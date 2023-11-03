@@ -1,7 +1,7 @@
-﻿using dumbogram.Models;
+﻿using Dumbogram.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace dumbogram.Controllers;
+namespace Dumbogram.Controllers;
 
 [ApiController]
 [Route("[controller]")]

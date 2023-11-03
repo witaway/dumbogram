@@ -1,7 +1,7 @@
-using dumbogram.Models;
+using Dumbogram.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace dumbogram;
+namespace Dumbogram;
 
 public static class ServiceInitializer
 {

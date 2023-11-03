@@ -2,7 +2,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 
-namespace dumbogram.Models;
+namespace Dumbogram.Models;
 
 public enum UserRole
 {

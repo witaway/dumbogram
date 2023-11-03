@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace dumbogram.Dto;
+namespace Dumbogram.Dto;
 
 public class SignUpDto
 {

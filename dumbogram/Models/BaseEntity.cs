@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace dumbogram.Models;
+namespace Dumbogram.Models;
 
 public class BaseEntity
 {

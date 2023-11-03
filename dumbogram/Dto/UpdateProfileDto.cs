@@ -1,4 +1,4 @@
-﻿namespace dumbogram.Dto;
+﻿namespace Dumbogram.Dto;
 
 public class UpdateProfileDto
 {

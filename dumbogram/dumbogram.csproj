@@ -5,6 +5,10 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <AssemblyName>Dumbogram</AssemblyName>
+        <RootNamespace>Dumbogram</RootNamespace>
+        <Company>Dumbogram</Company>
+        <Product>Dumbogram</Product>
     </PropertyGroup>
 
     <ItemGroup>

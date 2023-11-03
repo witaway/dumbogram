@@ -1,4 +1,4 @@
-using dumbogram;
+namespace Dumbogram;
 
 internal class Program
 {

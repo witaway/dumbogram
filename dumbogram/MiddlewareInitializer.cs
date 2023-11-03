@@ -1,4 +1,4 @@
-namespace dumbogram;
+namespace Dumbogram;
 
 public static partial class MiddlewareInitializer
 {
