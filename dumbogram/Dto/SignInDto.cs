@@ -1,15 +1,43 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using FluentValidation;
 
 namespace Dumbogram.Dto;
 
-
 public class SignInDto
 {
-    // Todo: Make required one field at once
-    public String Username { get; set; }
-    public String Email { get; set; }
- 
-    [StringLength(255)]
-    [Required]
-    public String Password { get; set; }
+    public string? Username { get; set; }
+
+    public string? Email { get; set; }
+
+    public string Password { get; set; }
+}
+
+public class SignInDtoValidator : AbstractValidator<SignInDto>
+{
+    public SignInDtoValidator()
+    {
+        RuleFor(credentials => credentials)
+            .Must(credentials => !string.IsNullOrEmpty(credentials.Username))
+            .WithMessage("Username or Email must be set")
+            .DependentRules(() =>
+            {
+                RuleFor(credentials => credentials.Username).Null()
+                    .When(credentials => credentials.Email != null)
+                    .WithMessage("Username must be null when Email has value");
+
+                RuleFor(credentials => credentials.Email).Null()
+                    .When(credentials => credentials.Username != null)
+                    .WithMessage("Email must be null when Username has value");
+            });
+
+        // Password.Length in [1; 255] if it's set
+        RuleFor(credentials => credentials.Username).NotEmpty().MaximumLength(255)
+            .When(credentials => credentials.Username != null);
+
+        // Email.Length in [1; 255] if it's set
+        RuleFor(credentials => credentials.Email).NotEmpty().MaximumLength(255)
+            .When(credentials => credentials.Email != null);
+
+        // Password.Length in [1; 255]
+        RuleFor(credentials => credentials.Password).NotEmpty().MaximumLength(255);
+    }
 }

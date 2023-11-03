@@ -1,4 +1,5 @@
-﻿using Dumbogram.Models;
+﻿using Dumbogram.Dto;
+using Dumbogram.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dumbogram.Controllers;
@@ -14,5 +15,12 @@ public class UsersController : ControllerBase
     {
         this.logger = logger;
         this.dbContext = dbContext;
+    }
+
+    
+    [HttpGet(Name = "SignIn")]
+    public SignInDto SignIn([FromBody] SignInDto signInDto)
+    {
+        return signInDto;
     }
 }
