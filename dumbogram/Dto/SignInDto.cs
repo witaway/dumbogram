@@ -16,7 +16,8 @@ public class SignInDtoValidator : AbstractValidator<SignInDto>
     public SignInDtoValidator()
     {
         RuleFor(credentials => credentials)
-            .Must(credentials => !string.IsNullOrEmpty(credentials.Username))
+            .Must(credentials =>
+                !string.IsNullOrEmpty(credentials.Username) || !string.IsNullOrEmpty(credentials.Email))
             .WithMessage("Username or Email must be set")
             .DependentRules(() =>
             {

@@ -1,9 +1,11 @@
 ﻿using Dumbogram.Dto;
 using Dumbogram.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dumbogram.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("/api/[controller]")]
 public class UsersController : ControllerBase
@@ -13,8 +15,8 @@ public class UsersController : ControllerBase
 
     public UsersController(ILogger<UsersController> logger, ApplicationDbContext dbContext)
     {
-        this._logger = logger;
-        this._dbContext = dbContext;
+        _logger = logger;
+        _dbContext = dbContext;
     }
 
 

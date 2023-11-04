@@ -1,8 +1,12 @@
+using System.Text;
 using Dumbogram.Dto;
 using Dumbogram.Models;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Dumbogram;
 
@@ -14,6 +18,10 @@ public static class ServiceInitializer
     )
     {
         RegisterDbContext(services, configuration);
+        RegisterIdentity(services);
+        ConfigureIdentity(services);
+        RegisterAuthentication(services, configuration);
+
         RegisterCustomDependencies(services);
 
         services.AddControllers();
@@ -27,6 +35,51 @@ public static class ServiceInitializer
     private static void RegisterCustomDependencies(IServiceCollection services)
     {
         // Place where custom services must register in IoC
+    }
+
+    private static void RegisterIdentity(IServiceCollection services)
+    {
+        services.AddIdentity<IdentityUser, IdentityRole>()
+            .AddEntityFrameworkStores<IdentityDbContext>()
+            .AddDefaultTokenProviders();
+    }
+
+    // TODO: Centralize Identity configuration???
+    private static void ConfigureIdentity(IServiceCollection services)
+    {
+        services.Configure<IdentityOptions>(options =>
+        {
+            // TEMPORARY SOLUTION
+            // Disabled all password requirements to simplify development
+            // TODO: Maybe for Development environment disable all policies?
+            options.Password.RequireDigit = false;
+            options.Password.RequireLowercase = false;
+            options.Password.RequireUppercase = false;
+            options.Password.RequireNonAlphanumeric = false;
+        });
+    }
+
+    private static void RegisterAuthentication(IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.SaveToken = true;
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidAudience = configuration["JWT:ValidAudience"],
+                    ValidIssuer = configuration["JWT:ValidIssuer"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]))
+                };
+            });
     }
 
     private static void RegisterFluentValidation(IServiceCollection services)
@@ -43,7 +96,16 @@ public static class ServiceInitializer
         services.AddDbContext<ApplicationDbContext>(
             options =>
             {
-                var connectionString = configuration.GetConnectionString("DumbogramDbConnection");
+                var connectionString = configuration.GetConnectionString("DumbogramApplicationDbConnection");
+                options
+                    .UseNpgsql(connectionString)
+                    .UseSnakeCaseNamingConvention();
+            }
+        );
+        services.AddDbContext<IdentityDbContext>(
+            options =>
+            {
+                var connectionString = configuration.GetConnectionString("DumbogramIdentityDbConnection");
                 options
                     .UseNpgsql(connectionString)
                     .UseSnakeCaseNamingConvention();
