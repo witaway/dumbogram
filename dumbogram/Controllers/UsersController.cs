@@ -5,20 +5,20 @@ using Microsoft.AspNetCore.Mvc;
 namespace Dumbogram.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("/api/[controller]")]
 public class UsersController : ControllerBase
 {
-    private readonly ILogger<UsersController> logger;
-    private readonly ApplicationDbContext dbContext;
-    
+    private readonly ApplicationDbContext _dbContext;
+    private readonly ILogger<UsersController> _logger;
+
     public UsersController(ILogger<UsersController> logger, ApplicationDbContext dbContext)
     {
-        this.logger = logger;
-        this.dbContext = dbContext;
+        this._logger = logger;
+        this._dbContext = dbContext;
     }
 
-    
-    [HttpGet(Name = "SignIn")]
+
+    [HttpPost(Name = "SignIn")]
     public SignInDto SignIn([FromBody] SignInDto signInDto)
     {
         return signInDto;
