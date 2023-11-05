@@ -1,6 +1,7 @@
-﻿using FluentValidation;
+﻿using Dumbogram.Core.User.Dto;
+using FluentValidation;
 
-namespace Dumbogram.Dto;
+namespace Dumbogram.Core.Auth.Dto;
 
 public class SignUpDto
 {

@@ -9,6 +9,7 @@
         <RootNamespace>Dumbogram</RootNamespace>
         <Company>Dumbogram</Company>
         <Product>Dumbogram</Product>
+        <UserSecretsId>7b896608-cfde-4ef9-a278-88d69582eeb9</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
@@ -38,7 +39,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Migrations\"/>
+        <Folder Include="Core\Auth\Models\"/>
     </ItemGroup>
 
 </Project>

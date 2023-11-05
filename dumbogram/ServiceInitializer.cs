@@ -1,6 +1,6 @@
 using System.Text;
-using Dumbogram.Dto;
-using Dumbogram.Models;
+using Dumbogram.Core.Auth.Dto;
+using Dumbogram.Database;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

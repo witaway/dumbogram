@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Dumbogram.Models;
+namespace Dumbogram.Database;
 
 public class IdentityDbContext : IdentityDbContext<IdentityUser>
 {

@@ -1,7 +1,8 @@
 using System.ComponentModel.DataAnnotations;
+using Dumbogram.Common.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Dumbogram.Models;
+namespace Dumbogram.Core.User.Models;
 
 [Index(nameof(Username), IsUnique = true)]
 public class UserProfile : BaseEntity

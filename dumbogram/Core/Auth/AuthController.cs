@@ -1,12 +1,12 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Dumbogram.Dto;
+using Dumbogram.Core.Auth.Dto;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Dumbogram.Controllers;
+namespace Dumbogram.Core.Auth;
 
 public static class UserRoles
 {

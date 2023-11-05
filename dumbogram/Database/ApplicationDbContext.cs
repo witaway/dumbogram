@@ -1,6 +1,7 @@
+using Dumbogram.Core.User.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Dumbogram.Models;
+namespace Dumbogram.Database;
 
 public class ApplicationDbContext : DbContext
 {
