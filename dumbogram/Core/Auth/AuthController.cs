@@ -4,17 +4,11 @@ using Dumbogram.Common.Filters;
 using Dumbogram.Core.Auth.Dto;
 using Dumbogram.Core.Auth.Services;
 using Dumbogram.Core.User.Services;
+using Dumbogram.Database;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dumbogram.Core.Auth;
-
-public static class UserRoles
-{
-    public const string Admin = "Admin";
-    public const string User = "User";
-    public const string Moderator = "Moderator";
-}
 
 [Route("api/[controller]")]
 [ApiController]

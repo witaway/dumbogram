@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using Dumbogram.Core.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

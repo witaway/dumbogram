@@ -5,6 +5,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Dumbogram.Database;
 
+public static class UserRoles
+{
+    public const string Admin = "Admin";
+    public const string User = "User";
+    public const string Moderator = "Moderator";
+}
+
 public class IdentityDbContext : IdentityDbContext<IdentityUser>
 {
     public IdentityDbContext(DbContextOptions<IdentityDbContext> options) : base(options)
