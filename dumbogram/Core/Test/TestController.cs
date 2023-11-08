@@ -1,4 +1,5 @@
-﻿using Dumbogram.Core.Auth.Dto;
+﻿using Dumbogram.Common.Filters;
+using Dumbogram.Core.Auth.Dto;
 using Dumbogram.Database;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Dumbogram.Core.Test;
 
+[DevOnly]
 [ApiController]
 [Route("/api/[controller]")]
 public class TestController : ControllerBase
