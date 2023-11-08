@@ -16,16 +16,6 @@ public static class UserRoles
     public const string Moderator = "Moderator";
 }
 
-public class Response
-{
-    public string? Status { get; set; }
-    public string? Message { get; set; }
-}
-
-// TODO: REFACTOR ALL THE SHIT!!!!!!!! Separate code to layers such as a repository and service and make it less SHITTY.
-// THIS IS ONLY A BASIC DEMONSTRATION. MUST BE REFACTORED.
-// THIS IS NOT AN EVEN CLOSE FINAL VERSION.
-
 [Route("api/[controller]")]
 [ApiController]
 public class AuthController : ControllerBase
