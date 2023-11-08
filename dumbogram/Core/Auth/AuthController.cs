@@ -1,10 +1,11 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
+using System.Runtime.CompilerServices;
 using Dumbogram.Core.Auth.Dto;
+using Dumbogram.Core.Auth.Services;
+using Dumbogram.Core.User;
+using Dumbogram.Core.User.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Dumbogram.Core.Auth;
 
@@ -29,131 +30,138 @@ public class Response
 [ApiController]
 public class AuthController : ControllerBase
 {
-    private readonly IConfiguration _configuration;
+    private readonly AuthService _authService;
     private readonly ILogger<AuthController> _logger;
-    private readonly RoleManager<IdentityRole> _roleManager;
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly RolesService _rolesService;
+    private readonly UserService _userService;
 
     public AuthController(
-        UserManager<IdentityUser> userManager,
-        RoleManager<IdentityRole> roleManager,
-        IConfiguration configuration,
+        UserService userService,
+        AuthService authService,
+        RolesService rolesService,
         ILogger<AuthController> logger)
     {
-        _userManager = userManager;
-        _roleManager = roleManager;
-        _configuration = configuration;
+        _userService = userService;
+        _authService = authService;
+        _rolesService = rolesService;
         _logger = logger;
     }
 
     [HttpPost]
     [Route("sign-in")]
-    public async Task<IActionResult> SignIn([FromBody] SignInDto model)
+    public async Task<IActionResult> SignIn([FromBody] SignInRequestDto model)
     {
-        // Todo: Add case for signing in by Username (Stored in UserProfile model)
-        var user = await _userManager.FindByEmailAsync(model.Email);
-        if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
+        var user = model switch
         {
-            var userRoles = await _userManager.GetRolesAsync(user);
+            { Email: not null } => await _userService.ReadUserByEmail(model.Email),
+            { Username: not null } => await _userService.ReadUserByUsername(model.Username),
+            _ => throw new SwitchExpressionException()
+        };
 
-            var authClaims = new List<Claim>
-            {
-                new(ClaimTypes.Name, user.UserName),
-                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
-
-            foreach (var userRole in userRoles) authClaims.Add(new Claim(ClaimTypes.Role, userRole));
-
-            var token = GetToken(authClaims);
-
-            // TODO: Send token in cookies
-
-            return Ok(new
-            {
-                token = new JwtSecurityTokenHandler().WriteToken(token),
-                expiration = token.ValidTo
-            });
+        if (user == null)
+        {
+            return Unauthorized();
         }
 
-        return Unauthorized();
+        var isPasswordValid = await _authService.CheckPasswordCorrectness(user, model.Password);
+        if (!isPasswordValid)
+        {
+            return Unauthorized();
+        }
+
+        var token = await _authService.SignIn(user);
+        var tokenStringRepresentation = new JwtSecurityTokenHandler().WriteToken(token);
+
+        return Ok(new
+        {
+            token = tokenStringRepresentation,
+            expiration = token.ValidTo
+        });
     }
 
     [HttpPost]
     [Route("sign-up")]
-    public async Task<IActionResult> SignUp([FromBody] SignUpDto model)
+    public async Task<IActionResult> SignUp([FromBody] SignUpRequestDto model)
     {
-        var userExists = await _userManager.FindByNameAsync(model.Username);
-        if (userExists != null)
-            return StatusCode(StatusCodes.Status500InternalServerError,
-                new Response { Status = "Error", Message = "User already exists!" });
+        var emailAlreadyTaken = await _userService.IsUserWithEmailExist(model.Email);
+        var usernameAlreadyTaken = await _userService.IsUserWithUsernameExist(model.Username);
 
-        // Todo: Remove Username usages in IdentityUser. Use the same in UserProfile
+        if (emailAlreadyTaken)
+        {
+            return Conflict(new
+            {
+                Status = "Error",
+                Message = "Email already taken"
+            });
+        }
+
+        if (usernameAlreadyTaken)
+        {
+            return Conflict(new
+            {
+                Status = "Error",
+                Message = "Username already taken"
+            });
+        }
+
         IdentityUser user = new()
         {
             Email = model.Email,
-            SecurityStamp = Guid.NewGuid().ToString(),
-            UserName = model.Username
+            UserName = model.Username,
+            SecurityStamp = Guid.NewGuid().ToString()
         };
-        var result = await _userManager.CreateAsync(user, model.Password);
+
+        var result = await _authService.SignUp(user, model.Password);
+
         if (!result.Succeeded)
         {
-            // Todo: Add response details when NOT SUCCEEDED
-            // Logging is temporary solution
-            _logger.Log(LogLevel.Warning, string.Join(", ",
-                result.Errors.Select(x => $"Code: {x.Code} Description: {x.Description}")));
+            var details = result.Errors.Select(error => new
+            {
+                error.Code, error.Description
+            });
 
-            return StatusCode(StatusCodes.Status500InternalServerError,
-                new Response { Status = "Error", Message = "User creation failed!" });
+            return BadRequest(new
+            {
+                Status = "Error",
+                Message = "User creation failed",
+                Details = details
+            });
         }
 
-        return Ok(new Response { Status = "Success", Message = "User created successfully!" });
+        _rolesService.GrantRoleToUser(user, UserRoles.User);
+
+        return Ok(new
+            {
+                Status = "Success",
+                Message = "User created successfully!"
+            }
+        );
     }
 
     [HttpPost]
     [Route("sign-up-admin")]
-    public async Task<IActionResult> SignUpAdmin([FromBody] SignUpDto model)
+    public async Task<IActionResult> SignUpAdmin([FromBody] SignUpRequestDto model)
     {
-        var userExists = await _userManager.FindByNameAsync(model.Username);
-        if (userExists != null)
-            return StatusCode(StatusCodes.Status500InternalServerError,
-                new Response { Status = "Error", Message = "User already exists!" });
+        // Reuse Signing Up code
+        var result = await SignUp(model);
 
-        IdentityUser user = new()
+        // If user is not created (result is not Ok), return this error
+        // Otherwise continue, add role and return the same result.
+        var okResult = result as OkObjectResult;
+        if (okResult == null || okResult.StatusCode != 200)
         {
-            Email = model.Email,
-            SecurityStamp = Guid.NewGuid().ToString(),
-            UserName = model.Username
-        };
-        var result = await _userManager.CreateAsync(user, model.Password);
-        if (!result.Succeeded)
-            return StatusCode(StatusCodes.Status500InternalServerError,
-                new Response
-                    { Status = "Error", Message = "User creation failed! Please check user details and try again." });
+            return result;
+        }
 
-        if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))
-            await _roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
-        if (!await _roleManager.RoleExistsAsync(UserRoles.User))
-            await _roleManager.CreateAsync(new IdentityRole(UserRoles.User));
+        // We know that user exist because already created it
+        var user = (await _userService.ReadUserByEmail(model.Email))!;
 
-        if (await _roleManager.RoleExistsAsync(UserRoles.Admin))
-            await _userManager.AddToRoleAsync(user, UserRoles.Admin);
-        if (await _roleManager.RoleExistsAsync(UserRoles.Admin))
-            await _userManager.AddToRoleAsync(user, UserRoles.User);
-        return Ok(new Response { Status = "Success", Message = "User created successfully!" });
-    }
+        _rolesService.GrantRoleToUser(user, UserRoles.Admin);
 
-    private JwtSecurityToken GetToken(List<Claim> authClaims)
-    {
-        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
-
-        var token = new JwtSecurityToken(
-            _configuration["JWT:ValidIssuer"],
-            _configuration["JWT:ValidAudience"],
-            expires: DateTime.Now.AddHours(3),
-            claims: authClaims,
-            signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-        );
-
-        return token;
+        return Ok(new
+        {
+            Status = "Success",
+            Message = "Administrative User created successfully!"
+        });
     }
 }

@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace Dumbogram.Core.Auth.Dto;
 
-public class SignUpDto
+public class SignUpRequestDto
 {
     public string Username { get; set; }
 
@@ -14,9 +14,9 @@ public class SignUpDto
     public UpdateProfileDto? Profile { get; set; }
 }
 
-public class SignUpDtoValidator : AbstractValidator<SignUpDto>
+public class SignUpRequestDtoValidator : AbstractValidator<SignUpRequestDto>
 {
-    public SignUpDtoValidator()
+    public SignUpRequestDtoValidator()
     {
         // Password.Length in [1; 255]
         RuleFor(credentials => credentials.Username).NotEmpty().MaximumLength(255);

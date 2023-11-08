@@ -1,5 +1,9 @@
 using System.Text;
+using Dumbogram.Core.Auth;
 using Dumbogram.Core.Auth.Dto;
+using Dumbogram.Core.Auth.Services;
+using Dumbogram.Core.User;
+using Dumbogram.Core.User.Services;
 using Dumbogram.Database;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -35,6 +39,14 @@ public static class ServiceInitializer
     private static void RegisterCustomDependencies(IServiceCollection services)
     {
         // Place where custom services must register in IoC
+
+        // Auth-related services
+        services.AddScoped<AuthService>();
+        services.AddScoped<TokenService>();
+
+        // User-related services
+        services.AddScoped<RolesService>();
+        services.AddScoped<UserService>();
     }
 
     private static void RegisterIdentity(IServiceCollection services)
@@ -87,7 +99,7 @@ public static class ServiceInitializer
         // This is how single validator registers:
         //   services.AddScoped<IValidator<SignInDto>, SignInDtoValidator>();
         // Todo: Maybe use assembly name instead of marker validator?
-        services.AddValidatorsFromAssemblyContaining(typeof(SignInDtoValidator));
+        services.AddValidatorsFromAssemblyContaining(typeof(SignInRequestDtoValidator));
         services.AddFluentValidationAutoValidation();
     }
 

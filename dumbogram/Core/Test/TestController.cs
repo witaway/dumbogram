@@ -32,7 +32,7 @@ public class TestController : ControllerBase
 
     [HttpPost(Name = "EchoValidate")]
     [Route("echo-validate")]
-    public async Task<IActionResult> SignIn([FromBody] SignInDto model)
+    public async Task<IActionResult> SignIn([FromBody] SignInRequestDto model)
     {
         return Ok(model);
     }

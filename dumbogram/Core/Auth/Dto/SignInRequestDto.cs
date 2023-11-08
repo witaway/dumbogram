@@ -2,7 +2,7 @@
 
 namespace Dumbogram.Core.Auth.Dto;
 
-public class SignInDto
+public class SignInRequestDto
 {
     public string? Username { get; set; }
 
@@ -11,9 +11,9 @@ public class SignInDto
     public string Password { get; set; }
 }
 
-public class SignInDtoValidator : AbstractValidator<SignInDto>
+public class SignInRequestDtoValidator : AbstractValidator<SignInRequestDto>
 {
-    public SignInDtoValidator()
+    public SignInRequestDtoValidator()
     {
         RuleFor(credentials => credentials)
             .Must(credentials =>
