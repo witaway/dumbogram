@@ -1,9 +1,7 @@
 using System.Text;
-using Dumbogram.Core.Auth;
 using Dumbogram.Core.Auth.Dto;
 using Dumbogram.Core.Auth.Services;
-using Dumbogram.Core.User;
-using Dumbogram.Core.User.Services;
+using Dumbogram.Core.Users.Services;
 using Dumbogram.Database;
 using FluentValidation;
 using FluentValidation.AspNetCore;

@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace Dumbogram.Core.User.Dto;
+namespace Dumbogram.Core.Users.Dto;
 
 public class UpdateProfileDto
 {

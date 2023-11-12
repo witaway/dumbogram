@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace Dumbogram.Core.User.Services;
+namespace Dumbogram.Core.Users.Services;
 
 public class RolesService
 {

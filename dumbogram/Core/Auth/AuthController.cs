@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using Dumbogram.Common.Filters;
 using Dumbogram.Core.Auth.Dto;
 using Dumbogram.Core.Auth.Services;
-using Dumbogram.Core.User.Services;
+using Dumbogram.Core.Users.Services;
 using Dumbogram.Database;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

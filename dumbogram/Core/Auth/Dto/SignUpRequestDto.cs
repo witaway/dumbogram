@@ -1,4 +1,4 @@
-﻿using Dumbogram.Core.User.Dto;
+﻿using Dumbogram.Core.Users.Dto;
 using FluentValidation;
 
 namespace Dumbogram.Core.Auth.Dto;
