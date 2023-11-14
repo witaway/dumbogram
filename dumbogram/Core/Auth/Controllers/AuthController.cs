@@ -3,42 +3,45 @@ using System.Runtime.CompilerServices;
 using Dumbogram.Common.Filters;
 using Dumbogram.Core.Auth.Dto;
 using Dumbogram.Core.Auth.Services;
+using Dumbogram.Core.Users.Models;
 using Dumbogram.Core.Users.Services;
-using Dumbogram.Database;
-using Microsoft.AspNetCore.Identity;
+using Dumbogram.Database.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Dumbogram.Core.Auth;
+namespace Dumbogram.Core.Auth.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
 public class AuthController : ControllerBase
 {
     private readonly AuthService _authService;
+    private readonly IdentityRolesService _identityRolesService;
+    private readonly IdentityUserService _identityUserService;
     private readonly ILogger<AuthController> _logger;
-    private readonly RolesService _rolesService;
     private readonly UserService _userService;
 
     public AuthController(
-        UserService userService,
+        IdentityUserService identityUserService,
         AuthService authService,
-        RolesService rolesService,
+        IdentityRolesService identityRolesService,
+        UserService userService,
         ILogger<AuthController> logger)
     {
-        _userService = userService;
+        _identityUserService = identityUserService;
         _authService = authService;
-        _rolesService = rolesService;
+        _identityRolesService = identityRolesService;
+        _userService = userService;
         _logger = logger;
     }
 
     [HttpPost]
     [Route("sign-in")]
-    public async Task<IActionResult> SignIn([FromBody] SignInRequestDto model)
+    public async Task<IActionResult> SignIn([FromBody] SignInRequestDto dto)
     {
-        var user = model switch
+        var user = dto switch
         {
-            { Email: not null } => await _userService.ReadUserByEmail(model.Email),
-            { Username: not null } => await _userService.ReadUserByUsername(model.Username),
+            { Email: not null } => await _identityUserService.ReadUserByEmail(dto.Email),
+            { Username: not null } => await _identityUserService.ReadUserByUsername(dto.Username),
             _ => throw new SwitchExpressionException()
         };
 
@@ -47,7 +50,7 @@ public class AuthController : ControllerBase
             return Unauthorized();
         }
 
-        var isPasswordValid = await _authService.CheckPasswordCorrectness(user, model.Password);
+        var isPasswordValid = await _authService.CheckPasswordCorrectness(user, dto.Password);
         if (!isPasswordValid)
         {
             return Unauthorized();
@@ -66,10 +69,11 @@ public class AuthController : ControllerBase
     [DevOnly]
     [HttpPost]
     [Route("sign-up")]
-    public async Task<IActionResult> SignUp([FromBody] SignUpRequestDto model)
+    public async Task<IActionResult> SignUp([FromBody] SignUpRequestDto dto)
     {
-        var emailAlreadyTaken = await _userService.IsUserWithEmailExist(model.Email);
-        var usernameAlreadyTaken = await _userService.IsUserWithUsernameExist(model.Username);
+        // User existence check
+        var emailAlreadyTaken = await _identityUserService.IsUserWithEmailExist(dto.Email);
+        var usernameAlreadyTaken = await _identityUserService.IsUserWithUsernameExist(dto.Username);
 
         if (emailAlreadyTaken)
         {
@@ -89,15 +93,17 @@ public class AuthController : ControllerBase
             });
         }
 
-        IdentityUser user = new()
+        // Creating IdentityUser
+        ApplicationIdentityUser user = new()
         {
-            Email = model.Email,
-            UserName = model.Username,
+            Email = dto.Email,
+            UserName = dto.Username,
             SecurityStamp = Guid.NewGuid().ToString()
         };
 
-        var result = await _authService.SignUp(user, model.Password);
+        var result = await _authService.SignUp(user, dto.Password);
 
+        // Checking is IdentityUser created
         if (!result.Succeeded)
         {
             var details = result.Errors.Select(error => new
@@ -113,7 +119,18 @@ public class AuthController : ControllerBase
             });
         }
 
-        _rolesService.GrantRoleToUser(user, UserRoles.User);
+        // Granting roles to IdentityUser
+        _identityRolesService.GrantRoleToUser(user, UserRoles.User);
+
+        // Creating related UserProfile
+        var userId = new Guid(user.Id);
+        UserProfile userProfile = new()
+        {
+            Username = dto.Username,
+            Description = dto.Profile?.Description
+        };
+        _userService.CreateUserProfile(userId, userProfile);
+
 
         return Ok(new
             {
@@ -125,10 +142,10 @@ public class AuthController : ControllerBase
 
     [HttpPost]
     [Route("sign-up-admin")]
-    public async Task<IActionResult> SignUpAdmin([FromBody] SignUpRequestDto model)
+    public async Task<IActionResult> SignUpAdmin([FromBody] SignUpRequestDto dto)
     {
         // Reuse Signing Up code
-        var result = await SignUp(model);
+        var result = await SignUp(dto);
 
         // If user is not created (result is not Ok), return this error
         // Otherwise continue, add role and return the same result.
@@ -139,9 +156,9 @@ public class AuthController : ControllerBase
         }
 
         // We know that user exist because already created it
-        var user = (await _userService.ReadUserByEmail(model.Email))!;
+        var user = (await _identityUserService.ReadUserByEmail(dto.Email))!;
 
-        _rolesService.GrantRoleToUser(user, UserRoles.Admin);
+        _identityRolesService.GrantRoleToUser(user, UserRoles.Admin);
 
         return Ok(new
         {
