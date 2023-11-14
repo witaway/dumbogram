@@ -1,8 +1,10 @@
 using System.Text;
 using Dumbogram.Core.Auth.Dto;
 using Dumbogram.Core.Auth.Services;
+using Dumbogram.Core.Chats.Services;
 using Dumbogram.Core.Users.Services;
 using Dumbogram.Database;
+using Dumbogram.Database.Identity;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -42,15 +44,23 @@ public static class ServiceInitializer
         services.AddScoped<AuthService>();
         services.AddScoped<TokenService>();
 
+        // IdentityUser-related services
+        services.AddScoped<IdentityRolesService>();
+        services.AddScoped<IdentityUserService>();
+
         // User-related services
-        services.AddScoped<RolesService>();
         services.AddScoped<UserService>();
+
+        // Chat-related services
+        services.AddScoped<ChatService>();
+        services.AddScoped<ChatPermissionsService>();
+        services.AddScoped<ChatMembershipService>();
     }
 
     private static void RegisterIdentity(IServiceCollection services)
     {
-        services.AddIdentity<IdentityUser, IdentityRole>()
-            .AddEntityFrameworkStores<IdentityDbContext>()
+        services.AddIdentity<ApplicationIdentityUser, IdentityRole>()
+            .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
             .AddDefaultTokenProviders();
     }
 
@@ -112,7 +122,7 @@ public static class ServiceInitializer
                     .UseSnakeCaseNamingConvention();
             }
         );
-        services.AddDbContext<IdentityDbContext>(
+        services.AddDbContext<ApplicationIdentityDbContext>(
             options =>
             {
                 var connectionString = configuration.GetConnectionString("DumbogramIdentityDbConnection");
