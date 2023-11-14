@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Dumbogram.Database.Migrations.Identity
 {
-    [DbContext(typeof(IdentityDbContext))]
+    [DbContext(typeof(ApplicationIdentityDbContext))]
     [Migration("20231108004253_Created_Roles_User_Admin_Moderator")]
     partial class Created_Roles_User_Admin_Moderator
     {

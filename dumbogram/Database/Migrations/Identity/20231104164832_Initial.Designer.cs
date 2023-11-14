@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Dumbogram.Database.Migrations.Identity
 {
-    [DbContext(typeof(IdentityDbContext))]
+    [DbContext(typeof(ApplicationIdentityDbContext))]
     [Migration("20231104164832_Initial")]
     partial class Initial
     {
