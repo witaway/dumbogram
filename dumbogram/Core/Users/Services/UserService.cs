@@ -1,46 +1,30 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Dumbogram.Core.Users.Models;
+using Dumbogram.Database;
+using Microsoft.EntityFrameworkCore;
 
 namespace Dumbogram.Core.Users.Services;
 
 public class UserService
 {
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly ApplicationDbContext _dbContext;
 
-    public UserService(UserManager<IdentityUser> userManager)
+    public UserService(
+        ApplicationDbContext dbContext
+    )
     {
-        _userManager = userManager;
+        _dbContext = dbContext;
     }
 
-    public async Task<IdentityUser?> ReadUserByUsername(string username)
+    public async Task<UserProfile?> ReadUserProfileById(Guid userId)
     {
-        return await _userManager.FindByNameAsync(username);
+        var user = await _dbContext.UserProfiles.SingleOrDefaultAsync(u => u.UserId == userId);
+        return user;
     }
 
-    public async Task<IdentityUser?> ReadUserByEmail(string email)
+    public async void CreateUserProfile(Guid userId, UserProfile userProfile)
     {
-        return await _userManager.FindByEmailAsync(email);
-    }
-
-    public async Task<IdentityUser?> ReadUserById(string userId)
-    {
-        return await _userManager.FindByIdAsync(userId);
-    }
-
-    public async Task<bool> IsUserWithUsernameExist(string username)
-    {
-        var user = await _userManager.FindByNameAsync(username);
-        return user != null;
-    }
-
-    public async Task<bool> IsUserWithEmailExist(string email)
-    {
-        var user = await _userManager.FindByEmailAsync(email);
-        return user != null;
-    }
-
-    public async Task<bool> IsUserWithIdExist(string userId)
-    {
-        var user = await _userManager.FindByIdAsync(userId);
-        return user != null;
+        userProfile.UserId = userId;
+        await _dbContext.UserProfiles.AddAsync(userProfile);
+        _dbContext.SaveChanges();
     }
 }

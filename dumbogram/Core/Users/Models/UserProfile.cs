@@ -10,11 +10,9 @@ public class UserProfile : BaseEntity
 {
     public Guid UserId { get; set; }
 
-    public string Username { get; set; }
+    public string Username { get; set; } = null!;
 
-    public string Description { get; set; }
-
-    public Guid AvatarMediaId { get; set; }
+    public string? Description { get; set; }
 
     public IEnumerable<Chat> OwnedChats { get; } = null!;
     public IEnumerable<ChatMessage> Messages { get; } = null!;
