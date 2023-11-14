@@ -7,7 +7,7 @@ namespace Dumbogram.Core.Chats.Models;
 
 public enum MembershipStatus
 {
-    Alive = 0,
+    Joined = 0,
     Leaved = 1,
     Banned = 2
 }
@@ -15,10 +15,10 @@ public enum MembershipStatus
 [EntityTypeConfiguration(typeof(ChatMembershipConfiguration))]
 public class ChatMembership : BaseEntity
 {
-    public Guid ChatId { get; set; }
-    public Chat Chat { get; } = null!;
+    public Guid ChatId { get; private set; }
+    public Chat Chat { get; set; } = null!;
 
-    public Guid MemberId { get; set; }
+    public Guid MemberId { get; private set; }
     public UserProfile MemberProfile { get; set; } = null!;
 
     public MembershipStatus MembershipStatus { get; set; }

@@ -21,10 +21,10 @@ public enum MembershipRight
 [EntityTypeConfiguration(typeof(ChatMemberPermissionConfiguration))]
 public class ChatMemberPermission : BaseEntity
 {
-    public Guid ChatId { get; set; }
-    public Chat Chat { get; } = null!;
+    public Guid ChatId { get; private set; }
+    public Chat Chat { get; set; } = null!;
 
-    public Guid MemberId { get; set; }
+    public Guid MemberId { get; private set; }
     public UserProfile MemberProfile { get; set; } = null!;
 
     public MembershipRight MembershipRight { get; set; }

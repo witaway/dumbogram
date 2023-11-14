@@ -8,17 +8,15 @@ namespace Dumbogram.Core.Chats.Models;
 [EntityTypeConfiguration(typeof(ChatConfiguration))]
 public class Chat : BaseEntity
 {
-    public Guid Id { get; set; }
-
-    public Guid OwnerId { get; set; }
-    public UserProfile OwnerProfile { get; set; } = null!;
-
+    public Guid Id { get; private set; }
+    public Guid OwnerId { get; private set; }
     public string Title { get; set; } = null!;
     public string? Description { get; set; }
 
-    public IEnumerable<ChatMessage> Messages { get; } = null!;
-    public IEnumerable<ChatMembership> Memberships { get; } = null!;
-    public IEnumerable<ChatMemberPermission> Permissions { get; } = null!;
+    public UserProfile OwnerProfile { get; set; } = null!;
+    public IEnumerable<ChatMessage> Messages { get; set; } = null!;
+    public IEnumerable<ChatMembership> Memberships { get; set; } = null!;
+    public IEnumerable<ChatMemberPermission> Permissions { get; set; } = null!;
 }
 
 public class ChatConfiguration : IEntityTypeConfiguration<Chat>

@@ -17,12 +17,12 @@ public enum MessageType
 [EntityTypeConfiguration(typeof(ChatMessageConfiguration))]
 public class ChatMessage : BaseEntity
 {
-    public int Id { get; set; }
+    public int Id { get; private set; }
 
-    public Guid ChatId { get; set; }
+    public Guid ChatId { get; private set; }
     public Chat Chat { get; } = null!;
 
-    public Guid SenderId { get; set; }
+    public Guid SenderId { get; private set; }
     public UserProfile SenderProfile { get; } = null!;
 
     public MessageType MessageType { get; set; }
