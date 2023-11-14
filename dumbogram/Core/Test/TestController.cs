@@ -1,6 +1,8 @@
 ﻿using Dumbogram.Common.Filters;
+using Dumbogram.Common.Helpers;
 using Dumbogram.Core.Auth.Dto;
 using Dumbogram.Database;
+using Dumbogram.Database.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,10 +16,10 @@ public class TestController : ControllerBase
 {
     private readonly ApplicationDbContext _dbContext;
     private readonly ILogger<TestController> _logger;
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly UserManager<ApplicationIdentityUser> _userManager;
 
     public TestController(ILogger<TestController> logger, ApplicationDbContext dbContext,
-        UserManager<IdentityUser> userManager)
+        UserManager<ApplicationIdentityUser> userManager)
     {
         _logger = logger;
         _dbContext = dbContext;
@@ -44,7 +46,7 @@ public class TestController : ControllerBase
     [Route("user")]
     public async Task<IActionResult> GetCurrentUser()
     {
-        var user = await _userManager.FindByNameAsync(User.Identity.Name);
+        var user = await _userManager.FindByIdAsync(User.GetUserIdentityId());
         return Ok(user);
     }
 
