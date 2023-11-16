@@ -41,6 +41,13 @@ public class TestController : ControllerBase
         return Ok(model);
     }
 
+    [HttpGet(Name = "UnhandledException")]
+    [Route("unhandled-exception")]
+    public async Task<IActionResult> UnhandledException()
+    {
+        throw new Exception("Application has committed seppuku just now!");
+    }
+
     [Authorize]
     [HttpPost(Name = "GetCurrentUser")]
     [Route("user")]
