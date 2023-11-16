@@ -63,19 +63,23 @@ public class ErrorHandlerMiddleware : IMiddleware
 
     private string ExceptionToJson(Exception exception)
     {
-        var exceptionMessage = exception.Message;
+        var publicExceptionMessage =
+            "Oops! Something went wrong. " +
+            "Please contact support (it does not exist, you're ditched and no one cares you)";
         var exceptionCode = exception.GetErrorCode();
 
         // Response contains message and code of exception
         dynamic response = new ExpandoObject();
-        response.message = exceptionMessage;
+        response.message = publicExceptionMessage;
         response.code = exceptionCode!;
 
         // And in Development environment contains ALSO full exception info and containing data
         if (_env.IsDevelopment())
         {
+            var exceptionMessage = exception.Message;
             var exceptionInfo = exception.ToString();
             var exceptionData = exception.Data;
+            response.message = exceptionMessage;
             response.info = exceptionInfo;
             response.data = exceptionData;
         }
