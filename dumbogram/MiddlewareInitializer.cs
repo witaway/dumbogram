@@ -1,9 +1,13 @@
+using Dumbogram.Common.Middlewares;
+
 namespace Dumbogram;
 
-public static partial class MiddlewareInitializer
+public static class MiddlewareInitializer
 {
     public static WebApplication ConfigureMiddleware(this WebApplication app)
     {
+        app.UseMiddleware<ErrorHandlerMiddleware>();
+
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();

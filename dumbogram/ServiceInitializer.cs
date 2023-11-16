@@ -1,4 +1,5 @@
 using System.Text;
+using Dumbogram.Common.Middlewares;
 using Dumbogram.Core.Auth.Dto;
 using Dumbogram.Core.Auth.Services;
 using Dumbogram.Core.Chats.Services;
@@ -26,7 +27,8 @@ public static class ServiceInitializer
         ConfigureIdentity(services);
         RegisterAuthentication(services, configuration);
 
-        RegisterCustomDependencies(services);
+        RegisterCustomMiddlewares(services);
+        RegisterCustomServices(services);
 
         services.AddControllers();
 
@@ -36,10 +38,13 @@ public static class ServiceInitializer
         return services;
     }
 
-    private static void RegisterCustomDependencies(IServiceCollection services)
+    private static void RegisterCustomMiddlewares(IServiceCollection services)
     {
-        // Place where custom services must register in IoC
+        services.AddTransient<ErrorHandlerMiddleware>();
+    }
 
+    private static void RegisterCustomServices(IServiceCollection services)
+    {
         // Auth-related services
         services.AddScoped<AuthService>();
         services.AddScoped<TokenService>();
