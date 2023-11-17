@@ -1,9 +1,10 @@
 ﻿using System.Security.Claims;
 using System.Security.Principal;
+using Dumbogram.Common.Exceptions;
 
-namespace Dumbogram.Common.Helpers;
+namespace Dumbogram.Common.Extensions;
 
-public class CannotExtractClaimException : Exception
+public class CannotExtractClaimException : BaseApplicationException
 {
     public CannotExtractClaimException()
     {
@@ -20,13 +21,13 @@ public class CannotExtractClaimException : Exception
     }
 }
 
-public static class UserHelpers
+public static class PrincipalExtension
 {
     public static string GetUserIdentityId(this IPrincipal principal)
     {
         if (principal.Identity == null)
         {
-            throw new CannotExtractClaimException("[Authorization] Principal does not contain Identity Claims");
+            throw new CannotExtractClaimException("Principal does not contain Identity Claims");
         }
 
         var claimsIdentity = (ClaimsIdentity)principal.Identity;
@@ -34,7 +35,7 @@ public static class UserHelpers
 
         if (claim == null)
         {
-            throw new CannotExtractClaimException("[Authorization] Identifier Claim is not found");
+            throw new CannotExtractClaimException("Identifier Claim is not found");
         }
 
         return claim.Value;

@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Dumbogram.Common.Exceptions;
-using Dumbogram.Common.Helpers;
+using Dumbogram.Common.Extensions;
 
 namespace Dumbogram.Common.Middlewares;
 

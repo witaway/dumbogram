@@ -1,9 +1,9 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace Dumbogram.Common.Helpers;
+namespace Dumbogram.Common.Extensions;
 
-public static class ExceptionErrorCodeHelper
+public static class ExceptionErrorCodeExtension
 {
     private const string ErrorCodeKey = "errorCode";
 
