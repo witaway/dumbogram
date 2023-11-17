@@ -38,6 +38,8 @@ public class AuthController : ControllerBase
 
     [HttpPost]
     [Route("sign-in")]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ResponseFailureDto))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccessDto<SignInResponseDto>))]
     public async Task<IActionResult> SignIn([FromBody] SignInRequestDto dto)
     {
         var user = dto switch
@@ -49,34 +51,36 @@ public class AuthController : ControllerBase
 
         if (user == null)
         {
-            return Unauthorized(ResponseDto.Failure("User does not exist"));
+            return Unauthorized(ResponseDto.Failure(
+                "User does not exist"
+            ));
         }
 
         var signInResult = await _authService.SignIn(user, dto.Password);
 
         if (signInResult.IsFailed)
         {
-            return Unauthorized(signInResult.ToResult().ToFailureDto("Cannot sign in"));
+            return Unauthorized(signInResult.ToResult().ToFailureDto(
+                "Cannot sign in"
+            ));
         }
 
         var token = signInResult.Value;
         var tokenStringRepresentation = new JwtSecurityTokenHandler().WriteToken(token);
 
-        return Ok(new
+        return Ok(ResponseDto.Success("Signed in successfully", new SignInResponseDto
         {
-            Status = "Success",
-            Message = "Signed in successfully",
-            Data = new
-            {
-                Token = tokenStringRepresentation,
-                Expiration = token.ValidTo
-            }
-        });
+            Token = tokenStringRepresentation,
+            Expiration = token.ValidTo
+        }));
     }
 
     [DevOnly]
     [HttpPost]
     [Route("sign-up")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccessDto))]
+    [ProducesResponseType(StatusCodes.Status409Conflict, Type = typeof(ResponseFailureDto))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ResponseFailureDto))]
     public async Task<IActionResult> SignUp([FromBody] SignUpRequestDto dto)
     {
         ApplicationIdentityUser user = new()
@@ -88,23 +92,30 @@ public class AuthController : ControllerBase
 
         var signUpResult = await _authService.SignUp(user, dto.Password);
 
-        return signUpResult switch
+        if (signUpResult.IsSuccess)
         {
-            { IsSuccess: true } => Ok(new
-            {
-                Status = "Success",
-                Message = "User created successfully!"
-            }),
-            { IsSuccess: false, Errors: [CredentialsConflictError, _] } => Conflict(
-                signUpResult.ToFailureDto("User with such credentials already exist")),
-            { IsSuccess: false, Errors: [WrappedIdentityError, _] } => BadRequest(
-                signUpResult.ToFailureDto("Error during signing up")),
-            _ => throw new SwitchExpressionException()
-        };
+            return Ok(ResponseDto.Success(
+                "User created successfully"
+            ));
+        }
+
+        if (signUpResult.Errors is [CredentialsConflictError, _])
+        {
+            return Conflict(signUpResult.ToFailureDto(
+                "User with such credentials already exist"
+            ));
+        }
+
+        return BadRequest(signUpResult.ToFailureDto(
+            "Error during signing up"
+        ));
     }
 
     [HttpPost]
     [Route("sign-up-admin")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccessDto))]
+    [ProducesResponseType(StatusCodes.Status409Conflict, Type = typeof(ResponseFailureDto))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ResponseFailureDto))]
     public async Task<IActionResult> SignUpAdmin([FromBody] SignUpRequestDto dto)
     {
         // Reuse Signing Up code
@@ -123,10 +134,8 @@ public class AuthController : ControllerBase
 
         await _identityRolesService.EnsureUserIsInRole(user, UserRoles.Admin);
 
-        return Ok(new
-        {
-            Status = "Success",
-            Message = "Administrative User created successfully!"
-        });
+        return Ok(ResponseDto.Success(
+            "Administrative User created successfully!"
+        ));
     }
 }

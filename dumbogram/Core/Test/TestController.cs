@@ -1,6 +1,8 @@
-﻿using Dumbogram.Common.Extensions;
+﻿using Dumbogram.Common.Dto;
+using Dumbogram.Common.Extensions;
 using Dumbogram.Common.Filters;
 using Dumbogram.Core.Auth.Dto;
+using Dumbogram.Core.Users.Dto;
 using Dumbogram.Database;
 using Dumbogram.Database.Identity;
 using Microsoft.AspNetCore.Authorization;
@@ -11,7 +13,7 @@ namespace Dumbogram.Core.Test;
 
 [DevOnly]
 [ApiController]
-[Route("/api/[controller]")]
+[Route("api/[controller]")]
 public class TestController : ControllerBase
 {
     private readonly ApplicationDbContext _dbContext;
@@ -29,35 +31,37 @@ public class TestController : ControllerBase
 
     [HttpPost(Name = "Echo")]
     [Route("echo")]
-    public async Task<IActionResult> SignIn([FromBody] object model)
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccessDto<object>))]
+    public IActionResult Echo([FromBody] object model)
     {
-        return Ok(model);
+        return Ok(ResponseDto.Success("Echo!", model));
     }
 
     [HttpPost(Name = "EchoValidate")]
     [Route("echo-validate")]
-    public async Task<IActionResult> SignIn([FromBody] SignInRequestDto model)
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccessDto<SignInRequestDto>))]
+    public IActionResult EchoValidate([FromBody] SignInRequestDto model)
     {
-        return Ok(model);
+        return Ok(ResponseDto.Success("Echo, but also validate!", model));
     }
 
     [HttpGet(Name = "UnhandledException")]
-    [Route("unhandled-exception")]
-    public async Task<IActionResult> UnhandledException()
+    [Route("seppuku")]
+    public IActionResult UnhandledException()
     {
         throw new Exception("Application has committed seppuku just now!");
     }
 
     [Authorize]
     [HttpPost(Name = "GetCurrentUser")]
-    [Route("user")]
+    [Route("me")]
+    [ProducesResponseType(
+        StatusCodes.Status200OK, Type = typeof(ResponseSuccessDto<GetIdentityUserByUserIdResponseDto>)
+    )]
     public async Task<IActionResult> GetCurrentUser()
     {
         var user = await _userManager.FindByIdAsync(User.GetUserIdentityId());
-        return Ok(user);
-    }
-
-    private class GetCurrentUserResponseDto
-    {
+        var userDto = GetIdentityUserByUserIdResponseDto.MapFromModel(user!);
+        return Ok(ResponseDto.Success("That's a current user, wow!", userDto));
     }
 }

@@ -9,3 +9,10 @@ public class ResponseSuccessDto<T> : ResponseDto
 
     public T? Data { get; set; }
 }
+
+public class ResponseSuccessDto : ResponseDto
+{
+    public ResponseSuccessDto(string message) : base(message)
+    {
+    }
+}

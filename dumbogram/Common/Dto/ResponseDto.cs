@@ -24,4 +24,9 @@ public abstract class ResponseDto
     {
         return new ResponseSuccessDto<T>(message, data);
     }
+
+    public static ResponseSuccessDto Success(string message)
+    {
+        return new ResponseSuccessDto(message);
+    }
 }

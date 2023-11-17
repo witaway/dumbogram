@@ -1,4 +1,5 @@
-﻿using Dumbogram.Common.Extensions;
+﻿using Dumbogram.Common.Dto;
+using Dumbogram.Common.Extensions;
 using Dumbogram.Core.Chats.Dto;
 using Dumbogram.Core.Chats.Models;
 using Dumbogram.Core.Chats.Services;
@@ -38,21 +39,34 @@ public class ChatsController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult ReadAllChats()
+    [ProducesResponseType(
+        StatusCodes.Status200OK, Type = typeof(ResponseSuccessDto<List<ReadChatByChatIdResponseDto>>)
+    )]
+    public async Task<IActionResult> ReadAllChats()
     {
-        var chats = _chatService.ReadAllChats();
-        return Ok(chats);
+        var chats = await _chatService.ReadAllChats();
+        var chatsDto = chats.Select(ReadChatByChatIdResponseDto.MapFromModel).ToList();
+        return Ok(ResponseDto.Success("Chats list accessed successfully", chatsDto));
     }
 
     [HttpGet]
     [Route("{chatId:guid}")]
-    public IActionResult ReadChatByChatId([FromRoute] Guid chatId)
+    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ResponseFailureDto))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccessDto<ReadChatByChatIdResponseDto>))]
+    public async Task<IActionResult> ReadChatByChatId([FromRoute] Guid chatId)
     {
-        var chat = _chatService.ReadChatById(chatId);
-        return Ok(chat);
+        var chat = await _chatService.ReadChatById(chatId);
+        if (chat == null)
+        {
+            return NotFound(ResponseDto.Failure("Chat not found"));
+        }
+
+        var chatDto = ReadChatByChatIdResponseDto.MapFromModel(chat);
+        return Ok(ResponseDto.Success("Chat was found successfully", chatDto));
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(ResponseSuccessDto))]
     public async Task<IActionResult> CreateChat([FromBody] CreateChatRequestDto dto)
     {
         // Read current user
@@ -70,6 +84,8 @@ public class ChatsController : ControllerBase
         await _chatService.CreateChat(chat);
         await _chatMembershipService.JoinUser(userProfile!, chat);
 
-        return Ok();
+        var chatUri = $"/api/chats/{chat.Id}";
+
+        return Created(chatUri, ResponseDto.Success("Chat created successfully"));
     }
 }

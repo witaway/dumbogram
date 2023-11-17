@@ -52,7 +52,7 @@ public class ChatService
         return await ReadAllChatsJoinedBy(userProfile.UserId);
     }
 
-    public async Task<Chat> ReadChatById(Guid chatId)
+    public async Task<Chat?> ReadChatById(Guid chatId)
     {
         return await _dbContext
             .Chats
