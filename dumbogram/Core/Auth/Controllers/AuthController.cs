@@ -1,9 +1,11 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Runtime.CompilerServices;
+using Dumbogram.Common.Dto;
+using Dumbogram.Common.Extensions;
 using Dumbogram.Common.Filters;
 using Dumbogram.Core.Auth.Dto;
+using Dumbogram.Core.Auth.Errors;
 using Dumbogram.Core.Auth.Services;
-using Dumbogram.Core.Users.Models;
 using Dumbogram.Core.Users.Services;
 using Dumbogram.Database.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -47,22 +49,28 @@ public class AuthController : ControllerBase
 
         if (user == null)
         {
-            return Unauthorized();
+            return Unauthorized(ResponseDto.Failure("User does not exist"));
         }
 
-        var isPasswordValid = await _authService.CheckPasswordCorrectness(user, dto.Password);
-        if (!isPasswordValid)
+        var signInResult = await _authService.SignIn(user, dto.Password);
+
+        if (signInResult.IsFailed)
         {
-            return Unauthorized();
+            return Unauthorized(signInResult.ToResult().ToFailureDto("Cannot sign in"));
         }
 
-        var token = await _authService.SignIn(user);
+        var token = signInResult.Value;
         var tokenStringRepresentation = new JwtSecurityTokenHandler().WriteToken(token);
 
         return Ok(new
         {
-            token = tokenStringRepresentation,
-            expiration = token.ValidTo
+            Status = "Success",
+            Message = "Signed in successfully",
+            Data = new
+            {
+                Token = tokenStringRepresentation,
+                Expiration = token.ValidTo
+            }
         });
     }
 
@@ -71,29 +79,6 @@ public class AuthController : ControllerBase
     [Route("sign-up")]
     public async Task<IActionResult> SignUp([FromBody] SignUpRequestDto dto)
     {
-        // User existence check
-        var emailAlreadyTaken = await _identityUserService.IsUserWithEmailExist(dto.Email);
-        var usernameAlreadyTaken = await _identityUserService.IsUserWithUsernameExist(dto.Username);
-
-        if (emailAlreadyTaken)
-        {
-            return Conflict(new
-            {
-                Status = "Error",
-                Message = "Email already taken"
-            });
-        }
-
-        if (usernameAlreadyTaken)
-        {
-            return Conflict(new
-            {
-                Status = "Error",
-                Message = "Username already taken"
-            });
-        }
-
-        // Creating IdentityUser
         ApplicationIdentityUser user = new()
         {
             Email = dto.Email,
@@ -101,43 +86,21 @@ public class AuthController : ControllerBase
             SecurityStamp = Guid.NewGuid().ToString()
         };
 
-        var result = await _authService.SignUp(user, dto.Password);
+        var signUpResult = await _authService.SignUp(user, dto.Password);
 
-        // Checking is IdentityUser created
-        if (!result.Succeeded)
+        return signUpResult switch
         {
-            var details = result.Errors.Select(error => new
-            {
-                error.Code, error.Description
-            });
-
-            return BadRequest(new
-            {
-                Status = "Error",
-                Message = "User creation failed",
-                Details = details
-            });
-        }
-
-        // Granting roles to IdentityUser
-        _identityRolesService.GrantRoleToUser(user, UserRoles.User);
-
-        // Creating related UserProfile
-        var userId = new Guid(user.Id);
-        UserProfile userProfile = new()
-        {
-            Username = dto.Username,
-            Description = dto.Profile?.Description
-        };
-        _userService.CreateUserProfile(userId, userProfile);
-
-
-        return Ok(new
+            { IsSuccess: true } => Ok(new
             {
                 Status = "Success",
                 Message = "User created successfully!"
-            }
-        );
+            }),
+            { IsSuccess: false, Errors: [CredentialsConflictError, _] } => Conflict(
+                signUpResult.ToFailureDto("User with such credentials already exist")),
+            { IsSuccess: false, Errors: [WrappedIdentityError, _] } => BadRequest(
+                signUpResult.ToFailureDto("Error during signing up")),
+            _ => throw new SwitchExpressionException()
+        };
     }
 
     [HttpPost]
@@ -158,7 +121,7 @@ public class AuthController : ControllerBase
         // We know that user exist because already created it
         var user = (await _identityUserService.ReadUserByEmail(dto.Email))!;
 
-        _identityRolesService.GrantRoleToUser(user, UserRoles.Admin);
+        await _identityRolesService.EnsureUserIsInRole(user, UserRoles.Admin);
 
         return Ok(new
         {

@@ -1,6 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using FluentResults;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Dumbogram.Core.Auth.Services;
@@ -14,7 +15,7 @@ public class TokenService
         _configuration = configuration;
     }
 
-    public JwtSecurityToken CreateJwtSecurityToken(IEnumerable<Claim> claims)
+    public Result<JwtSecurityToken> CreateJwtSecurityToken(IEnumerable<Claim> claims)
     {
         var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
         var issuer = _configuration["JWT:ValidIssuer"];
@@ -30,6 +31,6 @@ public class TokenService
             signingCredentials: signingCredentials
         );
 
-        return token;
+        return Result.Ok(token);
     }
 }
