@@ -38,8 +38,8 @@ public class AuthController : ControllerBase
 
     [HttpPost]
     [Route("sign-in")]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ResponseFailureDto))]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccessDto<SignInResponseDto>))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ResponseFailure))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccess<SignInResponseDto>))]
     public async Task<IActionResult> SignIn([FromBody] SignInRequestDto dto)
     {
         var user = dto switch
@@ -51,7 +51,7 @@ public class AuthController : ControllerBase
 
         if (user == null)
         {
-            return Unauthorized(ResponseDto.Failure(
+            return Unauthorized(Common.Dto.Response.Failure(
                 "User does not exist"
             ));
         }
@@ -68,7 +68,7 @@ public class AuthController : ControllerBase
         var token = signInResult.Value;
         var tokenStringRepresentation = new JwtSecurityTokenHandler().WriteToken(token);
 
-        return Ok(ResponseDto.Success("Signed in successfully", new SignInResponseDto
+        return Ok(Common.Dto.Response.Success("Signed in successfully", new SignInResponseDto
         {
             Token = tokenStringRepresentation,
             Expiration = token.ValidTo
@@ -78,9 +78,9 @@ public class AuthController : ControllerBase
     [DevOnly]
     [HttpPost]
     [Route("sign-up")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccessDto))]
-    [ProducesResponseType(StatusCodes.Status409Conflict, Type = typeof(ResponseFailureDto))]
-    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ResponseFailureDto))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccess))]
+    [ProducesResponseType(StatusCodes.Status409Conflict, Type = typeof(ResponseFailure))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ResponseFailure))]
     public async Task<IActionResult> SignUp([FromBody] SignUpRequestDto dto)
     {
         ApplicationIdentityUser user = new()
@@ -94,7 +94,7 @@ public class AuthController : ControllerBase
 
         if (signUpResult.IsSuccess)
         {
-            return Ok(ResponseDto.Success(
+            return Ok(Common.Dto.Response.Success(
                 "User created successfully"
             ));
         }
@@ -113,9 +113,9 @@ public class AuthController : ControllerBase
 
     [HttpPost]
     [Route("sign-up-admin")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccessDto))]
-    [ProducesResponseType(StatusCodes.Status409Conflict, Type = typeof(ResponseFailureDto))]
-    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ResponseFailureDto))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccess))]
+    [ProducesResponseType(StatusCodes.Status409Conflict, Type = typeof(ResponseFailure))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ResponseFailure))]
     public async Task<IActionResult> SignUpAdmin([FromBody] SignUpRequestDto dto)
     {
         // Reuse Signing Up code
@@ -134,7 +134,7 @@ public class AuthController : ControllerBase
 
         await _identityRolesService.EnsureUserIsInRole(user, UserRoles.Admin);
 
-        return Ok(ResponseDto.Success(
+        return Ok(Common.Dto.Response.Success(
             "Administrative User created successfully!"
         ));
     }

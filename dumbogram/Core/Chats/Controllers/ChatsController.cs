@@ -40,33 +40,33 @@ public class ChatsController : ControllerBase
 
     [HttpGet]
     [ProducesResponseType(
-        StatusCodes.Status200OK, Type = typeof(ResponseSuccessDto<List<ReadChatByChatIdResponseDto>>)
+        StatusCodes.Status200OK, Type = typeof(ResponseSuccess<List<ReadChatByChatIdResponseDto>>)
     )]
     public async Task<IActionResult> ReadAllChats()
     {
         var chats = await _chatService.ReadAllChats();
         var chatsDto = chats.Select(ReadChatByChatIdResponseDto.MapFromModel).ToList();
-        return Ok(ResponseDto.Success("Chats list accessed successfully", chatsDto));
+        return Ok(Common.Dto.Response.Success("Chats list accessed successfully", chatsDto));
     }
 
     [HttpGet]
     [Route("{chatId:guid}")]
-    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ResponseFailureDto))]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccessDto<ReadChatByChatIdResponseDto>))]
+    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ResponseFailure))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccess<ReadChatByChatIdResponseDto>))]
     public async Task<IActionResult> ReadChatByChatId([FromRoute] Guid chatId)
     {
         var chat = await _chatService.ReadChatById(chatId);
         if (chat == null)
         {
-            return NotFound(ResponseDto.Failure("Chat not found"));
+            return NotFound(Common.Dto.Response.Failure("Chat not found"));
         }
 
         var chatDto = ReadChatByChatIdResponseDto.MapFromModel(chat);
-        return Ok(ResponseDto.Success("Chat was found successfully", chatDto));
+        return Ok(Common.Dto.Response.Success("Chat was found successfully", chatDto));
     }
 
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(ResponseSuccessDto))]
+    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(ResponseSuccess))]
     public async Task<IActionResult> CreateChat([FromBody] CreateChatRequestDto dto)
     {
         // Read current user
@@ -86,6 +86,6 @@ public class ChatsController : ControllerBase
 
         var chatUri = $"/api/chats/{chat.Id}";
 
-        return Created(chatUri, ResponseDto.Success("Chat created successfully"));
+        return Created(chatUri, Common.Dto.Response.Success("Chat created successfully"));
     }
 }

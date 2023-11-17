@@ -31,18 +31,18 @@ public class TestController : ControllerBase
 
     [HttpPost(Name = "Echo")]
     [Route("echo")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccessDto<object>))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccess<object>))]
     public IActionResult Echo([FromBody] object model)
     {
-        return Ok(ResponseDto.Success("Echo!", model));
+        return Ok(Common.Dto.Response.Success("Echo!", model));
     }
 
     [HttpPost(Name = "EchoValidate")]
     [Route("echo-validate")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccessDto<SignInRequestDto>))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccess<SignInRequestDto>))]
     public IActionResult EchoValidate([FromBody] SignInRequestDto model)
     {
-        return Ok(ResponseDto.Success("Echo, but also validate!", model));
+        return Ok(Common.Dto.Response.Success("Echo, but also validate!", model));
     }
 
     [HttpGet(Name = "UnhandledException")]
@@ -56,12 +56,12 @@ public class TestController : ControllerBase
     [HttpPost(Name = "GetCurrentUser")]
     [Route("me")]
     [ProducesResponseType(
-        StatusCodes.Status200OK, Type = typeof(ResponseSuccessDto<GetIdentityUserByUserIdResponseDto>)
+        StatusCodes.Status200OK, Type = typeof(ResponseSuccess<GetIdentityUserByUserIdResponseDto>)
     )]
     public async Task<IActionResult> GetCurrentUser()
     {
         var user = await _userManager.FindByIdAsync(User.GetUserIdentityId());
         var userDto = GetIdentityUserByUserIdResponseDto.MapFromModel(user!);
-        return Ok(ResponseDto.Success("That's a current user, wow!", userDto));
+        return Ok(Common.Dto.Response.Success("That's a current user, wow!", userDto));
     }
 }
