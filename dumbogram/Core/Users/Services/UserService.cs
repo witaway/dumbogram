@@ -21,10 +21,9 @@ public class UserService
         return user;
     }
 
-    public async void CreateUserProfile(Guid userId, UserProfile userProfile)
+    public async Task CreateUserProfile(UserProfile userProfile)
     {
-        userProfile.UserId = userId;
         await _dbContext.UserProfiles.AddAsync(userProfile);
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync();
     }
 }

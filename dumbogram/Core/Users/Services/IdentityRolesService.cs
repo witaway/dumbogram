@@ -16,17 +16,17 @@ public class IdentityRolesService
         _userManager = userManager;
     }
 
-    public void GrantRoleToUser(ApplicationIdentityUser user, string role)
+    public async Task EnsureUserIsInRole(ApplicationIdentityUser user, string role)
     {
         // We dont care if user already in role or not
         // We care only fact that user MUST be in role after the call
-        _userManager.AddToRoleAsync(user, role);
+        await _userManager.AddToRoleAsync(user, role);
     }
 
-    public void RevokeRoleFromUser(ApplicationIdentityUser user, string role)
+    public async Task EnsureUserIsNotInRole(ApplicationIdentityUser user, string role)
     {
         // A similar like with GrantRoleToUser
-        _userManager.RemoveFromRoleAsync(user, role);
+        await _userManager.RemoveFromRoleAsync(user, role);
     }
 
     public Task<IList<string>> ReadUserRoles(ApplicationIdentityUser user)

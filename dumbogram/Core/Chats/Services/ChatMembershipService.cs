@@ -1,6 +1,7 @@
 ﻿using Dumbogram.Core.Chats.Models;
 using Dumbogram.Core.Users.Models;
 using Dumbogram.Database;
+using Microsoft.EntityFrameworkCore;
 
 namespace Dumbogram.Core.Chats.Services;
 
@@ -13,7 +14,7 @@ public class ChatMembershipService
         _dbContext = dbContext;
     }
 
-    public void JoinUser(UserProfile userProfile, Chat chat)
+    public async Task JoinUser(UserProfile userProfile, Chat chat)
     {
         var chatMembership = new ChatMembership
         {
@@ -22,10 +23,10 @@ public class ChatMembershipService
             MembershipStatus = MembershipStatus.Joined
         };
         _dbContext.ChatMemberships.Update(chatMembership);
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync();
     }
 
-    public void BanUser(UserProfile userProfile, Chat chat)
+    public async Task BanUser(UserProfile userProfile, Chat chat)
     {
         var chatMembership = new ChatMembership
         {
@@ -34,10 +35,10 @@ public class ChatMembershipService
             MembershipStatus = MembershipStatus.Banned
         };
         _dbContext.ChatMemberships.Update(chatMembership);
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync();
     }
 
-    public void LeaveUser(UserProfile userProfile, Chat chat)
+    public async Task LeaveUser(UserProfile userProfile, Chat chat)
     {
         var chatMembership = new ChatMembership
         {
@@ -46,10 +47,10 @@ public class ChatMembershipService
             MembershipStatus = MembershipStatus.Leaved
         };
         _dbContext.ChatMemberships.Update(chatMembership);
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync();
     }
 
-    public bool IsMember(UserProfile userProfile, Chat chat)
+    public async Task<bool> IsMember(UserProfile userProfile, Chat chat)
     {
         var aliveMembershipStatus = new ChatMembership
         {
@@ -57,11 +58,11 @@ public class ChatMembershipService
             MemberProfile = userProfile,
             MembershipStatus = MembershipStatus.Joined
         };
-        var isMember = _dbContext.ChatMemberships.Any(m => m == aliveMembershipStatus);
+        var isMember = await _dbContext.ChatMemberships.AnyAsync(m => m == aliveMembershipStatus);
         return isMember;
     }
 
-    public bool IsBanned(UserProfile userProfile, Chat chat)
+    public async Task<bool> IsBanned(UserProfile userProfile, Chat chat)
     {
         var bannedMembershipStatus = new ChatMembership
         {
@@ -69,11 +70,11 @@ public class ChatMembershipService
             MemberProfile = userProfile,
             MembershipStatus = MembershipStatus.Banned
         };
-        var isBanned = _dbContext.ChatMemberships.Any(m => m == bannedMembershipStatus);
+        var isBanned = await _dbContext.ChatMemberships.AnyAsync(m => m == bannedMembershipStatus);
         return isBanned;
     }
 
-    public bool IsLeaved(UserProfile userProfile, Chat chat)
+    public async Task<bool> IsLeaved(UserProfile userProfile, Chat chat)
     {
         var leavedMembershipStatus = new ChatMembership
         {
@@ -81,7 +82,7 @@ public class ChatMembershipService
             MemberProfile = userProfile,
             MembershipStatus = MembershipStatus.Leaved
         };
-        var isLeaved = _dbContext.ChatMemberships.Any(m => m == leavedMembershipStatus);
+        var isLeaved = await _dbContext.ChatMemberships.AnyAsync(m => m == leavedMembershipStatus);
         return isLeaved;
     }
 }

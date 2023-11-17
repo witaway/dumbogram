@@ -1,6 +1,7 @@
 ﻿using Dumbogram.Core.Chats.Models;
 using Dumbogram.Core.Users.Models;
 using Dumbogram.Database;
+using Microsoft.EntityFrameworkCore;
 
 namespace Dumbogram.Core.Chats.Services;
 
@@ -18,50 +19,55 @@ public class ChatService
         _chatMembershipService = chatMembershipService;
     }
 
-    public IEnumerable<Chat> ReadAllChats()
+    public async Task<IEnumerable<Chat>> ReadAllChats()
     {
-        return _dbContext.Chats.ToList();
+        return await _dbContext
+            .Chats
+            .ToListAsync();
     }
 
-    public IEnumerable<Chat> ReadAllChatsOwnedBy(Guid ownerId)
+    public async Task<IEnumerable<Chat>> ReadAllChatsOwnedBy(Guid ownerId)
     {
-        return _dbContext.Chats
+        return await _dbContext
+            .Chats
             .Where(c => c.OwnerId == ownerId)
-            .ToList();
+            .ToListAsync();
     }
 
-    public IEnumerable<Chat> ReadAllChatsOwnedBy(UserProfile userProfile)
+    public async Task<IEnumerable<Chat>> ReadAllChatsOwnedBy(UserProfile userProfile)
     {
-        return ReadAllChatsOwnedBy(userProfile.UserId);
+        return await ReadAllChatsOwnedBy(userProfile.UserId);
     }
 
-    public IEnumerable<Chat> ReadAllChatsJoinedBy(Guid memberId)
+    public async Task<IEnumerable<Chat>> ReadAllChatsJoinedBy(Guid memberId)
     {
-        return _dbContext
+        return await _dbContext
             .Chats
             .Where(c => c.Memberships.Any(m => m.MemberId == memberId && m.MembershipStatus == MembershipStatus.Joined))
-            .ToList();
+            .ToListAsync();
     }
 
-    public IEnumerable<Chat> ReadAllChatsJoinedBy(UserProfile userProfile)
+    public async Task<IEnumerable<Chat>> ReadAllChatsJoinedBy(UserProfile userProfile)
     {
-        return ReadAllChatsJoinedBy(userProfile.UserId);
+        return await ReadAllChatsJoinedBy(userProfile.UserId);
     }
 
-    public Chat ReadChatById(Guid chatId)
+    public async Task<Chat> ReadChatById(Guid chatId)
     {
-        return _dbContext.Chats.Single(c => c.Id == chatId);
+        return await _dbContext
+            .Chats
+            .SingleAsync(c => c.Id == chatId);
     }
 
-    public void CreateChat(Chat chat)
+    public async Task CreateChat(Chat chat)
     {
-        _dbContext.Chats.Add(chat);
-        _dbContext.SaveChanges();
+        await _dbContext.Chats.AddAsync(chat);
+        await _dbContext.SaveChangesAsync();
     }
 
-    public void UpdateChat(Chat chat)
+    public async Task UpdateChat(Chat chat)
     {
         _dbContext.Chats.Update(chat);
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync();
     }
 }

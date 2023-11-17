@@ -15,10 +15,10 @@ public class ChatPermissionsService
         _dbContext = dbContext;
     }
 
-    public void ChangeChatOwnership(Chat chat, UserProfile userProfile)
+    public async Task ChangeChatOwnership(Chat chat, UserProfile userProfile)
     {
         chat.OwnerProfile = userProfile;
         _dbContext.Chats.Update(chat);
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync();
     }
 }

@@ -1,4 +1,4 @@
-﻿using Dumbogram.Common.Helpers;
+﻿using Dumbogram.Common.Extensions;
 using Dumbogram.Core.Chats.Dto;
 using Dumbogram.Core.Chats.Models;
 using Dumbogram.Core.Chats.Services;
@@ -67,8 +67,8 @@ public class ChatsController : ControllerBase
             Title = dto.Title
         };
 
-        _chatService.CreateChat(chat);
-        _chatMembershipService.JoinUser(userProfile!, chat);
+        await _chatService.CreateChat(chat);
+        await _chatMembershipService.JoinUser(userProfile!, chat);
 
         return Ok();
     }
