@@ -5,6 +5,12 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Dumbogram.Core.Chats.Models;
 
+public enum ChatVisibility
+{
+    Public = 0,
+    Private = 1
+}
+
 [EntityTypeConfiguration(typeof(ChatConfiguration))]
 public class Chat : BaseEntity
 {
@@ -12,6 +18,7 @@ public class Chat : BaseEntity
     public Guid OwnerId { get; private set; }
     public string Title { get; set; } = null!;
     public string? Description { get; set; }
+    public ChatVisibility ChatVisibility { get; set; }
 
     public UserProfile OwnerProfile { get; set; } = null!;
     public IEnumerable<ChatMessage> Messages { get; set; } = null!;
