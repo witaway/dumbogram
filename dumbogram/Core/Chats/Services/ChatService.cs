@@ -19,55 +19,170 @@ public class ChatService
         _chatMembershipService = chatMembershipService;
     }
 
-    public async Task<IEnumerable<Chat>> ReadAllChats()
-    {
-        return await _dbContext
-            .Chats
-            .ToListAsync();
-    }
-
-    public async Task<IEnumerable<Chat>> ReadAllChatsOwnedBy(Guid ownerId)
-    {
-        return await _dbContext
-            .Chats
-            .Where(c => c.OwnerId == ownerId)
-            .ToListAsync();
-    }
-
-    public async Task<IEnumerable<Chat>> ReadAllChatsOwnedBy(UserProfile userProfile)
-    {
-        return await ReadAllChatsOwnedBy(userProfile.UserId);
-    }
-
-    public async Task<IEnumerable<Chat>> ReadAllChatsJoinedBy(Guid memberId)
-    {
-        return await _dbContext
-            .Chats
-            .Where(c => c.Memberships.Any(m => m.MemberId == memberId && m.MembershipStatus == MembershipStatus.Joined))
-            .ToListAsync();
-    }
-
-    public async Task<IEnumerable<Chat>> ReadAllChatsJoinedBy(UserProfile userProfile)
-    {
-        return await ReadAllChatsJoinedBy(userProfile.UserId);
-    }
-
-    public async Task<Chat?> ReadChatById(Guid chatId)
-    {
-        return await _dbContext
-            .Chats
-            .SingleAsync(c => c.Id == chatId);
-    }
-
+    /// <summary>
+    ///     Creates chat
+    /// </summary>
+    /// <param name="chat"></param>
     public async Task CreateChat(Chat chat)
     {
         await _dbContext.Chats.AddAsync(chat);
         await _dbContext.SaveChangesAsync();
     }
 
+    /// <summary>
+    ///     Updates chat
+    /// </summary>
+    /// <param name="chat"></param>
     public async Task UpdateChat(Chat chat)
     {
         _dbContext.Chats.Update(chat);
         await _dbContext.SaveChangesAsync();
+    }
+
+    /// <summary>
+    ///     Reads all chats with Public visibility
+    /// </summary>
+    /// <returns></returns>
+    public async Task<IEnumerable<Chat>> ReadAllPublicChats()
+    {
+        var query = _dbContext
+            .Chats
+            .Where(chat => chat.ChatVisibility == ChatVisibility.Public);
+
+        return await query.ToListAsync();
+    }
+
+    /// <summary>
+    ///     Reads public or accessible (by given user) chat
+    /// </summary>
+    /// <param name="chatId"></param>
+    /// <param name="userProfile"></param>
+    /// <returns></returns>
+    public async Task<Chat?> ReadPublicChatByChatId(Guid chatId)
+    {
+        var query = _dbContext
+            .Chats
+            .Where(chat => chat.Id == chatId)
+            .Where(chat => chat.ChatVisibility == ChatVisibility.Public);
+
+        return await query.SingleAsync();
+    }
+
+    /// <summary>
+    ///     Reads all chats with Public visibility or that are accessible by given user.
+    ///     Can be used for chat searching.
+    /// </summary>
+    /// <param name="userProfile"></param>
+    /// <returns></returns>
+    public async Task<IEnumerable<Chat>> ReadAllPublicOrAccessibleChats(UserProfile userProfile)
+    {
+        var query = _dbContext
+            .Chats
+            .Where(chat => chat.ChatVisibility == ChatVisibility.Public ||
+                           chat.OwnerProfile == userProfile ||
+                           chat.Memberships.Any(
+                               membership =>
+                                   membership.MemberId == userProfile.UserId &&
+                                   membership.MembershipStatus == MembershipStatus.Joined
+                           )
+            );
+
+        return await query.ToListAsync();
+    }
+
+    /// <summary>
+    ///     Reads public or accessible (by given user) chat
+    /// </summary>
+    /// <param name="chatId"></param>
+    /// <param name="userProfile"></param>
+    /// <returns></returns>
+    public async Task<Chat?> ReadPublicOrAccessibleChatByChatId(Guid chatId, UserProfile userProfile)
+    {
+        var query = _dbContext
+            .Chats
+            .Where(chat => chat.Id == chatId)
+            .Where(chat =>
+                chat.ChatVisibility == ChatVisibility.Public ||
+                chat.OwnerProfile == userProfile ||
+                chat.Memberships.Any(
+                    membership =>
+                        membership.MemberId == userProfile.UserId &&
+                        membership.MembershipStatus == MembershipStatus.Joined
+                )
+            );
+
+        return await query.SingleAsync();
+    }
+
+    /// <summary>
+    ///     Reads only all chats are owned by given user.
+    /// </summary>
+    /// <param name="userProfile"></param>
+    /// <returns></returns>
+    public async Task<IEnumerable<Chat>> ReadAllChatsOwnedBy(UserProfile userProfile)
+    {
+        var query = _dbContext
+            .Chats
+            .Where(chat =>
+                chat.OwnerProfile == userProfile
+            );
+
+        return await query.ToListAsync();
+    }
+
+    /// <summary>
+    ///     Reads chat owned by given user.
+    /// </summary>
+    /// <param name="chatId"></param>
+    /// <param name="userProfile"></param>
+    /// <returns></returns>
+    public async Task<Chat> ReadChatOwnedBy(Guid chatId, UserProfile userProfile)
+    {
+        var query = _dbContext
+            .Chats
+            .Where(chat => chat.Id == chatId)
+            .Where(chat => chat.OwnerProfile == userProfile);
+
+        return await query.SingleAsync();
+    }
+
+    /// <summary>
+    ///     Reads all chats joined by given user.
+    /// </summary>
+    /// <param name="userProfile"></param>
+    /// <returns></returns>
+    public async Task<IEnumerable<Chat>> ReadAllChatsJoinedBy(UserProfile userProfile)
+    {
+        var query = _dbContext
+            .Chats
+            .Where(chat => chat.Memberships.Any(
+                    membership =>
+                        membership.MemberProfile == userProfile &&
+                        membership.MembershipStatus == MembershipStatus.Joined
+                )
+            );
+
+        return await query.ToListAsync();
+    }
+
+    /// <summary>
+    ///     Reads chat joined by given user.
+    /// </summary>
+    /// <param name="chatId"></param>
+    /// <param name="userProfile"></param>
+    /// <returns></returns>
+    public async Task<IEnumerable<Chat>> ReadAllChatsJoinedBy(Guid chatId, UserProfile userProfile)
+    {
+        var query = _dbContext
+            .Chats
+            .Where(chat => chat.Id == chatId)
+            .Where(chat => chat.Memberships.Any(
+                    membership =>
+                        membership.MemberProfile == userProfile &&
+                        membership.MembershipStatus == MembershipStatus.Joined
+                )
+            );
+
+        return await query.ToListAsync();
     }
 }
