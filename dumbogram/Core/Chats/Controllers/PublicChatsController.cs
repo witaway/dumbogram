@@ -10,25 +10,24 @@ using Microsoft.AspNetCore.Mvc;
 namespace Dumbogram.Core.Chats.Controllers;
 
 [Authorize]
-[Route("/api/[controller]")]
+[Route("/api/chats/public")]
 [ApiController]
-public class ChatsController : ControllerBase
+public class PublicChatsController : ControllerBase
 {
     private readonly ChatMembershipService _chatMembershipService;
     private readonly ChatPermissionsService _chatPermissionsService;
 
     private readonly ChatService _chatService;
 
-    private readonly ILogger<ChatsController> _logger;
+    private readonly ILogger<PublicChatsController> _logger;
     private readonly UserService _userService;
 
-    public ChatsController(
+    public PublicChatsController(
         ChatService chatService,
-        IdentityUserService identityUserService,
         ChatMembershipService chatMembershipService,
         ChatPermissionsService chatPermissionsService,
         UserService userService,
-        ILogger<ChatsController> logger
+        ILogger<PublicChatsController> logger
     )
     {
         _chatService = chatService;
@@ -38,42 +37,44 @@ public class ChatsController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet]
     [ProducesResponseType(
-        StatusCodes.Status200OK, Type = typeof(ResponseSuccess<List<ReadChatByChatIdResponseDto>>)
+        StatusCodes.Status200OK, Type = typeof(ResponseSuccess<ReadMultipleChatsResponseDto>)
     )]
+    [HttpGet]
     public async Task<IActionResult> ReadAllChats()
     {
-        var chats = await _chatService.ReadAllChats();
-        var chatsDto = chats.Select(ReadChatByChatIdResponseDto.MapFromModel).ToList();
+        var userProfile = await _userService.ReadUserProfileById(User.GetUserApplicationId());
+
+        var chats = await _chatService.ReadAllPublicOrAccessibleChats(userProfile!);
+
+        var chatsDto = new ReadMultipleChatsResponseDto(chats);
         return Ok(Common.Dto.Response.Success("Chats list accessed successfully", chatsDto));
     }
 
-    [HttpGet]
-    [Route("{chatId:guid}")]
     [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ResponseFailure))]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccess<ReadChatByChatIdResponseDto>))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccess<ReadSingleChatByChatIdResponseDto>))]
+    [HttpGet("{chatId:guid}")]
     public async Task<IActionResult> ReadChatByChatId([FromRoute] Guid chatId)
     {
-        var chat = await _chatService.ReadChatById(chatId);
+        var userProfile = await _userService.ReadUserProfileById(User.GetUserApplicationId());
+
+        var chat = await _chatService.ReadPublicOrAccessibleChatByChatId(chatId, userProfile!);
         if (chat == null)
         {
             return NotFound(Common.Dto.Response.Failure("Chat not found"));
         }
 
-        var chatDto = ReadChatByChatIdResponseDto.MapFromModel(chat);
-        return Ok(Common.Dto.Response.Success("Chat was found successfully", chatDto));
+        var chatDto = new ReadSingleChatByChatIdResponseDto(chat);
+        return Ok(Common.Dto.Response.Success("Chat was found successfully", chat));
     }
 
-    [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(ResponseSuccess))]
+    [HttpPost]
     public async Task<IActionResult> CreateChat([FromBody] CreateChatRequestDto dto)
     {
-        // Read current user
         var uid = User.GetUserApplicationId();
         var userProfile = await _userService.ReadUserProfileById(uid);
 
-        // Chat entity instance
         var chat = new Chat
         {
             OwnerProfile = userProfile,
@@ -82,10 +83,23 @@ public class ChatsController : ControllerBase
         };
 
         await _chatService.CreateChat(chat);
-        await _chatMembershipService.JoinUser(userProfile!, chat);
+        await _chatMembershipService.EnsureUserJoinedInChat(userProfile!, chat);
 
         var chatUri = $"/api/chats/{chat.Id}";
 
         return Created(chatUri, Common.Dto.Response.Success("Chat created successfully"));
+    }
+
+    [HttpGet("{chatId:guid}/join")]
+    public async Task<IActionResult> JoinChat([FromRoute] Guid chatId)
+    {
+        var uid = User.GetUserApplicationId();
+        var userProfile = await _userService.ReadUserProfileById(uid);
+
+        var chat = await _chatService.ReadPublicChatByChatId(chatId);
+
+        await _chatMembershipService.EnsureUserJoinedInChat(userProfile, chat);
+
+        return Ok(Common.Dto.Response.Success("Chat joined successfully"));
     }
 }

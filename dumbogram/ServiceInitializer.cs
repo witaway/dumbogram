@@ -60,6 +60,7 @@ public static class ServiceInitializer
         services.AddScoped<ChatService>();
         services.AddScoped<ChatPermissionsService>();
         services.AddScoped<ChatMembershipService>();
+        services.AddScoped<ChatVisibilityService>();
     }
 
     private static void RegisterIdentity(IServiceCollection services)

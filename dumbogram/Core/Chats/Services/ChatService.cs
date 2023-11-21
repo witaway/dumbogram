@@ -39,6 +39,12 @@ public class ChatService
         await _dbContext.SaveChangesAsync();
     }
 
+    public async Task EnsureChatDeleted(Chat chat)
+    {
+        _dbContext.Chats.Remove(chat);
+        await _dbContext.SaveChangesAsync();
+    }
+
     /// <summary>
     ///     Reads all chats with Public visibility
     /// </summary>
@@ -136,7 +142,7 @@ public class ChatService
     /// <param name="chatId"></param>
     /// <param name="userProfile"></param>
     /// <returns></returns>
-    public async Task<Chat> ReadChatOwnedBy(Guid chatId, UserProfile userProfile)
+    public async Task<Chat?> ReadChatOwnedBy(Guid chatId, UserProfile userProfile)
     {
         var query = _dbContext
             .Chats

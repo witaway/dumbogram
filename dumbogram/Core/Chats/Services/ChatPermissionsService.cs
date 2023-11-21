@@ -21,4 +21,29 @@ public class ChatPermissionsService
         _dbContext.Chats.Update(chat);
         await _dbContext.SaveChangesAsync();
     }
+
+    public async Task EnsureUserHasPermissionInChat(Chat chat, UserProfile userProfile, MembershipRight membershipRight)
+    {
+        var permission = new ChatMemberPermission
+        {
+            Chat = chat,
+            MemberProfile = userProfile,
+            MembershipRight = membershipRight
+        };
+        _dbContext.ChatMemberPermissions.Update(permission);
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task EnsureUserHasNotPermissionInChat(Chat chat, UserProfile userProfile,
+        MembershipRight membershipRight)
+    {
+        var permission = new ChatMemberPermission
+        {
+            Chat = chat,
+            MemberProfile = userProfile,
+            MembershipRight = membershipRight
+        };
+        _dbContext.ChatMemberPermissions.Remove(permission);
+        await _dbContext.SaveChangesAsync();
+    }
 }
