@@ -2,34 +2,34 @@
 
 namespace Dumbogram.Core.Chats.Errors;
 
-public class UserAlreadyJoinedToChat : BaseApplicationError
+public class UserAlreadyJoinedToChatError : BaseApplicationError
 {
-    public UserAlreadyJoinedToChat(string message)
-        : base(nameof(UserAlreadyJoinedToChat), message)
+    public UserAlreadyJoinedToChatError(string message)
+        : base(nameof(UserAlreadyJoinedToChatError), message)
     {
     }
 }
 
-public class UserAlreadyBannedInChat : BaseApplicationError
+public class UserAlreadyBannedInChatError : BaseApplicationError
 {
-    public UserAlreadyBannedInChat(string message)
-        : base(nameof(UserAlreadyBannedInChat), message)
+    public UserAlreadyBannedInChatError(string message)
+        : base(nameof(UserAlreadyBannedInChatError), message)
     {
     }
 }
 
-public class UserAlreadyLeavedFromChat : BaseApplicationError
+public class UserAlreadyLeftFromChatError : BaseApplicationError
 {
-    public UserAlreadyLeavedFromChat(string message)
-        : base(nameof(UserAlreadyLeavedFromChat), message)
+    public UserAlreadyLeftFromChatError(string message)
+        : base(nameof(UserAlreadyLeftFromChatError), message)
     {
     }
 }
 
-public class UserBannedInChat : BaseApplicationError
+public class UserBannedInChatError : BaseApplicationError
 {
-    public UserBannedInChat(string message)
-        : base(nameof(UserBannedInChat), message)
+    public UserBannedInChatError(string message)
+        : base(nameof(UserBannedInChatError), message)
     {
     }
 }
