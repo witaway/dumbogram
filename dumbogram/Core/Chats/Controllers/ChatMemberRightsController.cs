@@ -39,7 +39,7 @@ public class ChatMemberRightsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetRightsOfMember(Guid chatId, Guid memberId)
     {
-        var uid = User.GetUserApplicationId();
+        var uid = User.GetApplicationUserId();
         var userProfile = await _userService.ReadUserProfileById(uid);
 
         var chatResult = await _chatService.RequestPublicOrAccessibleChatByChatId(chatId, userProfile!);
@@ -89,7 +89,7 @@ public class ChatMemberRightsController : ControllerBase
         Guid memberId,
         [FromBody] ApplyRightsRequestDto dto)
     {
-        var uid = User.GetUserApplicationId();
+        var uid = User.GetApplicationUserId();
         var userProfile = await _userService.ReadUserProfileById(uid);
 
         var chatResult = await _chatService.RequestPublicOrAccessibleChatByChatId(chatId, userProfile!);

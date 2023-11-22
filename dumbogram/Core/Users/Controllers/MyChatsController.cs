@@ -35,7 +35,7 @@ public class MyChatsController : ControllerBase
     [HttpGet("owned")]
     public async Task<IActionResult> ReadOwnedChats()
     {
-        var userProfile = await _userService.ReadUserProfileById(User.GetUserApplicationId());
+        var userProfile = await _userService.ReadUserProfileById(User.GetApplicationUserId());
 
         var chats = await _chatService.ReadAllChatsOwnedBy(userProfile!);
 
@@ -49,7 +49,7 @@ public class MyChatsController : ControllerBase
     [HttpGet("joined")]
     public async Task<IActionResult> ReadJoinedChats()
     {
-        var userProfile = await _userService.ReadUserProfileById(User.GetUserApplicationId());
+        var userProfile = await _userService.ReadUserProfileById(User.GetApplicationUserId());
 
         var chats = await _chatService.ReadAllChatsJoinedBy(userProfile!);
 

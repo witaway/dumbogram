@@ -40,7 +40,7 @@ public class ChatsController : ControllerBase
     [HttpGet("search")]
     public async Task<IActionResult> ReadAllChats()
     {
-        var userProfile = await _userService.ReadUserProfileById(User.GetUserApplicationId());
+        var userProfile = await _userService.ReadUserProfileById(User.GetApplicationUserId());
 
         var chats = await _chatService.ReadAllPublicOrAccessibleChats(userProfile!);
 
@@ -52,7 +52,7 @@ public class ChatsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateChat([FromBody] CreateChatRequestDto dto)
     {
-        var uid = User.GetUserApplicationId();
+        var uid = User.GetApplicationUserId();
         var userProfile = await _userService.ReadUserProfileById(uid);
 
         var chat = new Chat

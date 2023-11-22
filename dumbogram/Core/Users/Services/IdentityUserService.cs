@@ -1,4 +1,6 @@
-﻿using Dumbogram.Database.Identity;
+﻿using Dumbogram.Core.Users.Errors;
+using Dumbogram.Database.Identity;
+using FluentResults;
 using Microsoft.AspNetCore.Identity;
 
 namespace Dumbogram.Core.Users.Services;
@@ -17,14 +19,50 @@ public class IdentityUserService
         return await _userManager.FindByNameAsync(username);
     }
 
+    public async Task<Result<ApplicationIdentityUser>> RequestUserByUsername(string username)
+    {
+        var identityUser = await ReadUserByUsername(username);
+        if (identityUser == null)
+        {
+            const string message = "User not found";
+            return Result.Fail(new UserNotFoundError(message));
+        }
+
+        return Result.Ok(identityUser);
+    }
+
     public async Task<ApplicationIdentityUser?> ReadUserByEmail(string email)
     {
         return await _userManager.FindByEmailAsync(email);
     }
 
+    public async Task<Result<ApplicationIdentityUser>> RequestUserByEmail(string email)
+    {
+        var identityUser = await ReadUserByEmail(email);
+        if (identityUser == null)
+        {
+            const string message = "User not found";
+            return Result.Fail(new UserNotFoundError(message));
+        }
+
+        return Result.Ok(identityUser);
+    }
+
     public async Task<ApplicationIdentityUser?> ReadUserById(string userId)
     {
         return await _userManager.FindByIdAsync(userId);
+    }
+
+    public async Task<Result<ApplicationIdentityUser>> RequestUserById(string userId)
+    {
+        var identityUser = await ReadUserById(userId);
+        if (identityUser == null)
+        {
+            const string message = "User not found";
+            return Result.Fail(new UserNotFoundError(message));
+        }
+
+        return Result.Ok(identityUser);
     }
 
     public async Task<bool> IsUserWithUsernameExist(string username)

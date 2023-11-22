@@ -1,33 +1,19 @@
 ﻿using System.Security.Claims;
 using System.Security.Principal;
+using Dumbogram.Common.Errors;
 using Dumbogram.Common.Exceptions;
+using FluentResults;
 
 namespace Dumbogram.Common.Extensions;
 
-public class CannotExtractClaimException : BaseApplicationException
-{
-    public CannotExtractClaimException()
-    {
-    }
-
-    public CannotExtractClaimException(string message)
-        : base(message)
-    {
-    }
-
-    public CannotExtractClaimException(string message, Exception inner)
-        : base(message, inner)
-    {
-    }
-}
-
 public static class PrincipalExtension
 {
-    public static string GetUserIdentityId(this IPrincipal principal)
+    public static Result<string> TryGetIdentityUserId(this IPrincipal principal)
     {
         if (principal.Identity == null)
         {
-            throw new CannotExtractClaimException("Principal does not contain Identity Claims");
+            var message = "Principal does not contain Identity Claims";
+            return Result.Fail(new AuthenticationTokenIncorrectError(message));
         }
 
         var claimsIdentity = (ClaimsIdentity)principal.Identity;
@@ -35,14 +21,48 @@ public static class PrincipalExtension
 
         if (claim == null)
         {
-            throw new CannotExtractClaimException("Identifier Claim is not found");
+            var message = "Identifier Claim is not found";
+            return Result.Fail(new AuthenticationTokenIncorrectError(message));
         }
 
-        return claim.Value;
+        return Result.Ok(claim.Value);
     }
 
-    public static Guid GetUserApplicationId(this IPrincipal principal)
+    public static string GetIdentityUserId(this IPrincipal principal)
     {
-        return new Guid(GetUserIdentityId(principal));
+        var identityUserIdResult = TryGetIdentityUserId(principal);
+        if (identityUserIdResult.IsFailed)
+        {
+            var message = identityUserIdResult.Errors[0].Message;
+            throw new AuthenticationTokenIncorrectException(message);
+        }
+
+        return identityUserIdResult.Value;
+    }
+
+    public static Result<Guid> TryGetApplicationUserId(this IPrincipal principal)
+    {
+        var identityUserIdResult = TryGetIdentityUserId(principal);
+        if (identityUserIdResult.IsFailed)
+        {
+            return Result.Fail(identityUserIdResult.Errors);
+        }
+
+        var identityUserId = identityUserIdResult.Value;
+        var applicationUserId = new Guid(identityUserId);
+
+        return Result.Ok(applicationUserId);
+    }
+
+    public static Guid GetApplicationUserId(this IPrincipal principal)
+    {
+        var applicationUserIdResult = TryGetApplicationUserId(principal);
+        if (applicationUserIdResult.IsFailed)
+        {
+            var message = applicationUserIdResult.Errors[0].Message;
+            throw new AuthenticationTokenIncorrectException(message);
+        }
+
+        return applicationUserIdResult.Value;
     }
 }

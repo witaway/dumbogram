@@ -42,7 +42,7 @@ public class ChatController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> ReadChat([FromRoute] Guid chatId)
     {
-        var userProfile = await _userService.ReadUserProfileById(User.GetUserApplicationId());
+        var userProfile = await _userService.ReadUserProfileById(User.GetApplicationUserId());
 
         var chatResult = await _chatService.RequestPublicOrAccessibleChatByChatId(chatId, userProfile!);
 
@@ -71,7 +71,7 @@ public class ChatController : ControllerBase
     [HttpGet("join")]
     public async Task<IActionResult> JoinChat([FromRoute] Guid chatId)
     {
-        var uid = User.GetUserApplicationId();
+        var uid = User.GetApplicationUserId();
         var userProfile = await _userService.ReadUserProfileById(uid);
 
         var chatResult = await _chatService.RequestPublicOrAccessibleChatByChatId(chatId, userProfile!);
@@ -110,7 +110,7 @@ public class ChatController : ControllerBase
     [HttpGet("leave")]
     public async Task<IActionResult> LeaveChat([FromRoute] Guid chatId)
     {
-        var uid = User.GetUserApplicationId();
+        var uid = User.GetApplicationUserId();
         var userProfile = await _userService.ReadUserProfileById(uid);
 
         var chatResult = await _chatService.RequestPublicOrAccessibleChatByChatId(chatId, userProfile!);

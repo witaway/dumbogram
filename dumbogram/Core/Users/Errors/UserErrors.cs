@@ -9,3 +9,11 @@ public class UserNotFoundError : BaseApplicationError
     {
     }
 }
+
+public class UnauthorizedError : BaseApplicationError
+{
+    public UnauthorizedError(string message)
+        : base(nameof(UnauthorizedError), message)
+    {
+    }
+}

@@ -60,7 +60,7 @@ public class TestController : ControllerBase
     )]
     public async Task<IActionResult> GetCurrentUser()
     {
-        var user = await _userManager.FindByIdAsync(User.GetUserIdentityId());
+        var user = await _userManager.FindByIdAsync(User.GetIdentityUserId());
         var userDto = GetIdentityUserByUserIdResponseDto.MapFromModel(user!);
         return Ok(Common.Dto.Response.Success("That's a current user, wow!", userDto));
     }

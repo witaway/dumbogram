@@ -34,7 +34,7 @@ public class ChatMembersController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetMembers(Guid chatId)
     {
-        var uid = User.GetUserApplicationId();
+        var uid = User.GetApplicationUserId();
         var userProfile = await _userService.ReadUserProfileById(uid);
 
         var chatResult = await _chatService.RequestPublicOrAccessibleChatByChatId(chatId, userProfile!);
@@ -58,7 +58,7 @@ public class ChatMembersController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetBanned(Guid chatId)
     {
-        var uid = User.GetUserApplicationId();
+        var uid = User.GetApplicationUserId();
         var userProfile = await _userService.ReadUserProfileById(uid);
 
 
