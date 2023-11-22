@@ -45,7 +45,7 @@ public class ChatVisibilityService
         if (IsChatPrivate(chat))
         {
             var message = $"Chat {chat.Title} is already private";
-            return Result.Fail(new ChatAlreadyPrivate(message));
+            return Result.Fail(new ChatAlreadyPrivateError(message));
         }
 
         await EnsureChatPrivate(chat);
@@ -58,7 +58,7 @@ public class ChatVisibilityService
         if (IsChatPublic(chat))
         {
             var message = $"Chat {chat.Title} is already public";
-            return Result.Fail(new ChatAlreadyPublic(message));
+            return Result.Fail(new ChatAlreadyPublicError(message));
         }
 
         await EnsureChatPublic(chat);

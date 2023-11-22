@@ -110,16 +110,17 @@ public class ChatMembershipService
         if (await IsUserBannedInChat(userProfile, chat))
         {
             var message = $"User {userProfile.Username} is banned in chat {chat.Title}";
-            return Result.Fail(message);
+            return Result.Fail(new UserBannedInChatError(message));
         }
 
         if (await IsUserJoinedToChat(userProfile, chat))
         {
             var message = $"User {userProfile.Username} already joined to chat {chat.Title}";
-            return Result.Fail(new UserAlreadyJoinedToChat(message));
+            return Result.Fail(new UserAlreadyJoinedToChatError(message));
         }
 
         await EnsureUserJoinedInChat(userProfile, chat);
+
         return Result.Ok();
     }
 
@@ -134,13 +135,13 @@ public class ChatMembershipService
         if (await IsUserJoinedToChat(userProfile, chat))
         {
             var message = $"User {userProfile.Username} already joined to chat {chat.Title}";
-            return Result.Fail(new UserAlreadyJoinedToChat(message));
+            return Result.Fail(new UserAlreadyJoinedToChatError(message));
         }
 
         if (await IsUserBannedInChat(userProfile, chat))
         {
             var message = $"User {userProfile.Username} already left from chat ${chat.Title}";
-            return Result.Fail(new UserAlreadyBannedInChat(message));
+            return Result.Fail(new UserAlreadyBannedInChatError(message));
         }
 
         await EnsureUserJoinedInChat(userProfile, chat);
@@ -152,7 +153,7 @@ public class ChatMembershipService
         if (await IsUserBannedInChat(userProfile, chat))
         {
             var message = $"User {userProfile.Username} already banned in chat {chat.Title}";
-            return Result.Fail(new UserAlreadyBannedInChat(message));
+            return Result.Fail(new UserAlreadyBannedInChatError(message));
         }
 
         await EnsureUserBannedInChat(userProfile, chat);
@@ -164,7 +165,7 @@ public class ChatMembershipService
         if (await IsUserBannedInChat(userProfile, chat))
         {
             var message = $"User {userProfile.Username} already banned in chat ${chat.Title}";
-            return Result.Fail(new UserAlreadyBannedInChat(message));
+            return Result.Fail(new UserAlreadyBannedInChatError(message));
         }
 
         await EnsureUserLeavedInChat(userProfile, chat);
@@ -176,7 +177,7 @@ public class ChatMembershipService
         if (await IsUserBannedInChat(userProfile, chat))
         {
             var message = $"User {userProfile.Username} already left from chat ${chat.Title}";
-            return Result.Fail(new UserAlreadyBannedInChat(message));
+            return Result.Fail(new UserAlreadyBannedInChatError(message));
         }
 
         await EnsureUserBannedInChat(userProfile, chat);
