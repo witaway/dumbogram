@@ -9,9 +9,10 @@ public enum MessageType
 {
     NORMAL = 0,
     JOINED = 1,
-    CHANGED_TITLE = 2,
-    CHANGED_DESCRIPTION = 3,
-    CHANGED_AVATAR = 4
+    LEFT = 2,
+    CHANGED_TITLE = 3,
+    CHANGED_DESCRIPTION = 4,
+    CHANGED_AVATAR = 5
 }
 
 [EntityTypeConfiguration(typeof(ChatMessageConfiguration))]
