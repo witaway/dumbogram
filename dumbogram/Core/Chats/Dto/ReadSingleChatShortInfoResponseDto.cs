@@ -2,9 +2,9 @@
 
 namespace Dumbogram.Core.Chats.Dto;
 
-public class ReadSingleChatByChatIdResponseDto
+public class ReadSingleChatShortInfoResponseDto
 {
-    public ReadSingleChatByChatIdResponseDto(Chat chat)
+    public ReadSingleChatShortInfoResponseDto(Chat chat)
     {
         Title = chat.Title;
         Description = chat.Description;
