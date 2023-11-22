@@ -1,6 +1,8 @@
-﻿using Dumbogram.Core.Chats.Models;
+﻿using Dumbogram.Core.Chats.Errors;
+using Dumbogram.Core.Chats.Models;
 using Dumbogram.Core.Users.Models;
 using Dumbogram.Database;
+using FluentResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace Dumbogram.Core.Chats.Services;
@@ -74,6 +76,17 @@ public class ChatService
         return await query.SingleAsync();
     }
 
+    public async Task<Result<Chat>> RequestPublicChatByChatId(Guid chatId)
+    {
+        var chat = await ReadPublicChatByChatId(chatId);
+        if (chat == null)
+        {
+            return Result.Fail(new ChatNotFoundError(""));
+        }
+
+        return chat;
+    }
+
     /// <summary>
     ///     Reads all chats with Public visibility or that are accessible by given user.
     ///     Can be used for chat searching.
@@ -120,6 +133,17 @@ public class ChatService
         return await query.SingleAsync();
     }
 
+    public async Task<Result<Chat>> RequestPublicOrAccessibleChatByChatId(Guid chatId, UserProfile userProfile)
+    {
+        var chat = await ReadPublicOrAccessibleChatByChatId(chatId, userProfile);
+        if (chat == null)
+        {
+            return Result.Fail(new ChatNotFoundError(""));
+        }
+
+        return chat;
+    }
+
     /// <summary>
     ///     Reads only all chats are owned by given user.
     /// </summary>
@@ -152,6 +176,17 @@ public class ChatService
         return await query.SingleAsync();
     }
 
+    public async Task<Result<Chat>> RequestChatOwnedBy(Guid chatId, UserProfile userProfile)
+    {
+        var chat = await ReadChatOwnedBy(chatId, userProfile);
+        if (chat == null)
+        {
+            return Result.Fail(new ChatNotFoundError(""));
+        }
+
+        return chat;
+    }
+
     /// <summary>
     ///     Reads all chats joined by given user.
     /// </summary>
@@ -177,7 +212,7 @@ public class ChatService
     /// <param name="chatId"></param>
     /// <param name="userProfile"></param>
     /// <returns></returns>
-    public async Task<IEnumerable<Chat>> ReadAllChatsJoinedBy(Guid chatId, UserProfile userProfile)
+    public async Task<Chat?> ReadChatJoinedBy(Guid chatId, UserProfile userProfile)
     {
         var query = _dbContext
             .Chats
@@ -189,6 +224,17 @@ public class ChatService
                 )
             );
 
-        return await query.ToListAsync();
+        return await query.SingleAsync();
+    }
+
+    public async Task<Result<Chat>> RequestChatJoinedBy(Guid chatId, UserProfile userProfile)
+    {
+        var chat = await ReadChatJoinedBy(chatId, userProfile);
+        if (chat == null)
+        {
+            return Result.Fail(new ChatNotFoundError(""));
+        }
+
+        return chat;
     }
 }
