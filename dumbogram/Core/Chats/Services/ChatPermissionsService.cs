@@ -34,7 +34,8 @@ public class ChatPermissionsService
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task<IEnumerable<MembershipRight>> GetUsersRightsInChat(Chat chat, UserProfile userProfile)
+    public async Task<IEnumerable<MembershipRight>> ReadAllRightsAppliedToUsersInChat(Chat chat,
+        UserProfile userProfile)
     {
         var chatMemberPermissions = await _dbContext.ChatMemberPermissions
             .Where(permission => permission.Chat == chat)
@@ -53,6 +54,18 @@ public class ChatPermissionsService
         return rights;
     }
 
+    public async Task EnsureRightsAppliedToUserInChat(Chat chat, UserProfile userProfile,
+        List<MembershipRight> newRights)
+    {
+        var oldRights = (await ReadAllRightsAppliedToUsersInChat(chat, userProfile)).ToList();
+
+        var removedRights = oldRights.Except(newRights).ToList();
+        await EnsureUserHasNotPermissionsInChat(chat, userProfile, removedRights);
+
+        var addedRights = newRights.Except(oldRights).ToList();
+        await EnsureUserHasPermissionsInChat(chat, userProfile, addedRights);
+    }
+
     public async Task EnsureUserHasPermissionInChat(Chat chat, UserProfile userProfile, MembershipRight membershipRight)
     {
         var permission = new ChatMemberPermission
@@ -62,6 +75,19 @@ public class ChatPermissionsService
             MembershipRight = membershipRight
         };
         _dbContext.ChatMemberPermissions.Update(permission);
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task EnsureUserHasPermissionsInChat(
+        Chat chat,
+        UserProfile userProfile,
+        IEnumerable<MembershipRight> membershipRights)
+    {
+        foreach (var right in membershipRights)
+        {
+            await EnsureUserHasPermissionInChat(chat, userProfile, right);
+        }
+
         await _dbContext.SaveChangesAsync();
     }
 
@@ -75,6 +101,19 @@ public class ChatPermissionsService
             MembershipRight = membershipRight
         };
         _dbContext.ChatMemberPermissions.Remove(permission);
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task EnsureUserHasNotPermissionsInChat(
+        Chat chat,
+        UserProfile userProfile,
+        IEnumerable<MembershipRight> membershipRights)
+    {
+        foreach (var right in membershipRights)
+        {
+            await EnsureUserHasNotPermissionInChat(chat, userProfile, right);
+        }
+
         await _dbContext.SaveChangesAsync();
     }
 }

@@ -9,3 +9,11 @@ public class NotEnoughPermissionsError : BaseApplicationError
     {
     }
 }
+
+public class CannotChangeOwnerRights : BaseApplicationError
+{
+    public CannotChangeOwnerRights(string message)
+        : base(nameof(CannotChangeOwnerRights), message)
+    {
+    }
+}
