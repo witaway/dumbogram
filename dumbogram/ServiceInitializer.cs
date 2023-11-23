@@ -27,6 +27,7 @@ public static class ServiceInitializer
         ConfigureIdentity(services);
         RegisterAuthentication(services, configuration);
 
+        services.AddHttpContextAccessor();
         RegisterCustomMiddlewares(services);
         RegisterCustomServices(services);
 
@@ -55,7 +56,11 @@ public static class ServiceInitializer
 
         // User-related services
         services.AddScoped<UserService>();
-
+        
+        // User resolver
+        // Needed to obtain current logged in user access in other services
+        services.AddScoped<UserResolverService>();
+        
         // Chat-related services
         services.AddScoped<ChatService>();
         services.AddScoped<ChatPermissionsService>();
