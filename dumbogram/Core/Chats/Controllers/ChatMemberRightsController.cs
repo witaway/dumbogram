@@ -48,10 +48,10 @@ public class ChatMemberRightsController : ControllerBase
         {
             if (chatResult.HasError<ChatNotFoundError>())
             {
-                return NotFound(chatResult.ToFailureDto("Chat not found"));
+                return NotFound(chatResult.ToFailureDto());
             }
 
-            return BadRequest(chatResult.ToFailureDto("Cannot access chat"));
+            return BadRequest(chatResult.ToFailureDto());
         }
 
         var chat = chatResult.Value;
@@ -60,7 +60,7 @@ public class ChatMemberRightsController : ControllerBase
         if (!isOwner)
         {
             var result = Result.Fail(new NotEnoughPermissionsError());
-            return StatusCode(StatusCodes.Status403Forbidden, result.ToFailureDto("Not enough permissions"));
+            return StatusCode(StatusCodes.Status403Forbidden, result.ToFailureDto());
         }
 
         var memberProfileResult = await _userService.RequestUserProfileById(memberId);
@@ -69,10 +69,10 @@ public class ChatMemberRightsController : ControllerBase
         {
             if (memberProfileResult.HasError<UserNotFoundError>())
             {
-                return NotFound(memberProfileResult.ToFailureDto("Member not found"));
+                return NotFound(memberProfileResult.ToFailureDto());
             }
 
-            return BadRequest(memberProfileResult.ToFailureDto("Cannot access member"));
+            return BadRequest(memberProfileResult.ToFailureDto());
         }
 
         var memberProfile = memberProfileResult.Value;
@@ -80,7 +80,7 @@ public class ChatMemberRightsController : ControllerBase
         var rights = await _chatPermissionsService.ReadAllRightsAppliedToUsersInChat(chat, memberProfile);
         var rightsDto = new ReadMultipleRightsResponseDto(rights);
 
-        return Ok(Common.Dto.Response.Success("Rights got successfully", rightsDto));
+        return Ok(Common.Dto.Response.Success(rightsDto));
     }
 
     [HttpPut]
@@ -98,10 +98,10 @@ public class ChatMemberRightsController : ControllerBase
         {
             if (chatResult.HasError<ChatNotFoundError>())
             {
-                return NotFound(chatResult.ToFailureDto("Chat not found"));
+                return NotFound(chatResult.ToFailureDto());
             }
 
-            return BadRequest(chatResult.ToFailureDto("Cannot access chat"));
+            return BadRequest(chatResult.ToFailureDto());
         }
 
         var chat = chatResult.Value;
@@ -110,7 +110,7 @@ public class ChatMemberRightsController : ControllerBase
         if (!isOwner)
         {
             var result = Result.Fail(new NotEnoughPermissionsError());
-            return StatusCode(StatusCodes.Status403Forbidden, result.ToFailureDto("Not enough permissions"));
+            return StatusCode(StatusCodes.Status403Forbidden, result.ToFailureDto());
         }
 
         var memberProfileResult = await _userService.RequestUserProfileById(memberId);
@@ -119,10 +119,10 @@ public class ChatMemberRightsController : ControllerBase
         {
             if (memberProfileResult.HasError<UserNotFoundError>())
             {
-                return NotFound(memberProfileResult.ToFailureDto("Member not found"));
+                return NotFound(memberProfileResult.ToFailureDto());
             }
 
-            return BadRequest(memberProfileResult.ToFailureDto("Cannot access member"));
+            return BadRequest(memberProfileResult.ToFailureDto());
         }
 
         var memberProfile = memberProfileResult.Value;
@@ -131,7 +131,7 @@ public class ChatMemberRightsController : ControllerBase
         if (isMemberOwner)
         {
             var result = Result.Fail(new CannotChangeOwnerRights());
-            return BadRequest(result.ToFailureDto("Cannot change owner rights"));
+            return BadRequest(result.ToFailureDto());
         }
 
         var rights = dto.ConvertToRightsList();

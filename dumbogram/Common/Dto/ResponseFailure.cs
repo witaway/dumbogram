@@ -2,7 +2,7 @@
 
 public class ResponseFailure : Response
 {
-    public ResponseFailure(string message, IEnumerable<ErrorDto> errors) : base(message)
+    public ResponseFailure(IEnumerable<ErrorDto> errors)
     {
         Errors = errors;
     }

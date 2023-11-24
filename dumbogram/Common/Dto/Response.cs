@@ -2,31 +2,18 @@
 
 public abstract class Response
 {
-    protected Response(string message)
+    public static Response Failure(IEnumerable<ErrorDto> errors)
     {
-        Message = message;
+        return new ResponseFailure(errors);
     }
 
-    public string Message { get; set; }
-
-    public static Response Failure(string message, IEnumerable<ErrorDto> errors)
+    public static ResponseSuccess<T> Success<T>(T data)
     {
-        return new ResponseFailure(message, errors);
+        return new ResponseSuccess<T>(data);
     }
 
-    public static Response Failure(string message)
+    public static ResponseSuccess Success()
     {
-        var errors = new List<ErrorDto>();
-        return new ResponseFailure(message, errors);
-    }
-
-    public static ResponseSuccess<T> Success<T>(string message, T data)
-    {
-        return new ResponseSuccess<T>(message, data);
-    }
-
-    public static ResponseSuccess Success(string message)
-    {
-        return new ResponseSuccess(message);
+        return new ResponseSuccess();
     }
 }

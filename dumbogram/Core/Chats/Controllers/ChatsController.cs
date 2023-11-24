@@ -45,7 +45,7 @@ public class ChatsController : ControllerBase
         var chats = await _chatService.ReadAllPublicOrAccessibleChats(userProfile!);
 
         var chatsDto = new ReadMultipleChatsShortInfoResponseDto(chats);
-        return Ok(Common.Dto.Response.Success("Chats list accessed successfully", chatsDto));
+        return Ok(Common.Dto.Response.Success(chatsDto));
     }
 
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(ResponseSuccess))]
@@ -67,6 +67,6 @@ public class ChatsController : ControllerBase
 
         var chatUri = $"/api/chats/{chat.Id}";
 
-        return Created(chatUri, Common.Dto.Response.Success("Chat created successfully"));
+        return Created(chatUri, Common.Dto.Response.Success());
     }
 }

@@ -40,7 +40,7 @@ public class MyChatsController : ControllerBase
         var chats = await _chatService.ReadAllChatsOwnedBy(userProfile!);
 
         var chatsDto = new ReadMultipleChatsShortInfoResponseDto(chats);
-        return Ok(Common.Dto.Response.Success("Chats list accessed successfully", chatsDto));
+        return Ok(Common.Dto.Response.Success(chatsDto));
     }
 
     [ProducesResponseType(StatusCodes.Status200OK,
@@ -54,6 +54,6 @@ public class MyChatsController : ControllerBase
         var chats = await _chatService.ReadAllChatsJoinedBy(userProfile!);
 
         var chatsDto = new ReadMultipleChatsShortInfoResponseDto(chats);
-        return Ok(Common.Dto.Response.Success("Chats list accessed successfully", chatsDto));
+        return Ok(Common.Dto.Response.Success(chatsDto));
     }
 }

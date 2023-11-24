@@ -34,7 +34,7 @@ public class TestController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccess<object>))]
     public IActionResult Echo([FromBody] object model)
     {
-        return Ok(Common.Dto.Response.Success("Echo!", model));
+        return Ok(Common.Dto.Response.Success(model));
     }
 
     [HttpPost(Name = "EchoValidate")]
@@ -42,7 +42,7 @@ public class TestController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccess<SignInRequestDto>))]
     public IActionResult EchoValidate([FromBody] SignInRequestDto model)
     {
-        return Ok(Common.Dto.Response.Success("Echo, but also validate!", model));
+        return Ok(Common.Dto.Response.Success(model));
     }
 
     [HttpGet(Name = "UnhandledException")]
@@ -62,6 +62,6 @@ public class TestController : ControllerBase
     {
         var user = await _userManager.FindByIdAsync(User.GetIdentityUserId());
         var userDto = GetIdentityUserByUserIdResponseDto.MapFromModel(user!);
-        return Ok(Common.Dto.Response.Success("That's a current user, wow!", userDto));
+        return Ok(Common.Dto.Response.Success(userDto));
     }
 }

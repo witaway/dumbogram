@@ -5,7 +5,7 @@ namespace Dumbogram.Common.Extensions;
 
 public static class ResultDtoExtensions
 {
-    public static Response ToFailureDto(this IResultBase result, string message)
+    public static Response ToFailureDto(this IResultBase result)
     {
         if (result.IsSuccess)
         {
@@ -15,6 +15,6 @@ public static class ResultDtoExtensions
         var errors = result.Errors;
         var errorDtos = errors.Select(ErrorDto.FromError);
 
-        return Response.Failure(message, errorDtos);
+        return Response.Failure(errorDtos);
     }
 }

@@ -19,7 +19,7 @@ public abstract class CredentialsConflictError : ApplicationError
     }
 }
 
-public class UsernameAlreadyTakenError : ApplicationError
+public class UsernameAlreadyTakenError : CredentialsConflictError
 {
     public UsernameAlreadyTakenError()
         : base("UsernameAlreadyTaken")
@@ -27,7 +27,7 @@ public class UsernameAlreadyTakenError : ApplicationError
     }
 }
 
-public class EmailAlreadyTakenError : ApplicationError
+public class EmailAlreadyTakenError : CredentialsConflictError
 {
     public EmailAlreadyTakenError()
         : base("EmailAlreadyTaken")

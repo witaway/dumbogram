@@ -50,15 +50,15 @@ public class ChatController : ControllerBase
         {
             if (chatResult.HasError<ChatNotFoundError>())
             {
-                return NotFound(chatResult.ToFailureDto("Chat not found"));
+                return NotFound(chatResult.ToFailureDto());
             }
 
-            return BadRequest(chatResult.ToFailureDto("Cannot access chat"));
+            return BadRequest(chatResult.ToFailureDto());
         }
 
         var chat = chatResult.Value;
         var chatDto = new ReadSingleChatShortInfoResponseDto(chat);
-        return Ok(Common.Dto.Response.Success("Chat found successfully", chatDto));
+        return Ok(Common.Dto.Response.Success(chatDto));
     }
 
     [HttpPatch]
@@ -80,10 +80,10 @@ public class ChatController : ControllerBase
         {
             if (chatResult.HasError<ChatNotFoundError>())
             {
-                return NotFound(chatResult.ToFailureDto("Chat not found"));
+                return NotFound(chatResult.ToFailureDto());
             }
 
-            return BadRequest(chatResult.ToFailureDto("Cannot access chat"));
+            return BadRequest(chatResult.ToFailureDto());
         }
 
         var chat = chatResult.Value;
@@ -93,18 +93,18 @@ public class ChatController : ControllerBase
         {
             if (joinResult.HasError<UserBannedInChatError>())
             {
-                return StatusCode(StatusCodes.Status403Forbidden, joinResult.ToFailureDto("User banned in chat"));
+                return StatusCode(StatusCodes.Status403Forbidden, joinResult.ToFailureDto());
             }
 
             if (joinResult.HasError<UserAlreadyJoinedToChatError>())
             {
-                return Conflict(joinResult.ToFailureDto("User already joined to chat"));
+                return Conflict(joinResult.ToFailureDto());
             }
 
-            return BadRequest(joinResult.ToFailureDto("Cannot join chat"));
+            return BadRequest(joinResult.ToFailureDto());
         }
 
-        return Ok(Common.Dto.Response.Success("Joined chat successfully"));
+        return Ok(Common.Dto.Response.Success());
     }
 
     [HttpGet("leave")]
@@ -119,10 +119,10 @@ public class ChatController : ControllerBase
         {
             if (chatResult.HasError<ChatNotFoundError>())
             {
-                return NotFound(chatResult.ToFailureDto("Chat not found"));
+                return NotFound(chatResult.ToFailureDto());
             }
 
-            return BadRequest(chatResult.ToFailureDto("Cannot access chat"));
+            return BadRequest(chatResult.ToFailureDto());
         }
 
         var chat = chatResult.Value;
@@ -134,10 +134,10 @@ public class ChatController : ControllerBase
             if (leaveResult.HasError<UserAlreadyLeftFromChatError>())
             {
                 return StatusCode(StatusCodes.Status403Forbidden,
-                    leaveResult.ToFailureDto("User already left from chat"));
+                    leaveResult.ToFailureDto());
             }
 
-            return BadRequest(leaveResult.ToFailureDto("Cannot left chat"));
+            return BadRequest(leaveResult.ToFailureDto());
         }
 
         return Ok(Common.Dto.Response.Success("Left chat successfully"));

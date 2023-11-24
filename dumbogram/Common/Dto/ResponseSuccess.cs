@@ -2,7 +2,7 @@
 
 public class ResponseSuccess<T> : Response
 {
-    public ResponseSuccess(string message, T data) : base(message)
+    public ResponseSuccess(T data)
     {
         Data = data;
     }
@@ -12,7 +12,4 @@ public class ResponseSuccess<T> : Response
 
 public class ResponseSuccess : Response
 {
-    public ResponseSuccess(string message) : base(message)
-    {
-    }
 }

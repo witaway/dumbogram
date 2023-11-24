@@ -43,10 +43,10 @@ public class ChatMembersController : ControllerBase
         {
             if (chatResult.HasError<ChatNotFoundError>())
             {
-                return NotFound(chatResult.ToFailureDto("Chat not found"));
+                return NotFound(chatResult.ToFailureDto());
             }
 
-            return BadRequest(chatResult.ToFailureDto("Cannot access chat"));
+            return BadRequest(chatResult.ToFailureDto());
         }
 
         var chat = chatResult.Value;
@@ -68,10 +68,10 @@ public class ChatMembersController : ControllerBase
         {
             if (chatResult.HasError<ChatNotFoundError>())
             {
-                return NotFound(chatResult.ToFailureDto("Chat not found"));
+                return NotFound(chatResult.ToFailureDto());
             }
 
-            return BadRequest(chatResult.ToFailureDto("Cannot access chat"));
+            return BadRequest(chatResult.ToFailureDto());
         }
 
         var chat = chatResult.Value;

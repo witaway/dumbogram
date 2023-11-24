@@ -6,8 +6,10 @@ using Dumbogram.Common.Filters;
 using Dumbogram.Core.Auth.Dto;
 using Dumbogram.Core.Auth.Errors;
 using Dumbogram.Core.Auth.Services;
+using Dumbogram.Core.Users.Errors;
 using Dumbogram.Core.Users.Services;
 using Dumbogram.Database.Identity;
+using FluentResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dumbogram.Core.Auth.Controllers;
@@ -51,24 +53,21 @@ public class AuthController : ControllerBase
 
         if (user == null)
         {
-            return Unauthorized(Common.Dto.Response.Failure(
-                "User does not exist"
-            ));
+            var error = Result.Fail(new UserNotFoundError());
+            return Unauthorized(error.ToFailureDto());
         }
 
         var signInResult = await _authService.SignIn(user, dto.Password);
 
         if (signInResult.IsFailed)
         {
-            return Unauthorized(signInResult.ToResult().ToFailureDto(
-                "Cannot sign in"
-            ));
+            return Unauthorized(signInResult.ToFailureDto());
         }
 
         var token = signInResult.Value;
         var tokenStringRepresentation = new JwtSecurityTokenHandler().WriteToken(token);
 
-        return Ok(Common.Dto.Response.Success("Signed in successfully", new SignInResponseDto
+        return Ok(Common.Dto.Response.Success(new SignInResponseDto
         {
             Token = tokenStringRepresentation,
             Expiration = token.ValidTo
@@ -99,16 +98,12 @@ public class AuthController : ControllerBase
             ));
         }
 
-        if (signUpResult.Errors is [CredentialsConflictError, _])
+        if (signUpResult.HasError<CredentialsConflictError>())
         {
-            return Conflict(signUpResult.ToFailureDto(
-                "User with such credentials already exist"
-            ));
+            return Conflict(signUpResult.ToFailureDto());
         }
 
-        return BadRequest(signUpResult.ToFailureDto(
-            "Error during signing up"
-        ));
+        return BadRequest(signUpResult.ToFailureDto());
     }
 
     [HttpPost]
