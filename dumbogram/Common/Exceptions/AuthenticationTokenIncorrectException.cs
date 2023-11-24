@@ -1,11 +1,7 @@
 ﻿namespace Dumbogram.Common.Exceptions;
 
-public class AuthenticationTokenIncorrectException : BaseApplicationException
+public class AuthenticationTokenIncorrectException : ApplicationException
 {
-    public AuthenticationTokenIncorrectException()
-    {
-    }
-
     public AuthenticationTokenIncorrectException(string message)
         : base(message)
     {

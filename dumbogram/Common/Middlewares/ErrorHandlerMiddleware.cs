@@ -1,8 +1,8 @@
 ﻿using System.Dynamic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Dumbogram.Common.Exceptions;
 using Dumbogram.Common.Extensions;
+using ApplicationException = Dumbogram.Common.Exceptions.ApplicationException;
 
 namespace Dumbogram.Common.Middlewares;
 
@@ -45,7 +45,7 @@ public class ErrorHandlerMiddleware : IMiddleware
         {
             exception.AddErrorCode();
 
-            var logMessage = exception is BaseApplicationException
+            var logMessage = exception is ApplicationException
                 ? exception.Message
                 : "An unhandled exception has occurred while executing the request.";
 
