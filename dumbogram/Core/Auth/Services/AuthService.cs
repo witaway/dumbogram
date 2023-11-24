@@ -61,7 +61,7 @@ public class AuthService
         // Checking if password matches user
         if (!await IsPasswordMatches(user, password))
         {
-            return Result.Fail<JwtSecurityToken>(new PasswordNotValidError("Password is not valid"));
+            return Result.Fail<JwtSecurityToken>(new PasswordNotValidError());
         }
 
         // Get user's claims
@@ -93,13 +93,13 @@ public class AuthService
         var emailAlreadyTaken = await _identityUserService.IsUserWithEmailExist(user.Email);
         if (emailAlreadyTaken)
         {
-            existenceErrors.Add(new EmailAlreadyTakenError($"Email {user.Email} is already taken"));
+            existenceErrors.Add(new EmailAlreadyTakenError());
         }
 
         var usernameAlreadyTaken = await _identityUserService.IsUserWithUsernameExist(user.UserName);
         if (usernameAlreadyTaken)
         {
-            existenceErrors.Add(new UsernameAlreadyTakenError($"Username {user.UserName} is already taken"));
+            existenceErrors.Add(new UsernameAlreadyTakenError());
         }
 
         if (existenceErrors.Any())

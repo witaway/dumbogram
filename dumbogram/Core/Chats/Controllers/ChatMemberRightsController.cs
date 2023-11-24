@@ -59,7 +59,7 @@ public class ChatMemberRightsController : ControllerBase
 
         if (!isOwner)
         {
-            var result = Result.Fail(new NotEnoughPermissionsError("Not enough permissions"));
+            var result = Result.Fail(new NotEnoughPermissionsError());
             return StatusCode(StatusCodes.Status403Forbidden, result.ToFailureDto("Not enough permissions"));
         }
 
@@ -109,7 +109,7 @@ public class ChatMemberRightsController : ControllerBase
 
         if (!isOwner)
         {
-            var result = Result.Fail(new NotEnoughPermissionsError("Not enough permissions"));
+            var result = Result.Fail(new NotEnoughPermissionsError());
             return StatusCode(StatusCodes.Status403Forbidden, result.ToFailureDto("Not enough permissions"));
         }
 
@@ -130,7 +130,7 @@ public class ChatMemberRightsController : ControllerBase
 
         if (isMemberOwner)
         {
-            var result = Result.Fail(new CannotChangeOwnerRights("Cannot change owner rights"));
+            var result = Result.Fail(new CannotChangeOwnerRights());
             return BadRequest(result.ToFailureDto("Cannot change owner rights"));
         }
 

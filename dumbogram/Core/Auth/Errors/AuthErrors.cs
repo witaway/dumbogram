@@ -3,39 +3,39 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Dumbogram.Core.Auth.Errors;
 
-public class PasswordNotValidError : BaseApplicationError
+public class PasswordNotValidError : ApplicationError
 {
-    public PasswordNotValidError(string message)
-        : base("PasswordNotValid", message)
+    public PasswordNotValidError()
+        : base("PasswordNotValid")
     {
     }
 }
 
-public abstract class CredentialsConflictError : BaseApplicationError
+public abstract class CredentialsConflictError : ApplicationError
 {
-    protected CredentialsConflictError(string errorCode, string message)
-        : base(errorCode, message)
+    protected CredentialsConflictError(string errorCode)
+        : base(errorCode)
     {
     }
 }
 
-public class UsernameAlreadyTakenError : BaseApplicationError
+public class UsernameAlreadyTakenError : ApplicationError
 {
-    public UsernameAlreadyTakenError(string message)
-        : base("UsernameAlreadyTaken", message)
+    public UsernameAlreadyTakenError()
+        : base("UsernameAlreadyTaken")
     {
     }
 }
 
-public class EmailAlreadyTakenError : BaseApplicationError
+public class EmailAlreadyTakenError : ApplicationError
 {
-    public EmailAlreadyTakenError(string message)
-        : base("EmailAlreadyTaken", message)
+    public EmailAlreadyTakenError()
+        : base("EmailAlreadyTaken")
     {
     }
 }
 
-public class WrappedIdentityError : BaseApplicationError
+public class WrappedIdentityError : ApplicationError
 {
     public WrappedIdentityError(IdentityError error)
         : base(error.Code, error.Description)

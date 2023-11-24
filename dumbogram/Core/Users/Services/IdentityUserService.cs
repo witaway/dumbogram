@@ -24,8 +24,7 @@ public class IdentityUserService
         var identityUser = await ReadUserByUsername(username);
         if (identityUser == null)
         {
-            const string message = "User not found";
-            return Result.Fail(new UserNotFoundError(message));
+            return Result.Fail(new UserNotFoundError());
         }
 
         return Result.Ok(identityUser);
@@ -41,8 +40,7 @@ public class IdentityUserService
         var identityUser = await ReadUserByEmail(email);
         if (identityUser == null)
         {
-            const string message = "User not found";
-            return Result.Fail(new UserNotFoundError(message));
+            return Result.Fail(new UserNotFoundError());
         }
 
         return Result.Ok(identityUser);
@@ -58,8 +56,7 @@ public class IdentityUserService
         var identityUser = await ReadUserById(userId);
         if (identityUser == null)
         {
-            const string message = "User not found";
-            return Result.Fail(new UserNotFoundError(message));
+            return Result.Fail(new UserNotFoundError());
         }
 
         return Result.Ok(identityUser);

@@ -81,7 +81,7 @@ public class ChatService
         var chat = await ReadPublicChatByChatId(chatId);
         if (chat == null)
         {
-            return Result.Fail(new ChatNotFoundError(""));
+            return Result.Fail(new ChatNotFoundError());
         }
 
         return chat;
@@ -138,7 +138,7 @@ public class ChatService
         var chat = await ReadPublicOrAccessibleChatByChatId(chatId, userProfile);
         if (chat == null)
         {
-            return Result.Fail(new ChatNotFoundError(""));
+            return Result.Fail(new ChatNotFoundError());
         }
 
         return chat;
@@ -181,7 +181,7 @@ public class ChatService
         var chat = await ReadChatOwnedBy(chatId, userProfile);
         if (chat == null)
         {
-            return Result.Fail(new ChatNotFoundError(""));
+            return Result.Fail(new ChatNotFoundError());
         }
 
         return chat;
@@ -232,7 +232,7 @@ public class ChatService
         var chat = await ReadChatJoinedBy(chatId, userProfile);
         if (chat == null)
         {
-            return Result.Fail(new ChatNotFoundError(""));
+            return Result.Fail(new ChatNotFoundError());
         }
 
         return chat;

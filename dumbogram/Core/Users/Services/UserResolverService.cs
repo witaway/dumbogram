@@ -34,7 +34,7 @@ public class UserResolverService
         var claimsPrincipal = GetClaimsPrincipal();
         if (claimsPrincipal == null)
         {
-            return Result.Fail(new UnauthorizedError(""));
+            return Result.Fail(new UnauthorizedError());
         }
 
         var applicationUserIdResult = claimsPrincipal.TryGetApplicationUserId();
@@ -58,12 +58,10 @@ public class UserResolverService
     public async Task<UserProfile?> GetApplicationUser()
     {
         var applicationUserResult = await TryGetApplicationUser();
-        if (applicationUserResult.IsFailed)
-        {
-            return null;
-        }
 
-        return applicationUserResult.Value;
+        return applicationUserResult.IsFailed
+            ? null
+            : applicationUserResult.Value;
     }
 
     public async Task<Result<ApplicationIdentityUser>> TryGetIdentityUser()
@@ -71,7 +69,7 @@ public class UserResolverService
         var claimsPrincipal = GetClaimsPrincipal();
         if (claimsPrincipal == null)
         {
-            return Result.Fail(new UnauthorizedError(""));
+            return Result.Fail(new UnauthorizedError());
         }
 
         var identityUserIdResult = claimsPrincipal.TryGetIdentityUserId();
@@ -95,11 +93,9 @@ public class UserResolverService
     public async Task<ApplicationIdentityUser?> GetIdentityUser()
     {
         var applicationUserResult = await TryGetIdentityUser();
-        if (applicationUserResult.IsFailed)
-        {
-            return null;
-        }
 
-        return applicationUserResult.Value;
+        return applicationUserResult.IsFailed
+            ? null
+            : applicationUserResult.Value;
     }
 }

@@ -2,18 +2,18 @@
 
 namespace Dumbogram.Core.Chats.Errors;
 
-public class ChatAlreadyPublicError : BaseApplicationError
+public class ChatAlreadyPublicError : ApplicationError
 {
-    public ChatAlreadyPublicError(string message)
-        : base(nameof(ChatAlreadyPublicError), message)
+    public ChatAlreadyPublicError()
+        : base(nameof(ChatAlreadyPublicError))
     {
     }
 }
 
-public class ChatAlreadyPrivateError : BaseApplicationError
+public class ChatAlreadyPrivateError : ApplicationError
 {
-    public ChatAlreadyPrivateError(string message)
-        : base(nameof(ChatAlreadyPrivateError), message)
+    public ChatAlreadyPrivateError()
+        : base(nameof(ChatAlreadyPrivateError))
     {
     }
 }

@@ -12,8 +12,7 @@ public static class PrincipalExtension
     {
         if (principal.Identity == null)
         {
-            var message = "Principal does not contain Identity Claims";
-            return Result.Fail(new AuthenticationTokenIncorrectError(message));
+            return Result.Fail(new AuthenticationTokenIncorrectError());
         }
 
         var claimsIdentity = (ClaimsIdentity)principal.Identity;
@@ -21,8 +20,7 @@ public static class PrincipalExtension
 
         if (claim == null)
         {
-            var message = "Identifier Claim is not found";
-            return Result.Fail(new AuthenticationTokenIncorrectError(message));
+            return Result.Fail(new AuthenticationTokenIncorrectError());
         }
 
         return Result.Ok(claim.Value);

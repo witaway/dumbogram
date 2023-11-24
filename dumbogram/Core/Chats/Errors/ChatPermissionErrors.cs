@@ -2,18 +2,18 @@
 
 namespace Dumbogram.Core.Chats.Errors;
 
-public class NotEnoughPermissionsError : BaseApplicationError
+public class NotEnoughPermissionsError : ApplicationError
 {
-    public NotEnoughPermissionsError(string message)
-        : base(nameof(NotEnoughPermissionsError), message)
+    public NotEnoughPermissionsError()
+        : base(nameof(NotEnoughPermissionsError))
     {
     }
 }
 
-public class CannotChangeOwnerRights : BaseApplicationError
+public class CannotChangeOwnerRights : ApplicationError
 {
-    public CannotChangeOwnerRights(string message)
-        : base(nameof(CannotChangeOwnerRights), message)
+    public CannotChangeOwnerRights()
+        : base(nameof(CannotChangeOwnerRights))
     {
     }
 }

@@ -29,8 +29,7 @@ public class UserService
 
         if (userProfile == null)
         {
-            const string message = "User not found";
-            return Result.Fail(new UserNotFoundError(message));
+            return Result.Fail(new UserNotFoundError());
         }
 
         return Result.Ok(userProfile);

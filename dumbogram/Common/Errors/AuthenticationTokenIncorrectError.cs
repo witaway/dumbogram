@@ -1,9 +1,9 @@
 ﻿namespace Dumbogram.Common.Errors;
 
-public class AuthenticationTokenIncorrectError : BaseApplicationError
+public class AuthenticationTokenIncorrectError : ApplicationError
 {
-    public AuthenticationTokenIncorrectError(string message)
-        : base(nameof(AuthenticationTokenIncorrectError), message)
+    public AuthenticationTokenIncorrectError()
+        : base(nameof(AuthenticationTokenIncorrectError))
     {
     }
 }

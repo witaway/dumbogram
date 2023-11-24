@@ -2,10 +2,10 @@
 
 namespace Dumbogram.Core.Chats.Errors;
 
-public class ChatNotFoundError : BaseApplicationError
+public class ChatNotFoundError : ApplicationError
 {
-    public ChatNotFoundError(string message)
-        : base(nameof(ChatNotFoundError), message)
+    public ChatNotFoundError()
+        : base(nameof(ChatNotFoundError))
     {
     }
 }

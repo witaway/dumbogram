@@ -2,18 +2,18 @@
 
 namespace Dumbogram.Core.Users.Errors;
 
-public class UserNotFoundError : BaseApplicationError
+public class UserNotFoundError : ApplicationError
 {
-    public UserNotFoundError(string message)
-        : base(nameof(UserNotFoundError), message)
+    public UserNotFoundError()
+        : base(nameof(UserNotFoundError))
     {
     }
 }
 
-public class UnauthorizedError : BaseApplicationError
+public class UnauthorizedError : ApplicationError
 {
-    public UnauthorizedError(string message)
-        : base(nameof(UnauthorizedError), message)
+    public UnauthorizedError()
+        : base(nameof(UnauthorizedError))
     {
     }
 }
