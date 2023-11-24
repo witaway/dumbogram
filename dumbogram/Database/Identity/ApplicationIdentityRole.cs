@@ -29,7 +29,11 @@ public class ApplicationIdentityRoleConfiguration : IEntityTypeConfiguration<Ide
 
         allHardCodedRoles.ForEach(roleName =>
         {
-            var role = new IdentityRole(roleName);
+            var role = new IdentityRole()
+            {
+                Name = roleName,
+                NormalizedName = roleName.ToUpper(),
+            };
             builder.HasData(role);
         });
     }
