@@ -1,10 +1,10 @@
-﻿using Dumbogram.Common.Extensions;
+﻿using Dumbogram.Common.Controller;
+using Dumbogram.Common.Extensions;
 using Dumbogram.Core.Chats.Dto;
 using Dumbogram.Core.Chats.Errors;
 using Dumbogram.Core.Chats.Services;
 using Dumbogram.Core.Users.Errors;
 using Dumbogram.Core.Users.Services;
-using FluentResults;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,7 +13,7 @@ namespace Dumbogram.Core.Chats.Controllers;
 [Authorize]
 [Route("/api/chats/{chatId:guid}/members/{memberId:guid}")]
 [ApiController]
-public class ChatMemberRightsController : ControllerBase
+public class ChatMemberRightsController : ApplicationController
 {
     private readonly ChatMembershipService _chatMembershipService;
     private readonly ChatPermissionsService _chatPermissionsService;
@@ -48,10 +48,10 @@ public class ChatMemberRightsController : ControllerBase
         {
             if (chatResult.HasError<ChatNotFoundError>())
             {
-                return NotFound(chatResult.ToFailureDto());
+                return NotFound(chatResult.Errors);
             }
 
-            return BadRequest(chatResult.ToFailureDto());
+            return BadRequest(chatResult.Errors);
         }
 
         var chat = chatResult.Value;
@@ -59,8 +59,7 @@ public class ChatMemberRightsController : ControllerBase
 
         if (!isOwner)
         {
-            var result = Result.Fail(new NotEnoughPermissionsError());
-            return StatusCode(StatusCodes.Status403Forbidden, result.ToFailureDto());
+            return Forbidden(new NotEnoughPermissionsError());
         }
 
         var memberProfileResult = await _userService.RequestUserProfileById(memberId);
@@ -69,10 +68,10 @@ public class ChatMemberRightsController : ControllerBase
         {
             if (memberProfileResult.HasError<UserNotFoundError>())
             {
-                return NotFound(memberProfileResult.ToFailureDto());
+                return NotFound(memberProfileResult.Errors);
             }
 
-            return BadRequest(memberProfileResult.ToFailureDto());
+            return BadRequest(memberProfileResult.Errors);
         }
 
         var memberProfile = memberProfileResult.Value;
@@ -80,7 +79,7 @@ public class ChatMemberRightsController : ControllerBase
         var rights = await _chatPermissionsService.ReadAllRightsAppliedToUsersInChat(chat, memberProfile);
         var rightsDto = new ReadMultipleRightsResponseDto(rights);
 
-        return Ok(Common.Dto.Response.Success(rightsDto));
+        return Ok(rightsDto);
     }
 
     [HttpPut]
@@ -98,10 +97,10 @@ public class ChatMemberRightsController : ControllerBase
         {
             if (chatResult.HasError<ChatNotFoundError>())
             {
-                return NotFound(chatResult.ToFailureDto());
+                return NotFound(chatResult.Errors);
             }
 
-            return BadRequest(chatResult.ToFailureDto());
+            return BadRequest(chatResult.Errors);
         }
 
         var chat = chatResult.Value;
@@ -109,8 +108,7 @@ public class ChatMemberRightsController : ControllerBase
 
         if (!isOwner)
         {
-            var result = Result.Fail(new NotEnoughPermissionsError());
-            return StatusCode(StatusCodes.Status403Forbidden, result.ToFailureDto());
+            return Forbidden(new NotEnoughPermissionsError());
         }
 
         var memberProfileResult = await _userService.RequestUserProfileById(memberId);
@@ -119,10 +117,10 @@ public class ChatMemberRightsController : ControllerBase
         {
             if (memberProfileResult.HasError<UserNotFoundError>())
             {
-                return NotFound(memberProfileResult.ToFailureDto());
+                return NotFound(memberProfileResult.Errors);
             }
 
-            return BadRequest(memberProfileResult.ToFailureDto());
+            return BadRequest(memberProfileResult.Errors);
         }
 
         var memberProfile = memberProfileResult.Value;
@@ -130,8 +128,7 @@ public class ChatMemberRightsController : ControllerBase
 
         if (isMemberOwner)
         {
-            var result = Result.Fail(new CannotChangeOwnerRights());
-            return BadRequest(result.ToFailureDto());
+            return BadRequest(new CannotChangeOwnerRights());
         }
 
         var rights = dto.ConvertToRightsList();

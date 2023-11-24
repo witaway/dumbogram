@@ -1,7 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Runtime.CompilerServices;
+using Dumbogram.Common.Controller;
 using Dumbogram.Common.Dto;
-using Dumbogram.Common.Extensions;
 using Dumbogram.Common.Filters;
 using Dumbogram.Core.Auth.Dto;
 using Dumbogram.Core.Auth.Errors;
@@ -9,14 +9,13 @@ using Dumbogram.Core.Auth.Services;
 using Dumbogram.Core.Users.Errors;
 using Dumbogram.Core.Users.Services;
 using Dumbogram.Database.Identity;
-using FluentResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dumbogram.Core.Auth.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class AuthController : ControllerBase
+public class AuthController : ApplicationController
 {
     private readonly AuthService _authService;
     private readonly IdentityRolesService _identityRolesService;
@@ -53,25 +52,24 @@ public class AuthController : ControllerBase
 
         if (user == null)
         {
-            var error = Result.Fail(new UserNotFoundError());
-            return Unauthorized(error.ToFailureDto());
+            return Unauthorized(new UserNotFoundError());
         }
 
         var signInResult = await _authService.SignIn(user, dto.Password);
 
         if (signInResult.IsFailed)
         {
-            return Unauthorized(signInResult.ToFailureDto());
+            return Unauthorized(signInResult.Errors);
         }
 
         var token = signInResult.Value;
         var tokenStringRepresentation = new JwtSecurityTokenHandler().WriteToken(token);
 
-        return Ok(Common.Dto.Response.Success(new SignInResponseDto
+        return Ok(new SignInResponseDto
         {
             Token = tokenStringRepresentation,
             Expiration = token.ValidTo
-        }));
+        });
     }
 
     [DevOnly]
@@ -91,19 +89,17 @@ public class AuthController : ControllerBase
 
         var signUpResult = await _authService.SignUp(user, dto.Password);
 
-        if (signUpResult.IsSuccess)
+        if (signUpResult.IsFailed)
         {
-            return Ok(Common.Dto.Response.Success(
-                "User created successfully"
-            ));
+            if (signUpResult.HasError<CredentialsConflictError>())
+            {
+                return Conflict(signUpResult.Errors);
+            }
+
+            return BadRequest(signUpResult.Errors);
         }
 
-        if (signUpResult.HasError<CredentialsConflictError>())
-        {
-            return Conflict(signUpResult.ToFailureDto());
-        }
-
-        return BadRequest(signUpResult.ToFailureDto());
+        return Ok();
     }
 
     [HttpPost]
@@ -129,8 +125,6 @@ public class AuthController : ControllerBase
 
         await _identityRolesService.EnsureUserIsInRole(user, UserRoles.Admin);
 
-        return Ok(Common.Dto.Response.Success(
-            "Administrative User created successfully!"
-        ));
+        return Ok();
     }
 }

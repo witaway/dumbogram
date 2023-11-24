@@ -1,6 +1,6 @@
 namespace Dumbogram;
 
-public static partial class EndpointsMapper
+public static class EndpointsMapper
 {
     public static WebApplication RegisterEndpoints(this WebApplication app)
     {

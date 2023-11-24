@@ -1,4 +1,5 @@
-﻿using Dumbogram.Common.Extensions;
+﻿using Dumbogram.Common.Controller;
+using Dumbogram.Common.Extensions;
 using Dumbogram.Core.Chats.Dto;
 using Dumbogram.Core.Chats.Errors;
 using Dumbogram.Core.Chats.Services;
@@ -11,7 +12,7 @@ namespace Dumbogram.Core.Chats.Controllers;
 [Authorize]
 [Route("/api/chats/{chatId:guid}/members")]
 [ApiController]
-public class ChatMembersController : ControllerBase
+public class ChatMembersController : ApplicationController
 {
     private readonly ChatMembershipService _chatMembershipService;
     private readonly ChatService _chatService;
@@ -43,16 +44,17 @@ public class ChatMembersController : ControllerBase
         {
             if (chatResult.HasError<ChatNotFoundError>())
             {
-                return NotFound(chatResult.ToFailureDto());
+                return NotFound(chatResult.Errors);
             }
 
-            return BadRequest(chatResult.ToFailureDto());
+            return BadRequest(chatResult.Errors);
         }
 
         var chat = chatResult.Value;
         var members = await _chatMembershipService.ReadAllChatJoinedUsers(chat);
 
-        return Ok(new ReadMultipleMembersShortInfoResponseDto(members));
+        var membersDto = new ReadMultipleMembersShortInfoResponseDto(members);
+        return Ok(membersDto);
     }
 
     [HttpGet]
@@ -68,15 +70,16 @@ public class ChatMembersController : ControllerBase
         {
             if (chatResult.HasError<ChatNotFoundError>())
             {
-                return NotFound(chatResult.ToFailureDto());
+                return NotFound(chatResult.Errors);
             }
 
-            return BadRequest(chatResult.ToFailureDto());
+            return BadRequest(chatResult.Errors);
         }
 
         var chat = chatResult.Value;
         var members = await _chatMembershipService.ReadAllChatJoinedUsers(chat);
 
-        return Ok(new ReadMultipleMembersShortInfoResponseDto(members));
+        var membersDto = new ReadMultipleMembersShortInfoResponseDto(members);
+        return Ok(membersDto);
     }
 }

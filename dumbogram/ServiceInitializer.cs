@@ -1,4 +1,5 @@
 using System.Text;
+using Dumbogram.Common.Filters;
 using Dumbogram.Common.Middlewares;
 using Dumbogram.Core.Auth.Dto;
 using Dumbogram.Core.Auth.Services;
@@ -10,6 +11,7 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -31,12 +33,17 @@ public static class ServiceInitializer
         RegisterCustomMiddlewares(services);
         RegisterCustomServices(services);
 
-        services.AddControllers();
+        services.AddControllers(ConfigureMvc);
 
         RegisterFluentValidation(services);
         RegisterSwagger(services);
 
         return services;
+    }
+
+    private static void ConfigureMvc(MvcOptions options)
+    {
+        options.Filters.Add<ResultFilter>();
     }
 
     private static void RegisterCustomMiddlewares(IServiceCollection services)
@@ -56,11 +63,11 @@ public static class ServiceInitializer
 
         // User-related services
         services.AddScoped<UserService>();
-        
+
         // User resolver
         // Needed to obtain current logged in user access in other services
         services.AddScoped<UserResolverService>();
-        
+
         // Chat-related services
         services.AddScoped<ChatService>();
         services.AddScoped<ChatPermissionsService>();

@@ -1,4 +1,5 @@
-﻿using Dumbogram.Common.Dto;
+﻿using Dumbogram.Common.Controller;
+using Dumbogram.Common.Dto;
 using Dumbogram.Common.Extensions;
 using Dumbogram.Core.Chats.Dto;
 using Dumbogram.Core.Chats.Services;
@@ -11,7 +12,7 @@ namespace Dumbogram.Core.Chats.Controllers;
 [Authorize]
 [Route("/api/users/me/chats")]
 [ApiController]
-public class MyChatsController : ControllerBase
+public class MyChatsController : ApplicationController
 {
     private readonly ChatService _chatService;
 
@@ -40,7 +41,7 @@ public class MyChatsController : ControllerBase
         var chats = await _chatService.ReadAllChatsOwnedBy(userProfile!);
 
         var chatsDto = new ReadMultipleChatsShortInfoResponseDto(chats);
-        return Ok(Common.Dto.Response.Success(chatsDto));
+        return Ok(chatsDto);
     }
 
     [ProducesResponseType(StatusCodes.Status200OK,
@@ -54,6 +55,6 @@ public class MyChatsController : ControllerBase
         var chats = await _chatService.ReadAllChatsJoinedBy(userProfile!);
 
         var chatsDto = new ReadMultipleChatsShortInfoResponseDto(chats);
-        return Ok(Common.Dto.Response.Success(chatsDto));
+        return Ok(chatsDto);
     }
 }

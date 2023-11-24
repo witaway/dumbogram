@@ -15,7 +15,6 @@ public static class MiddlewareInitializer
         }
 
         app.UseHttpsRedirection();
-
         app.UseAuthorization();
         return app;
     }

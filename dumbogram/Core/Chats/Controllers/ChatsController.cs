@@ -1,4 +1,5 @@
-﻿using Dumbogram.Common.Dto;
+﻿using Dumbogram.Common.Controller;
+using Dumbogram.Common.Dto;
 using Dumbogram.Common.Extensions;
 using Dumbogram.Core.Chats.Dto;
 using Dumbogram.Core.Chats.Models;
@@ -12,7 +13,7 @@ namespace Dumbogram.Core.Chats.Controllers;
 [Authorize]
 [Route("/api/chats")]
 [ApiController]
-public class ChatsController : ControllerBase
+public class ChatsController : ApplicationController
 {
     private readonly ChatMembershipService _chatMembershipService;
 
@@ -45,7 +46,7 @@ public class ChatsController : ControllerBase
         var chats = await _chatService.ReadAllPublicOrAccessibleChats(userProfile!);
 
         var chatsDto = new ReadMultipleChatsShortInfoResponseDto(chats);
-        return Ok(Common.Dto.Response.Success(chatsDto));
+        return Ok(chatsDto);
     }
 
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(ResponseSuccess))]
@@ -66,7 +67,6 @@ public class ChatsController : ControllerBase
         await _chatMembershipService.EnsureUserJoinedInChat(userProfile!, chat);
 
         var chatUri = $"/api/chats/{chat.Id}";
-
-        return Created(chatUri, Common.Dto.Response.Success());
+        return Created(chatUri, null);
     }
 }

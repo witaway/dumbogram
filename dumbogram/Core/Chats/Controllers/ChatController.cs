@@ -1,4 +1,5 @@
-﻿using Dumbogram.Common.Dto;
+﻿using Dumbogram.Common.Controller;
+using Dumbogram.Common.Dto;
 using Dumbogram.Common.Extensions;
 using Dumbogram.Core.Chats.Dto;
 using Dumbogram.Core.Chats.Errors;
@@ -12,7 +13,7 @@ namespace Dumbogram.Core.Chats.Controllers;
 [Authorize]
 [Route("/api/chats/{chatId:guid}")]
 [ApiController]
-public class ChatController : ControllerBase
+public class ChatController : ApplicationController
 {
     private readonly ChatMembershipService _chatMembershipService;
     private readonly ChatPermissionsService _chatPermissionsService;
@@ -50,15 +51,15 @@ public class ChatController : ControllerBase
         {
             if (chatResult.HasError<ChatNotFoundError>())
             {
-                return NotFound(chatResult.ToFailureDto());
+                return NotFound(chatResult.Errors);
             }
 
-            return BadRequest(chatResult.ToFailureDto());
+            return BadRequest(chatResult.Errors);
         }
 
         var chat = chatResult.Value;
         var chatDto = new ReadSingleChatShortInfoResponseDto(chat);
-        return Ok(Common.Dto.Response.Success(chatDto));
+        return Ok(chatDto);
     }
 
     [HttpPatch]
@@ -80,10 +81,10 @@ public class ChatController : ControllerBase
         {
             if (chatResult.HasError<ChatNotFoundError>())
             {
-                return NotFound(chatResult.ToFailureDto());
+                return NotFound(chatResult.Errors);
             }
 
-            return BadRequest(chatResult.ToFailureDto());
+            return BadRequest(chatResult.Errors);
         }
 
         var chat = chatResult.Value;
@@ -93,18 +94,18 @@ public class ChatController : ControllerBase
         {
             if (joinResult.HasError<UserBannedInChatError>())
             {
-                return StatusCode(StatusCodes.Status403Forbidden, joinResult.ToFailureDto());
+                return Forbidden(joinResult.Errors);
             }
 
             if (joinResult.HasError<UserAlreadyJoinedToChatError>())
             {
-                return Conflict(joinResult.ToFailureDto());
+                return Conflict(joinResult.Errors);
             }
 
-            return BadRequest(joinResult.ToFailureDto());
+            return BadRequest(joinResult.Errors);
         }
 
-        return Ok(Common.Dto.Response.Success());
+        return Ok();
     }
 
     [HttpGet("leave")]
@@ -119,10 +120,10 @@ public class ChatController : ControllerBase
         {
             if (chatResult.HasError<ChatNotFoundError>())
             {
-                return NotFound(chatResult.ToFailureDto());
+                return NotFound(chatResult.Errors);
             }
 
-            return BadRequest(chatResult.ToFailureDto());
+            return BadRequest(chatResult.Errors);
         }
 
         var chat = chatResult.Value;
@@ -133,13 +134,12 @@ public class ChatController : ControllerBase
         {
             if (leaveResult.HasError<UserAlreadyLeftFromChatError>())
             {
-                return StatusCode(StatusCodes.Status403Forbidden,
-                    leaveResult.ToFailureDto());
+                return Forbidden(leaveResult.Errors);
             }
 
-            return BadRequest(leaveResult.ToFailureDto());
+            return BadRequest(leaveResult.Errors);
         }
 
-        return Ok(Common.Dto.Response.Success("Left chat successfully"));
+        return Ok();
     }
 }
