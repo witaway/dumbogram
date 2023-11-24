@@ -1,10 +1,10 @@
 using System.Text;
+using Dumbogram.Application.Auth.Dto;
+using Dumbogram.Application.Auth.Services;
+using Dumbogram.Application.Chats.Services;
+using Dumbogram.Application.Users.Services;
 using Dumbogram.Common.Filters;
 using Dumbogram.Common.Middlewares;
-using Dumbogram.Core.Auth.Dto;
-using Dumbogram.Core.Auth.Services;
-using Dumbogram.Core.Chats.Services;
-using Dumbogram.Core.Users.Services;
 using Dumbogram.Database;
 using Dumbogram.Database.Identity;
 using FluentValidation;

@@ -1,0 +1,72 @@
+﻿using Dumbogram.Application.Chats.Dto;
+using Dumbogram.Application.Chats.Models;
+using Dumbogram.Application.Chats.Services;
+using Dumbogram.Application.Users.Services;
+using Dumbogram.Common.Controller;
+using Dumbogram.Common.Dto;
+using Dumbogram.Common.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Dumbogram.Application.Chats.Controllers;
+
+[Authorize]
+[Route("/api/chats")]
+[ApiController]
+public class ChatsController : ApplicationController
+{
+    private readonly ChatMembershipService _chatMembershipService;
+
+    private readonly ChatService _chatService;
+
+    private readonly ILogger<ChatsController> _logger;
+    private readonly UserService _userService;
+
+    public ChatsController(
+        ChatService chatService,
+        ChatMembershipService chatMembershipService,
+        UserService userService,
+        ILogger<ChatsController> logger
+    )
+    {
+        _chatService = chatService;
+        _userService = userService;
+        _chatMembershipService = chatMembershipService;
+        _logger = logger;
+    }
+
+    [ProducesResponseType(
+        StatusCodes.Status200OK, Type = typeof(ResponseSuccess<ReadMultipleChatsShortInfoResponseDto>)
+    )]
+    [HttpGet("search")]
+    public async Task<IActionResult> ReadAllChats()
+    {
+        var userProfile = await _userService.ReadUserProfileById(User.GetApplicationUserId());
+
+        var chats = await _chatService.ReadAllPublicOrAccessibleChats(userProfile!);
+
+        var chatsDto = new ReadMultipleChatsShortInfoResponseDto(chats);
+        return Ok(chatsDto);
+    }
+
+    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(ResponseSuccess))]
+    [HttpPost]
+    public async Task<IActionResult> CreateChat([FromBody] CreateChatRequestDto dto)
+    {
+        var uid = User.GetApplicationUserId();
+        var userProfile = await _userService.ReadUserProfileById(uid);
+
+        var chat = new Chat
+        {
+            OwnerProfile = userProfile!,
+            Description = dto.Description,
+            Title = dto.Title
+        };
+
+        await _chatService.CreateChat(chat);
+        await _chatMembershipService.EnsureUserJoinedInChat(userProfile!, chat);
+
+        var chatUri = $"/api/chats/{chat.Id}";
+        return Created(chatUri, null);
+    }
+}
