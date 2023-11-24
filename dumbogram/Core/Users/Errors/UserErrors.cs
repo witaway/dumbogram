@@ -1,19 +1,20 @@
-﻿using Dumbogram.Common.Errors;
+﻿using System.Net;
+using Dumbogram.Common.Errors;
 
 namespace Dumbogram.Core.Users.Errors;
 
-public class UserNotFoundError : ApplicationError
+public class UserNotFoundError : ApplicationApiError
 {
     public UserNotFoundError()
-        : base(nameof(UserNotFoundError))
+        : base(nameof(UserNotFoundError), HttpStatusCode.NotFound)
     {
     }
 }
 
-public class UnauthorizedError : ApplicationError
+public class UnauthorizedError : ApplicationApiError
 {
     public UnauthorizedError()
-        : base(nameof(UnauthorizedError))
+        : base(nameof(UnauthorizedError), HttpStatusCode.Unauthorized)
     {
     }
 }

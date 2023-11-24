@@ -2,7 +2,6 @@
 using Dumbogram.Common.Dto;
 using Dumbogram.Common.Extensions;
 using Dumbogram.Core.Chats.Dto;
-using Dumbogram.Core.Chats.Errors;
 using Dumbogram.Core.Chats.Services;
 using Dumbogram.Core.Users.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -49,16 +48,11 @@ public class ChatController : ApplicationController
 
         if (chatResult.IsFailed)
         {
-            if (chatResult.HasError<ChatNotFoundError>())
-            {
-                return NotFound(chatResult.Errors);
-            }
-
-            return BadRequest(chatResult.Errors);
+            return Failure(chatResult.Errors);
         }
 
         var chat = chatResult.Value;
-        var chatDto = new ReadSingleChatShortInfoResponseDto(chat);
+        var chatDto = new ReadSingleChatShortInfoResponseDto(chatResult.Value);
         return Ok(chatDto);
     }
 
@@ -79,12 +73,7 @@ public class ChatController : ApplicationController
 
         if (chatResult.IsFailed)
         {
-            if (chatResult.HasError<ChatNotFoundError>())
-            {
-                return NotFound(chatResult.Errors);
-            }
-
-            return BadRequest(chatResult.Errors);
+            return Failure(chatResult.Errors);
         }
 
         var chat = chatResult.Value;
@@ -92,17 +81,7 @@ public class ChatController : ApplicationController
 
         if (joinResult.IsFailed)
         {
-            if (joinResult.HasError<UserBannedInChatError>())
-            {
-                return Forbidden(joinResult.Errors);
-            }
-
-            if (joinResult.HasError<UserAlreadyJoinedToChatError>())
-            {
-                return Conflict(joinResult.Errors);
-            }
-
-            return BadRequest(joinResult.Errors);
+            return Failure(joinResult.Errors);
         }
 
         return Ok();
@@ -118,12 +97,7 @@ public class ChatController : ApplicationController
 
         if (chatResult.IsFailed)
         {
-            if (chatResult.HasError<ChatNotFoundError>())
-            {
-                return NotFound(chatResult.Errors);
-            }
-
-            return BadRequest(chatResult.Errors);
+            return Failure(chatResult.Errors);
         }
 
         var chat = chatResult.Value;
@@ -132,12 +106,7 @@ public class ChatController : ApplicationController
 
         if (leaveResult.IsFailed)
         {
-            if (leaveResult.HasError<UserAlreadyLeftFromChatError>())
-            {
-                return Forbidden(leaveResult.Errors);
-            }
-
-            return BadRequest(leaveResult.Errors);
+            return Failure(leaveResult.Errors);
         }
 
         return Ok();

@@ -4,33 +4,21 @@ namespace Dumbogram.Common.Errors;
 
 public class ApplicationError : Error
 {
-    public ApplicationError(string errorCode)
+    protected ApplicationError(string errorCode)
     {
         ErrorCode = errorCode;
-    }
-
-    public ApplicationError(string errorCode, IError causedBy)
-    {
-        ErrorCode = errorCode;
-        CausedBy(causedBy);
-    }
-
-    public ApplicationError(string errorCode, string message)
-        : this(errorCode)
-    {
-        Message = message;
-    }
-
-    public ApplicationError(string errorCode, string message, IError causedBy)
-        : this(errorCode, causedBy)
-    {
-        Message = message;
     }
 
     public string ErrorCode
     {
         get => GetErrorCode();
         private set => SetErrorCode(value);
+    }
+
+    public ApplicationError WithMessage(string message)
+    {
+        Message = message;
+        return this;
     }
 
     private void SetErrorCode(string errorCode)

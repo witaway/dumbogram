@@ -1,7 +1,6 @@
 ﻿using Dumbogram.Common.Controller;
 using Dumbogram.Common.Extensions;
 using Dumbogram.Core.Chats.Dto;
-using Dumbogram.Core.Chats.Errors;
 using Dumbogram.Core.Chats.Services;
 using Dumbogram.Core.Users.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -42,12 +41,7 @@ public class ChatMembersController : ApplicationController
 
         if (chatResult.IsFailed)
         {
-            if (chatResult.HasError<ChatNotFoundError>())
-            {
-                return NotFound(chatResult.Errors);
-            }
-
-            return BadRequest(chatResult.Errors);
+            return Failure(chatResult.Errors);
         }
 
         var chat = chatResult.Value;
@@ -68,12 +62,7 @@ public class ChatMembersController : ApplicationController
 
         if (chatResult.IsFailed)
         {
-            if (chatResult.HasError<ChatNotFoundError>())
-            {
-                return NotFound(chatResult.Errors);
-            }
-
-            return BadRequest(chatResult.Errors);
+            return Failure(chatResult.Errors);
         }
 
         var chat = chatResult.Value;

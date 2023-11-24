@@ -1,35 +1,36 @@
-﻿using Dumbogram.Common.Errors;
+﻿using System.Net;
+using Dumbogram.Common.Errors;
 
 namespace Dumbogram.Core.Chats.Errors;
 
-public class UserAlreadyJoinedToChatError : ApplicationError
+public class UserAlreadyJoinedToChatError : ApplicationApiError
 {
     public UserAlreadyJoinedToChatError()
-        : base(nameof(UserAlreadyJoinedToChatError))
+        : base(nameof(UserAlreadyJoinedToChatError), HttpStatusCode.Conflict)
     {
     }
 }
 
-public class UserAlreadyBannedInChatError : ApplicationError
+public class UserAlreadyBannedInChatError : ApplicationApiError
 {
     public UserAlreadyBannedInChatError()
-        : base(nameof(UserAlreadyBannedInChatError))
+        : base(nameof(UserAlreadyBannedInChatError), HttpStatusCode.Conflict)
     {
     }
 }
 
-public class UserAlreadyLeftFromChatError : ApplicationError
+public class UserAlreadyLeftFromChatError : ApplicationApiError
 {
     public UserAlreadyLeftFromChatError()
-        : base(nameof(UserAlreadyLeftFromChatError))
+        : base(nameof(UserAlreadyLeftFromChatError), HttpStatusCode.Conflict)
     {
     }
 }
 
-public class UserBannedInChatError : ApplicationError
+public class UserBannedInChatError : ApplicationApiError
 {
     public UserBannedInChatError()
-        : base(nameof(UserBannedInChatError))
+        : base(nameof(UserBannedInChatError), HttpStatusCode.Forbidden)
     {
     }
 }

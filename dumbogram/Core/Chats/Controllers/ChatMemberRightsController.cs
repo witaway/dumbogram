@@ -3,7 +3,6 @@ using Dumbogram.Common.Extensions;
 using Dumbogram.Core.Chats.Dto;
 using Dumbogram.Core.Chats.Errors;
 using Dumbogram.Core.Chats.Services;
-using Dumbogram.Core.Users.Errors;
 using Dumbogram.Core.Users.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -46,12 +45,7 @@ public class ChatMemberRightsController : ApplicationController
 
         if (chatResult.IsFailed)
         {
-            if (chatResult.HasError<ChatNotFoundError>())
-            {
-                return NotFound(chatResult.Errors);
-            }
-
-            return BadRequest(chatResult.Errors);
+            return Failure(chatResult.Errors);
         }
 
         var chat = chatResult.Value;
@@ -59,19 +53,14 @@ public class ChatMemberRightsController : ApplicationController
 
         if (!isOwner)
         {
-            return Forbidden(new NotEnoughPermissionsError());
+            return Failure(new NotEnoughPermissionsError());
         }
 
         var memberProfileResult = await _userService.RequestUserProfileById(memberId);
 
         if (memberProfileResult.IsFailed)
         {
-            if (memberProfileResult.HasError<UserNotFoundError>())
-            {
-                return NotFound(memberProfileResult.Errors);
-            }
-
-            return BadRequest(memberProfileResult.Errors);
+            return Failure(memberProfileResult.Errors);
         }
 
         var memberProfile = memberProfileResult.Value;
@@ -95,12 +84,7 @@ public class ChatMemberRightsController : ApplicationController
 
         if (chatResult.IsFailed)
         {
-            if (chatResult.HasError<ChatNotFoundError>())
-            {
-                return NotFound(chatResult.Errors);
-            }
-
-            return BadRequest(chatResult.Errors);
+            return Failure(chatResult.Errors);
         }
 
         var chat = chatResult.Value;
@@ -108,19 +92,14 @@ public class ChatMemberRightsController : ApplicationController
 
         if (!isOwner)
         {
-            return Forbidden(new NotEnoughPermissionsError());
+            return Failure(new NotEnoughPermissionsError());
         }
 
         var memberProfileResult = await _userService.RequestUserProfileById(memberId);
 
         if (memberProfileResult.IsFailed)
         {
-            if (memberProfileResult.HasError<UserNotFoundError>())
-            {
-                return NotFound(memberProfileResult.Errors);
-            }
-
-            return BadRequest(memberProfileResult.Errors);
+            return Failure(memberProfileResult.Errors);
         }
 
         var memberProfile = memberProfileResult.Value;
@@ -128,7 +107,7 @@ public class ChatMemberRightsController : ApplicationController
 
         if (isMemberOwner)
         {
-            return BadRequest(new CannotChangeOwnerRights());
+            return Failure(new CannotChangeOwnerRights());
         }
 
         var rights = dto.ConvertToRightsList();

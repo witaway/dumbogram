@@ -1,20 +1,21 @@
-﻿using Dumbogram.Common.Errors;
+﻿using System.Net;
+using Dumbogram.Common.Errors;
 using Microsoft.AspNetCore.Identity;
 
 namespace Dumbogram.Core.Auth.Errors;
 
-public class PasswordNotValidError : ApplicationError
+public class PasswordNotValidError : ApplicationApiError
 {
     public PasswordNotValidError()
-        : base("PasswordNotValid")
+        : base(nameof(PasswordNotValidError), HttpStatusCode.Unauthorized)
     {
     }
 }
 
-public abstract class CredentialsConflictError : ApplicationError
+public abstract class CredentialsConflictError : ApplicationApiError
 {
     protected CredentialsConflictError(string errorCode)
-        : base(errorCode)
+        : base(errorCode, HttpStatusCode.Conflict)
     {
     }
 }
@@ -22,7 +23,7 @@ public abstract class CredentialsConflictError : ApplicationError
 public class UsernameAlreadyTakenError : CredentialsConflictError
 {
     public UsernameAlreadyTakenError()
-        : base("UsernameAlreadyTaken")
+        : base(nameof(UsernameAlreadyTakenError))
     {
     }
 }
@@ -30,15 +31,16 @@ public class UsernameAlreadyTakenError : CredentialsConflictError
 public class EmailAlreadyTakenError : CredentialsConflictError
 {
     public EmailAlreadyTakenError()
-        : base("EmailAlreadyTaken")
+        : base(nameof(EmailAlreadyTakenError))
     {
     }
 }
 
-public class WrappedIdentityError : ApplicationError
+public class WrappedIdentityError : ApplicationApiError
 {
     public WrappedIdentityError(IdentityError error)
-        : base(error.Code, error.Description)
+        : base(error.Code, HttpStatusCode.BadRequest)
     {
+        WithMessage(error.Description);
     }
 }

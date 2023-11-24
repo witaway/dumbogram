@@ -4,9 +4,7 @@ using Dumbogram.Common.Controller;
 using Dumbogram.Common.Dto;
 using Dumbogram.Common.Filters;
 using Dumbogram.Core.Auth.Dto;
-using Dumbogram.Core.Auth.Errors;
 using Dumbogram.Core.Auth.Services;
-using Dumbogram.Core.Users.Errors;
 using Dumbogram.Core.Users.Services;
 using Dumbogram.Database.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -43,23 +41,21 @@ public class AuthController : ApplicationController
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccess<SignInResponseDto>))]
     public async Task<IActionResult> SignIn([FromBody] SignInRequestDto dto)
     {
-        var user = dto switch
+        var userResult = dto switch
         {
-            { Email: not null } => await _identityUserService.ReadUserByEmail(dto.Email),
-            { Username: not null } => await _identityUserService.ReadUserByUsername(dto.Username),
+            { Email: not null } => await _identityUserService.RequestUserByEmail(dto.Email),
+            { Username: not null } => await _identityUserService.RequestUserByUsername(dto.Username),
             _ => throw new SwitchExpressionException()
         };
-
-        if (user == null)
+        if (userResult.IsFailed)
         {
-            return Unauthorized(new UserNotFoundError());
+            return Failure(userResult.Errors);
         }
 
-        var signInResult = await _authService.SignIn(user, dto.Password);
-
+        var signInResult = await _authService.SignIn(userResult.Value, dto.Password);
         if (signInResult.IsFailed)
         {
-            return Unauthorized(signInResult.Errors);
+            return Failure(signInResult.Errors);
         }
 
         var token = signInResult.Value;
@@ -72,7 +68,6 @@ public class AuthController : ApplicationController
         });
     }
 
-    [DevOnly]
     [HttpPost]
     [Route("sign-up")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccess))]
@@ -88,20 +83,15 @@ public class AuthController : ApplicationController
         };
 
         var signUpResult = await _authService.SignUp(user, dto.Password);
-
         if (signUpResult.IsFailed)
         {
-            if (signUpResult.HasError<CredentialsConflictError>())
-            {
-                return Conflict(signUpResult.Errors);
-            }
-
-            return BadRequest(signUpResult.Errors);
+            return Failure(signUpResult.Errors);
         }
 
         return Ok();
     }
 
+    [DevOnly]
     [HttpPost]
     [Route("sign-up-admin")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccess))]
