@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Dumbogram.Application.Users.Errors;
+using Dumbogram.Application.Users.Exceptions;
 using Dumbogram.Application.Users.Models;
 using Dumbogram.Common.Extensions;
 using Dumbogram.Database.Identity;
@@ -55,15 +56,6 @@ public class UserResolverService
         return applicationUser;
     }
 
-    public async Task<UserProfile?> GetApplicationUser()
-    {
-        var applicationUserResult = await TryGetApplicationUser();
-
-        return applicationUserResult.IsFailed
-            ? null
-            : applicationUserResult.Value;
-    }
-
     public async Task<Result<ApplicationIdentityUser>> TryGetIdentityUser()
     {
         var claimsPrincipal = GetClaimsPrincipal();
@@ -90,12 +82,27 @@ public class UserResolverService
         return identityUser;
     }
 
-    public async Task<ApplicationIdentityUser?> GetIdentityUser()
+    public async Task<UserProfile> GetApplicationUser()
+    {
+        var applicationUserResult = await TryGetApplicationUser();
+
+        if (applicationUserResult.IsFailed)
+        {
+            throw new UnauthorizedException();
+        }
+
+        return applicationUserResult.Value;
+    }
+
+    public async Task<ApplicationIdentityUser> GetIdentityUser()
     {
         var applicationUserResult = await TryGetIdentityUser();
 
-        return applicationUserResult.IsFailed
-            ? null
-            : applicationUserResult.Value;
+        if (applicationUserResult.IsFailed)
+        {
+            throw new UnauthorizedException();
+        }
+
+        return applicationUserResult.Value;
     }
 }

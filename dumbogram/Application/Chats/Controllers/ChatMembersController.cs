@@ -2,7 +2,6 @@
 using Dumbogram.Application.Chats.Services;
 using Dumbogram.Application.Users.Services;
 using Dumbogram.Common.Controller;
-using Dumbogram.Common.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,29 +15,27 @@ public class ChatMembersController : ApplicationController
     private readonly ChatMembershipService _chatMembershipService;
     private readonly ChatService _chatService;
     private readonly ILogger<ChatsController> _logger;
-    private readonly UserService _userService;
+    private readonly UserResolverService _userResolverService;
 
     public ChatMembersController(
         ChatService chatService,
         ChatMembershipService chatMembershipService,
-        UserService userService,
-        ILogger<ChatsController> logger
+        ILogger<ChatsController> logger,
+        UserResolverService userResolverService
     )
     {
         _chatService = chatService;
-        _userService = userService;
         _chatMembershipService = chatMembershipService;
+        _userResolverService = userResolverService;
         _logger = logger;
     }
 
     [HttpGet]
     public async Task<IActionResult> GetMembers(Guid chatId)
     {
-        var uid = User.GetApplicationUserId();
-        var userProfile = await _userService.ReadUserProfileById(uid);
+        var userProfile = await _userResolverService.GetApplicationUser();
 
         var chatResult = await _chatService.RequestPublicOrAccessibleChatByChatId(chatId, userProfile!);
-
         if (chatResult.IsFailed)
         {
             return Failure(chatResult.Errors);
@@ -46,20 +43,17 @@ public class ChatMembersController : ApplicationController
 
         var chat = chatResult.Value;
         var members = await _chatMembershipService.ReadAllChatJoinedUsers(chat);
-
         var membersDto = new ReadMultipleMembersShortInfoResponseDto(members);
+
         return Ok(membersDto);
     }
 
     [HttpGet]
     public async Task<IActionResult> GetBanned(Guid chatId)
     {
-        var uid = User.GetApplicationUserId();
-        var userProfile = await _userService.ReadUserProfileById(uid);
-
+        var userProfile = await _userResolverService.GetApplicationUser();
 
         var chatResult = await _chatService.RequestPublicOrAccessibleChatByChatId(chatId, userProfile!);
-
         if (chatResult.IsFailed)
         {
             return Failure(chatResult.Errors);
@@ -67,8 +61,8 @@ public class ChatMembersController : ApplicationController
 
         var chat = chatResult.Value;
         var members = await _chatMembershipService.ReadAllChatJoinedUsers(chat);
-
         var membersDto = new ReadMultipleMembersShortInfoResponseDto(members);
+
         return Ok(membersDto);
     }
 }

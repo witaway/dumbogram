@@ -3,7 +3,6 @@ using Dumbogram.Application.Chats.Services;
 using Dumbogram.Application.Users.Services;
 using Dumbogram.Common.Controller;
 using Dumbogram.Common.Dto;
-using Dumbogram.Common.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,25 +14,20 @@ namespace Dumbogram.Application.Chats.Controllers;
 public class ChatController : ApplicationController
 {
     private readonly ChatMembershipService _chatMembershipService;
-    private readonly ChatPermissionsService _chatPermissionsService;
-
     private readonly ChatService _chatService;
-
     private readonly ILogger<ChatsController> _logger;
-    private readonly UserService _userService;
+    private readonly UserResolverService _userResolverService;
 
     public ChatController(
         ChatService chatService,
         ChatMembershipService chatMembershipService,
-        ChatPermissionsService chatPermissionsService,
-        UserService userService,
-        ILogger<ChatsController> logger
+        ILogger<ChatsController> logger,
+        UserResolverService userResolverService
     )
     {
         _chatService = chatService;
-        _chatPermissionsService = chatPermissionsService;
-        _userService = userService;
         _chatMembershipService = chatMembershipService;
+        _userResolverService = userResolverService;
         _logger = logger;
     }
 
@@ -42,10 +36,9 @@ public class ChatController : ApplicationController
     [HttpGet]
     public async Task<IActionResult> ReadChat([FromRoute] Guid chatId)
     {
-        var userProfile = await _userService.ReadUserProfileById(User.GetApplicationUserId());
+        var userProfile = await _userResolverService.GetApplicationUser();
 
         var chatResult = await _chatService.RequestPublicOrAccessibleChatByChatId(chatId, userProfile!);
-
         if (chatResult.IsFailed)
         {
             return Failure(chatResult.Errors);
@@ -53,6 +46,7 @@ public class ChatController : ApplicationController
 
         var chat = chatResult.Value;
         var chatDto = new ReadSingleChatShortInfoResponseDto(chatResult.Value);
+
         return Ok(chatDto);
     }
 
@@ -66,19 +60,16 @@ public class ChatController : ApplicationController
     [HttpGet("join")]
     public async Task<IActionResult> JoinChat([FromRoute] Guid chatId)
     {
-        var uid = User.GetApplicationUserId();
-        var userProfile = await _userService.ReadUserProfileById(uid);
+        var userProfile = await _userResolverService.GetApplicationUser();
 
-        var chatResult = await _chatService.RequestPublicOrAccessibleChatByChatId(chatId, userProfile!);
-
+        var chatResult = await _chatService.RequestPublicOrAccessibleChatByChatId(chatId, userProfile);
         if (chatResult.IsFailed)
         {
             return Failure(chatResult.Errors);
         }
 
         var chat = chatResult.Value;
-        var joinResult = await _chatMembershipService.JoinUserToChat(userProfile!, chat);
-
+        var joinResult = await _chatMembershipService.JoinUserToChat(userProfile, chat);
         if (joinResult.IsFailed)
         {
             return Failure(joinResult.Errors);
@@ -90,20 +81,16 @@ public class ChatController : ApplicationController
     [HttpGet("leave")]
     public async Task<IActionResult> LeaveChat([FromRoute] Guid chatId)
     {
-        var uid = User.GetApplicationUserId();
-        var userProfile = await _userService.ReadUserProfileById(uid);
+        var userProfile = await _userResolverService.GetApplicationUser();
 
-        var chatResult = await _chatService.RequestPublicOrAccessibleChatByChatId(chatId, userProfile!);
-
+        var chatResult = await _chatService.RequestPublicOrAccessibleChatByChatId(chatId, userProfile);
         if (chatResult.IsFailed)
         {
             return Failure(chatResult.Errors);
         }
 
         var chat = chatResult.Value;
-
-        var leaveResult = await _chatMembershipService.JoinUserToChat(userProfile!, chat!);
-
+        var leaveResult = await _chatMembershipService.JoinUserToChat(userProfile, chat);
         if (leaveResult.IsFailed)
         {
             return Failure(leaveResult.Errors);

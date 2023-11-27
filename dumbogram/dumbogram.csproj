@@ -39,4 +39,8 @@
         </Content>
     </ItemGroup>
 
+    <ItemGroup>
+        <Folder Include="Infrasctructure\Binders\"/>
+    </ItemGroup>
+
 </Project>

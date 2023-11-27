@@ -4,7 +4,6 @@ using Dumbogram.Application.Chats.Services;
 using Dumbogram.Application.Users.Services;
 using Dumbogram.Common.Controller;
 using Dumbogram.Common.Dto;
-using Dumbogram.Common.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,18 +15,17 @@ namespace Dumbogram.Application.Users.Controllers;
 public class MyChatsController : ApplicationController
 {
     private readonly ChatService _chatService;
-
     private readonly ILogger<ChatsController> _logger;
-    private readonly UserService _userService;
+    private readonly UserResolverService _userResolverService;
 
     public MyChatsController(
         ChatService chatService,
-        UserService userService,
+        UserResolverService userResolverService,
         ILogger<ChatsController> logger
     )
     {
         _chatService = chatService;
-        _userService = userService;
+        _userResolverService = userResolverService;
         _logger = logger;
     }
 
@@ -37,11 +35,11 @@ public class MyChatsController : ApplicationController
     [HttpGet("owned")]
     public async Task<IActionResult> ReadOwnedChats()
     {
-        var userProfile = await _userService.ReadUserProfileById(User.GetApplicationUserId());
+        var userProfile = await _userResolverService.GetApplicationUser();
 
         var chats = await _chatService.ReadAllChatsOwnedBy(userProfile!);
-
         var chatsDto = new ReadMultipleChatsShortInfoResponseDto(chats);
+
         return Ok(chatsDto);
     }
 
@@ -51,11 +49,11 @@ public class MyChatsController : ApplicationController
     [HttpGet("joined")]
     public async Task<IActionResult> ReadJoinedChats()
     {
-        var userProfile = await _userService.ReadUserProfileById(User.GetApplicationUserId());
+        var userProfile = await _userResolverService.GetApplicationUser();
 
         var chats = await _chatService.ReadAllChatsJoinedBy(userProfile!);
-
         var chatsDto = new ReadMultipleChatsShortInfoResponseDto(chats);
+
         return Ok(chatsDto);
     }
 }

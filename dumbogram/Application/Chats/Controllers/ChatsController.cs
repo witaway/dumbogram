@@ -4,7 +4,6 @@ using Dumbogram.Application.Chats.Services;
 using Dumbogram.Application.Users.Services;
 using Dumbogram.Common.Controller;
 using Dumbogram.Common.Dto;
-using Dumbogram.Common.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,22 +15,23 @@ namespace Dumbogram.Application.Chats.Controllers;
 public class ChatsController : ApplicationController
 {
     private readonly ChatMembershipService _chatMembershipService;
-
     private readonly ChatService _chatService;
-
     private readonly ILogger<ChatsController> _logger;
+    private readonly UserResolverService _userResolverService;
     private readonly UserService _userService;
 
     public ChatsController(
         ChatService chatService,
         ChatMembershipService chatMembershipService,
         UserService userService,
+        UserResolverService userResolverService,
         ILogger<ChatsController> logger
     )
     {
         _chatService = chatService;
         _userService = userService;
         _chatMembershipService = chatMembershipService;
+        _userResolverService = userResolverService;
         _logger = logger;
     }
 
@@ -41,11 +41,11 @@ public class ChatsController : ApplicationController
     [HttpGet("search")]
     public async Task<IActionResult> ReadAllChats()
     {
-        var userProfile = await _userService.ReadUserProfileById(User.GetApplicationUserId());
+        var userProfile = await _userResolverService.GetApplicationUser();
 
         var chats = await _chatService.ReadAllPublicOrAccessibleChats(userProfile!);
-
         var chatsDto = new ReadMultipleChatsShortInfoResponseDto(chats);
+
         return Ok(chatsDto);
     }
 
@@ -53,8 +53,7 @@ public class ChatsController : ApplicationController
     [HttpPost]
     public async Task<IActionResult> CreateChat([FromBody] CreateChatRequestDto dto)
     {
-        var uid = User.GetApplicationUserId();
-        var userProfile = await _userService.ReadUserProfileById(uid);
+        var userProfile = await _userResolverService.GetApplicationUser();
 
         var chat = new Chat
         {
