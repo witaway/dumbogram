@@ -1,10 +1,10 @@
 ﻿using System.Dynamic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Dumbogram.Common.Extensions;
-using ApplicationException = Dumbogram.Common.Exceptions.ApplicationException;
+using Dumbogram.Infrasctructure.Extensions;
+using ApplicationException = Dumbogram.Infrasctructure.Exceptions.ApplicationException;
 
-namespace Dumbogram.Common.Middlewares;
+namespace Dumbogram.Infrasctructure.Middlewares;
 
 public class ErrorHandlerMiddleware : IMiddleware
 {

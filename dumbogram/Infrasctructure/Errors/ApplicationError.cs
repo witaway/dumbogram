@@ -1,6 +1,6 @@
 ﻿using FluentResults;
 
-namespace Dumbogram.Common.Errors;
+namespace Dumbogram.Infrasctructure.Errors;
 
 public class ApplicationError : Error
 {

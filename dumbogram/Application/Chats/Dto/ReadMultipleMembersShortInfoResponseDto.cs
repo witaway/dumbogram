@@ -1,4 +1,4 @@
-﻿using Dumbogram.Application.Users.Models;
+﻿using Dumbogram.Models.Users;
 
 namespace Dumbogram.Application.Chats.Dto;
 

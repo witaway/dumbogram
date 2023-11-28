@@ -1,10 +1,10 @@
 ﻿using System.Security.Claims;
 using System.Security.Principal;
-using Dumbogram.Common.Errors;
-using Dumbogram.Common.Exceptions;
+using Dumbogram.Infrasctructure.Errors;
+using Dumbogram.Infrasctructure.Exceptions;
 using FluentResults;
 
-namespace Dumbogram.Common.Extensions;
+namespace Dumbogram.Infrasctructure.Extensions;
 
 public static class PrincipalExtension
 {

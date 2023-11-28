@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using Dumbogram.Common.Errors;
+using Dumbogram.Infrasctructure.Errors;
 
 namespace Dumbogram.Application.Users.Errors;
 

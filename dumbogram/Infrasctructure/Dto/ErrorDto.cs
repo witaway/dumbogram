@@ -1,7 +1,7 @@
-﻿using Dumbogram.Common.Errors;
+﻿using Dumbogram.Infrasctructure.Errors;
 using FluentResults;
 
-namespace Dumbogram.Common.Dto;
+namespace Dumbogram.Infrasctructure.Dto;
 
 public class ErrorDto
 {

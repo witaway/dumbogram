@@ -3,10 +3,10 @@ using System.Runtime.CompilerServices;
 using Dumbogram.Application.Auth.Dto;
 using Dumbogram.Application.Auth.Services;
 using Dumbogram.Application.Users.Services;
-using Dumbogram.Common.Controller;
-using Dumbogram.Common.Dto;
-using Dumbogram.Common.Filters;
 using Dumbogram.Database.Identity;
+using Dumbogram.Infrasctructure.Controller;
+using Dumbogram.Infrasctructure.Dto;
+using Dumbogram.Infrasctructure.Filters;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dumbogram.Application.Auth.Controllers;

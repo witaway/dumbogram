@@ -1,6 +1,6 @@
 ﻿using Dumbogram.Application.Chats.Errors;
-using Dumbogram.Application.Chats.Models;
 using Dumbogram.Database;
+using Dumbogram.Models.Chats;
 using FluentResults;
 
 namespace Dumbogram.Application.Chats.Services;

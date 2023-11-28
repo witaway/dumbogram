@@ -1,9 +1,9 @@
 ﻿using System.Security.Claims;
 using Dumbogram.Application.Users.Errors;
 using Dumbogram.Application.Users.Exceptions;
-using Dumbogram.Application.Users.Models;
-using Dumbogram.Common.Extensions;
 using Dumbogram.Database.Identity;
+using Dumbogram.Infrasctructure.Extensions;
+using Dumbogram.Models.Users;
 using FluentResults;
 
 namespace Dumbogram.Application.Users.Services;

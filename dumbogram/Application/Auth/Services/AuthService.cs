@@ -2,10 +2,10 @@
 using System.Security.Claims;
 using Dumbogram.Application.Auth.Controllers;
 using Dumbogram.Application.Auth.Errors;
-using Dumbogram.Application.Users.Models;
 using Dumbogram.Application.Users.Services;
-using Dumbogram.Common.Extensions;
 using Dumbogram.Database.Identity;
+using Dumbogram.Infrasctructure.Extensions;
+using Dumbogram.Models.Users;
 using FluentResults;
 using Microsoft.AspNetCore.Identity;
 

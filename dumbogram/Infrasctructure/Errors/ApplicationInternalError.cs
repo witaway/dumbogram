@@ -1,4 +1,4 @@
-﻿namespace Dumbogram.Common.Errors;
+﻿namespace Dumbogram.Infrasctructure.Errors;
 
 public class ApplicationInternalError : ApplicationError
 {

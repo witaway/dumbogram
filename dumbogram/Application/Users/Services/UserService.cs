@@ -1,6 +1,6 @@
 ﻿using Dumbogram.Application.Users.Errors;
-using Dumbogram.Application.Users.Models;
 using Dumbogram.Database;
+using Dumbogram.Models.Users;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
 

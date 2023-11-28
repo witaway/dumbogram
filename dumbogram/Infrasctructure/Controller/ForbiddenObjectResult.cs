@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 
-namespace Dumbogram.Common.Controller;
+namespace Dumbogram.Infrasctructure.Controller;
 
 /// <summary>
 ///     An <see cref="ObjectResult" /> that when executed performs content negotiation, formats the entity body, and

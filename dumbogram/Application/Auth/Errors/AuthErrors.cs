@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using Dumbogram.Common.Errors;
+using Dumbogram.Infrasctructure.Errors;
 using Microsoft.AspNetCore.Identity;
 
 namespace Dumbogram.Application.Auth.Errors;

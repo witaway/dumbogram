@@ -1,9 +1,10 @@
-using Dumbogram.Application.Chats.Models;
-using Dumbogram.Common.Models;
+using Dumbogram.Infrasctructure.Models;
+using Dumbogram.Models.Chats;
+using Dumbogram.Models.Messages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Dumbogram.Application.Users.Models;
+namespace Dumbogram.Models.Users;
 
 [EntityTypeConfiguration(typeof(RolesConfiguration))]
 public class UserProfile : BaseEntity

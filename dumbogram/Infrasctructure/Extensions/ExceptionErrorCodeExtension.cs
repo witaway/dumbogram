@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace Dumbogram.Common.Extensions;
+namespace Dumbogram.Infrasctructure.Extensions;
 
 public static class ExceptionErrorCodeExtension
 {

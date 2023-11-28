@@ -2,7 +2,7 @@
 using FluentResults;
 using Microsoft.AspNetCore.Identity;
 
-namespace Dumbogram.Common.Extensions;
+namespace Dumbogram.Infrasctructure.Extensions;
 
 public static class IdentityResultExtension
 {

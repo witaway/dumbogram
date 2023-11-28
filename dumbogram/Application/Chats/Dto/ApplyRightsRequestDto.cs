@@ -1,4 +1,4 @@
-﻿using Dumbogram.Application.Chats.Models;
+﻿using Dumbogram.Models.Chats;
 using FluentValidation;
 
 namespace Dumbogram.Application.Chats.Dto;

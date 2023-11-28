@@ -1,4 +1,4 @@
-﻿namespace Dumbogram.Common.Utilities;
+﻿namespace Dumbogram.Infrasctructure.Utilities;
 
 public static class EnumUtility
 {

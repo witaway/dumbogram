@@ -1,9 +1,10 @@
-﻿using Dumbogram.Application.Users.Models;
-using Dumbogram.Common.Models;
+﻿using Dumbogram.Infrasctructure.Models;
+using Dumbogram.Models.Chats;
+using Dumbogram.Models.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Dumbogram.Application.Chats.Models;
+namespace Dumbogram.Models.Messages;
 
 public enum MessageType
 {

@@ -1,9 +1,9 @@
-﻿using Dumbogram.Common.Errors;
+﻿using Dumbogram.Infrasctructure.Errors;
 using FluentResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 
-namespace Dumbogram.Common.Controller;
+namespace Dumbogram.Infrasctructure.Controller;
 
 [DefaultStatusCode(DefaultStatusCode)]
 public class FailureObjectResult : ObjectResult

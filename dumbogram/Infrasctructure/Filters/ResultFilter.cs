@@ -1,10 +1,10 @@
-﻿using Dumbogram.Common.Dto;
-using Dumbogram.Common.Errors;
+﻿using Dumbogram.Infrasctructure.Dto;
+using Dumbogram.Infrasctructure.Errors;
 using FluentResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Dumbogram.Common.Filters;
+namespace Dumbogram.Infrasctructure.Filters;
 
 public class ResultFilter : IAsyncResultFilter
 {

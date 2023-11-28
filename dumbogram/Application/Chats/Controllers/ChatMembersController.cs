@@ -1,7 +1,7 @@
 ﻿using Dumbogram.Application.Chats.Dto;
 using Dumbogram.Application.Chats.Services;
 using Dumbogram.Application.Users.Services;
-using Dumbogram.Common.Controller;
+using Dumbogram.Infrasctructure.Controller;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

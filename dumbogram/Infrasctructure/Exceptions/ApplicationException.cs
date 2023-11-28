@@ -1,4 +1,4 @@
-﻿namespace Dumbogram.Common.Exceptions;
+﻿namespace Dumbogram.Infrasctructure.Exceptions;
 
 public abstract class ApplicationException : Exception
 {

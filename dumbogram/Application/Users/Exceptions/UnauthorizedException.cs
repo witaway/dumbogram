@@ -1,8 +1,8 @@
-﻿using ApplicationException = Dumbogram.Common.Exceptions.ApplicationException;
+﻿using ApplicationException = Dumbogram.Infrasctructure.Exceptions.ApplicationException;
 
 namespace Dumbogram.Application.Users.Exceptions;
 
-public class UnauthorizedException : ApplicationException
+public class UnauthorizedException : Infrasctructure.Exceptions.ApplicationException
 {
     public UnauthorizedException()
     {

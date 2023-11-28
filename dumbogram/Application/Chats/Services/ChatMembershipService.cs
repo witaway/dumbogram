@@ -1,7 +1,7 @@
 ﻿using Dumbogram.Application.Chats.Errors;
-using Dumbogram.Application.Chats.Models;
-using Dumbogram.Application.Users.Models;
 using Dumbogram.Database;
+using Dumbogram.Models.Chats;
+using Dumbogram.Models.Users;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
 

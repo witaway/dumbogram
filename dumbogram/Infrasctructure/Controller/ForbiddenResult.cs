@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 
-namespace Dumbogram.Common.Controller;
+namespace Dumbogram.Infrasctructure.Controller;
 
 /// <summary>
 ///     An <see cref="StatusCodeResult" /> that when executed will produce an empty

@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace Dumbogram.Common.Errors;
+namespace Dumbogram.Infrasctructure.Errors;
 
 public class ApplicationApiError : ApplicationError
 {

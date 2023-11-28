@@ -1,4 +1,4 @@
-﻿namespace Dumbogram.Common.Dto;
+﻿namespace Dumbogram.Infrasctructure.Dto;
 
 public abstract class Response
 {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Dumbogram.Common.Filters;
+namespace Dumbogram.Infrasctructure.Filters;
 
 public class DevOnlyAttribute : Attribute, IFilterFactory
 {

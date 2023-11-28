@@ -1,15 +1,26 @@
 ﻿using Dumbogram.Application.Auth.Dto;
 using Dumbogram.Application.Users.Dto;
-using Dumbogram.Common.Dto;
-using Dumbogram.Common.Extensions;
-using Dumbogram.Common.Filters;
 using Dumbogram.Database;
 using Dumbogram.Database.Identity;
+using Dumbogram.Infrasctructure.Dto;
+using Dumbogram.Infrasctructure.Extensions;
+using Dumbogram.Infrasctructure.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dumbogram.Application.Test;
+
+public class A
+{
+    public int Q { get; set; } = 1;
+    public int W { get; set; } = 2;
+}
+
+public class B : A
+{
+    public int E { get; set; } = 3;
+}
 
 [DevOnly]
 [ApiController]
@@ -29,20 +40,19 @@ public class TestController : ControllerBase
     }
 
 
-    [HttpPost(Name = "Echo")]
     [Route("echo")]
+    [HttpPost(Name = "Echo")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccess<object>))]
     public IActionResult Echo([FromBody] object model)
     {
-        return Ok(Common.Dto.Response.Success(model));
+        return Ok(Infrasctructure.Dto.Response.Success(model));
     }
 
-    [HttpPost(Name = "EchoValidate")]
-    [Route("echo-validate")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccess<SignInRequestDto>))]
+    [HttpPost("echo-validate")]
     public IActionResult EchoValidate([FromBody] SignInRequestDto model)
     {
-        return Ok(Common.Dto.Response.Success(model));
+        return Ok(Infrasctructure.Dto.Response.Success(model));
     }
 
     [HttpGet(Name = "UnhandledException")]
@@ -62,6 +72,16 @@ public class TestController : ControllerBase
     {
         var user = await _userManager.FindByIdAsync(User.GetIdentityUserId());
         var userDto = GetIdentityUserByUserIdResponseDto.MapFromModel(user!);
-        return Ok(Common.Dto.Response.Success(userDto));
+        return Ok(Infrasctructure.Dto.Response.Success(userDto));
+    }
+
+    [HttpGet("supclass")]
+    [ProducesResponseType(
+        StatusCodes.Status200OK, Type = typeof(ResponseSuccess<GetIdentityUserByUserIdResponseDto>)
+    )]
+    public async Task<IActionResult> Supclass()
+    {
+        A test = new B();
+        return Ok(test);
     }
 }

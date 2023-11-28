@@ -1,7 +1,7 @@
-﻿using Dumbogram.Application.Chats.Models;
-using Dumbogram.Application.Users.Models;
-using Dumbogram.Common.Utilities;
-using Dumbogram.Database;
+﻿using Dumbogram.Database;
+using Dumbogram.Infrasctructure.Utilities;
+using Dumbogram.Models.Chats;
+using Dumbogram.Models.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace Dumbogram.Application.Chats.Services;
