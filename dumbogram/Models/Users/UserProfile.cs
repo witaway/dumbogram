@@ -16,7 +16,7 @@ public class UserProfile : BaseEntity
     public string? Description { get; set; }
 
     public IEnumerable<Chat> OwnedChats { get; } = null!;
-    public IEnumerable<ChatMessage> Messages { get; } = null!;
+    public IEnumerable<Message> Messages { get; } = null!;
     public IEnumerable<ChatMembership> Memberships { get; } = null!;
     public IEnumerable<ChatMemberPermission> Permissions { get; } = null!;
 }
@@ -40,8 +40,8 @@ public class RolesConfiguration : IEntityTypeConfiguration<UserProfile>
 
         builder
             .HasMany(p => p.Messages)
-            .WithOne(m => m.SenderProfile)
-            .HasForeignKey(m => m.SenderId)
+            .WithOne(m => m.SubjectProfile)
+            .HasForeignKey(m => m.SubjectId)
             .HasPrincipalKey(p => p.UserId);
 
         builder

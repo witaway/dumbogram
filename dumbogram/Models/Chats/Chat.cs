@@ -22,7 +22,7 @@ public class Chat : BaseEntity
     public ChatVisibility ChatVisibility { get; set; }
 
     public UserProfile OwnerProfile { get; set; } = null!;
-    public IEnumerable<ChatMessage> Messages { get; set; } = null!;
+    public IEnumerable<Message> Messages { get; set; } = null!;
     public IEnumerable<ChatMembership> Memberships { get; set; } = null!;
     public IEnumerable<ChatMemberPermission> Permissions { get; set; } = null!;
 }

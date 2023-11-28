@@ -1,53 +1,41 @@
 ﻿using Dumbogram.Infrasctructure.Models;
 using Dumbogram.Models.Chats;
+using Dumbogram.Models.Messages.UserMessages;
 using Dumbogram.Models.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Dumbogram.Models.Messages;
 
-public enum MessageType
-{
-    NORMAL = 0,
-    JOINED = 1,
-    LEFT = 2,
-    CHANGED_TITLE = 3,
-    CHANGED_DESCRIPTION = 4,
-    CHANGED_AVATAR = 5
-}
-
 [EntityTypeConfiguration(typeof(ChatMessageConfiguration))]
-public class ChatMessage : BaseEntity
+public class Message : BaseEntity
 {
     public int Id { get; private set; }
-
     public Guid ChatId { get; private set; }
+    public Guid SubjectId { get; private set; }
+
     public Chat Chat { get; } = null!;
-
-    public Guid SenderId { get; private set; }
-    public UserProfile SenderProfile { get; } = null!;
-
-    public MessageType MessageType { get; set; }
-    public string? Message { get; set; }
+    public UserProfile SubjectProfile { get; } = null!;
+    public IEnumerable<RegularUserMessage> Replies { get; set; } = null!;
 }
 
-public class ChatMessageConfiguration : IEntityTypeConfiguration<ChatMessage>
+public class ChatMessageConfiguration : IEntityTypeConfiguration<Message>
 {
-    public void Configure(EntityTypeBuilder<ChatMessage> builder)
+    public void Configure(EntityTypeBuilder<Message> builder)
     {
         // Keys
         builder.HasKey(message => new { message.ChatId, message.Id });
 
         // Indexes
         builder.HasIndex(message => message.ChatId);
-        builder.HasIndex(message => message.SenderId);
+        builder.HasIndex(message => message.SubjectId);
         builder.HasIndex(message => message.CreatedDate);
 
         // Relations
         builder
-            .HasOne(message => message.SenderProfile)
+            .HasOne(message => message.SubjectProfile)
             .WithMany(profile => profile.Messages)
-            .HasForeignKey(message => message.SenderId)
+            .HasForeignKey(message => message.SubjectId)
             .HasPrincipalKey(profile => profile.UserId);
 
         builder
@@ -56,7 +44,10 @@ public class ChatMessageConfiguration : IEntityTypeConfiguration<ChatMessage>
             .HasForeignKey(message => message.ChatId)
             .HasPrincipalKey(chat => chat.Id);
 
-        // Constraints
-        builder.Property(message => message.Message).HasMaxLength(1024);
+        builder
+            .HasMany(message => message.Replies)
+            .WithOne(replyMessage => replyMessage.RepliedMessage)
+            .HasForeignKey(replyMessage => new { replyMessage.ChatId, replyMessage.RepliedMessageId })
+            .HasPrincipalKey(message => new { message.ChatId, message.Id });
     }
 }
