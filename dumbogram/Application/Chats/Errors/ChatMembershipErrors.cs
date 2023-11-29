@@ -34,3 +34,11 @@ public class UserBannedInChatError : ApplicationApiError
     {
     }
 }
+
+public class UserNotInChatError : ApplicationApiError
+{
+    public UserNotInChatError()
+        : base(nameof(UserNotInChatError), HttpStatusCode.Forbidden)
+    {
+    }
+}
