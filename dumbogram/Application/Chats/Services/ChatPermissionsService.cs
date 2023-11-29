@@ -54,6 +54,17 @@ public class ChatPermissionsService
         return rights;
     }
 
+    public async Task<bool> IsUserHasRightInChat(Chat chat, UserProfile userProfile, MembershipRight right)
+    {
+        return await _dbContext
+            .ChatMemberPermissions
+            .AnyAsync(permission =>
+                permission.Chat == chat &&
+                permission.MemberProfile == userProfile &&
+                permission.MembershipRight == right
+            );
+    }
+
     public async Task EnsureRightsAppliedToUserInChat(Chat chat, UserProfile userProfile,
         List<MembershipRight> newRights)
     {
