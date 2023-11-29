@@ -3,10 +3,10 @@ using Dumbogram.Infrasctructure.Errors;
 
 namespace Dumbogram.Application.Chats.Errors;
 
-public class NotEnoughPermissionsError : ApplicationApiError
+public class NotEnoughRightsError : ApplicationApiError
 {
-    public NotEnoughPermissionsError()
-        : base(nameof(NotEnoughPermissionsError), HttpStatusCode.Forbidden)
+    public NotEnoughRightsError()
+        : base(nameof(NotEnoughRightsError), HttpStatusCode.Forbidden)
     {
     }
 }

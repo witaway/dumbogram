@@ -50,7 +50,7 @@ public class ChatMemberRightsController : ApplicationController
         var isOwner = _chatPermissionsService.IsUserOwnerOfChat(chat, userProfile!);
         if (!isOwner)
         {
-            return Failure(new NotEnoughPermissionsError());
+            return Failure(new NotEnoughRightsError());
         }
 
         var memberProfileResult = await _userService.RequestUserProfileById(memberId);
@@ -85,7 +85,7 @@ public class ChatMemberRightsController : ApplicationController
         var isOwner = _chatPermissionsService.IsUserOwnerOfChat(chat, userProfile!);
         if (!isOwner)
         {
-            return Failure(new NotEnoughPermissionsError());
+            return Failure(new NotEnoughRightsError());
         }
 
         var memberProfileResult = await _userService.RequestUserProfileById(memberId);
