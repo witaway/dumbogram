@@ -14,9 +14,9 @@ public class Message : BaseEntity
     public Guid ChatId { get; private set; }
     public Guid SubjectId { get; private set; }
 
-    public Chat Chat { get; } = null!;
-    public UserProfile SubjectProfile { get; } = null!;
-    public IEnumerable<RegularUserMessage> Replies { get; set; } = null!;
+    public Chat Chat { get; set; } = null!;
+    public UserProfile SubjectProfile { get; set; } = null!;
+    public IEnumerable<RegularUserMessage> Replies { get; } = null!;
 }
 
 public class ChatMessageConfiguration : IEntityTypeConfiguration<Message>
