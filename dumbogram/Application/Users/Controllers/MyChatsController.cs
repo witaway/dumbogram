@@ -1,5 +1,5 @@
 ﻿using Dumbogram.Application.Chats.Controllers;
-using Dumbogram.Application.Chats.Dto;
+using Dumbogram.Application.Chats.Controllers.Dto;
 using Dumbogram.Application.Chats.Services;
 using Dumbogram.Application.Users.Services;
 using Dumbogram.Infrasctructure.Controller;
@@ -30,7 +30,7 @@ public class MyChatsController : ApplicationController
     }
 
     [ProducesResponseType(StatusCodes.Status200OK,
-        Type = typeof(ResponseSuccess<ReadMultipleChatsShortInfoResponseDto>)
+        Type = typeof(ResponseSuccess<ReadMultipleChatsShortInfoResponse>)
     )]
     [HttpGet("owned")]
     public async Task<IActionResult> ReadOwnedChats()
@@ -38,13 +38,13 @@ public class MyChatsController : ApplicationController
         var userProfile = await _userResolverService.GetApplicationUser();
 
         var chats = await _chatService.ReadAllChatsOwnedBy(userProfile!);
-        var chatsDto = new ReadMultipleChatsShortInfoResponseDto(chats);
+        var chatsDto = new ReadMultipleChatsShortInfoResponse(chats);
 
         return Ok(chatsDto);
     }
 
     [ProducesResponseType(StatusCodes.Status200OK,
-        Type = typeof(ResponseSuccess<ReadMultipleChatsShortInfoResponseDto>)
+        Type = typeof(ResponseSuccess<ReadMultipleChatsShortInfoResponse>)
     )]
     [HttpGet("joined")]
     public async Task<IActionResult> ReadJoinedChats()
@@ -52,7 +52,7 @@ public class MyChatsController : ApplicationController
         var userProfile = await _userResolverService.GetApplicationUser();
 
         var chats = await _chatService.ReadAllChatsJoinedBy(userProfile!);
-        var chatsDto = new ReadMultipleChatsShortInfoResponseDto(chats);
+        var chatsDto = new ReadMultipleChatsShortInfoResponse(chats);
 
         return Ok(chatsDto);
     }

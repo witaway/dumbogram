@@ -1,5 +1,5 @@
-﻿using Dumbogram.Application.Auth.Dto;
-using Dumbogram.Application.Users.Dto;
+﻿using Dumbogram.Application.Auth.Controllers.Dto;
+using Dumbogram.Application.Users.Controllers.Dto;
 using Dumbogram.Database;
 using Dumbogram.Database.Identity;
 using Dumbogram.Infrasctructure.Dto;
@@ -48,9 +48,9 @@ public class TestController : ControllerBase
         return Ok(Infrasctructure.Dto.Response.Success(model));
     }
 
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccess<SignInRequestDto>))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccess<SignInRequest>))]
     [HttpPost("echo-validate")]
-    public IActionResult EchoValidate([FromBody] SignInRequestDto model)
+    public IActionResult EchoValidate([FromBody] SignInRequest model)
     {
         return Ok(Infrasctructure.Dto.Response.Success(model));
     }
@@ -66,18 +66,18 @@ public class TestController : ControllerBase
     [HttpPost(Name = "GetCurrentUser")]
     [Route("me")]
     [ProducesResponseType(
-        StatusCodes.Status200OK, Type = typeof(ResponseSuccess<GetIdentityUserByUserIdResponseDto>)
+        StatusCodes.Status200OK, Type = typeof(ResponseSuccess<GetIdentityUserByUserIdResponse>)
     )]
     public async Task<IActionResult> GetCurrentUser()
     {
         var user = await _userManager.FindByIdAsync(User.GetIdentityUserId());
-        var userDto = GetIdentityUserByUserIdResponseDto.MapFromModel(user!);
+        var userDto = GetIdentityUserByUserIdResponse.MapFromModel(user!);
         return Ok(Infrasctructure.Dto.Response.Success(userDto));
     }
 
     [HttpGet("supclass")]
     [ProducesResponseType(
-        StatusCodes.Status200OK, Type = typeof(ResponseSuccess<GetIdentityUserByUserIdResponseDto>)
+        StatusCodes.Status200OK, Type = typeof(ResponseSuccess<GetIdentityUserByUserIdResponse>)
     )]
     public async Task<IActionResult> Supclass()
     {

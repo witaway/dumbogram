@@ -2,7 +2,7 @@
 using Dumbogram.Infrasctructure.Errors;
 using Microsoft.AspNetCore.Identity;
 
-namespace Dumbogram.Application.Auth.Errors;
+namespace Dumbogram.Application.Auth.Services.Errors;
 
 public class PasswordNotValidError : ApplicationApiError
 {

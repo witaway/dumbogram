@@ -1,9 +1,9 @@
 ﻿using Dumbogram.Models.Chats;
 using FluentValidation;
 
-namespace Dumbogram.Application.Chats.Dto;
+namespace Dumbogram.Application.Chats.Controllers.Dto;
 
-public class UpdateChatInfoRequestDto
+public class UpdateChatInfoRequest
 {
     public Guid? OwnerId { get; set; }
     public string? Title { get; set; }
@@ -16,9 +16,9 @@ public class UpdateChatInfoRequestDto
     }
 }
 
-public class UpdateChatInfoRequestDtoValidator : AbstractValidator<UpdateChatInfoRequestDto>
+public class UpdateChatInfoRequestValidator : AbstractValidator<UpdateChatInfoRequest>
 {
-    public UpdateChatInfoRequestDtoValidator()
+    public UpdateChatInfoRequestValidator()
     {
         bool ChatVisibilityMatchesEnumValue(string chatVisibility)
         {

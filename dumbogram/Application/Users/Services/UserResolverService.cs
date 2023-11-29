@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
-using Dumbogram.Application.Users.Errors;
-using Dumbogram.Application.Users.Exceptions;
+using Dumbogram.Application.Users.Services.Errors;
+using Dumbogram.Application.Users.Services.Exceptions;
 using Dumbogram.Database.Identity;
 using Dumbogram.Infrasctructure.Extensions;
 using Dumbogram.Models.Users;

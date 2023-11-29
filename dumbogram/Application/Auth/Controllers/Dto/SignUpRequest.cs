@@ -1,9 +1,9 @@
-﻿using Dumbogram.Application.Users.Dto;
+﻿using Dumbogram.Application.Users.Controllers.Dto;
 using FluentValidation;
 
-namespace Dumbogram.Application.Auth.Dto;
+namespace Dumbogram.Application.Auth.Controllers.Dto;
 
-public class SignUpRequestDto
+public class SignUpRequest
 {
     public string Username { get; set; }
 
@@ -11,12 +11,12 @@ public class SignUpRequestDto
 
     public string Password { get; set; }
 
-    public UpdateProfileDto? Profile { get; set; }
+    public UpdateProfileRequest? Profile { get; set; }
 }
 
-public class SignUpRequestDtoValidator : AbstractValidator<SignUpRequestDto>
+public class SignUpRequestValidator : AbstractValidator<SignUpRequest>
 {
-    public SignUpRequestDtoValidator()
+    public SignUpRequestValidator()
     {
         // Password.Length in [1; 255]
         RuleFor(credentials => credentials.Username).NotEmpty().MaximumLength(255);

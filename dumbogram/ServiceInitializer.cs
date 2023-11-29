@@ -1,5 +1,5 @@
 using System.Text;
-using Dumbogram.Application.Auth.Dto;
+using Dumbogram.Application.Auth.Controllers.Dto;
 using Dumbogram.Application.Auth.Services;
 using Dumbogram.Application.Chats.Services;
 using Dumbogram.Application.Users.Services;
@@ -125,7 +125,7 @@ public static class ServiceInitializer
         // This is how single validator registers:
         //   services.AddScoped<IValidator<SignInDto>, SignInDtoValidator>();
         // Todo: Maybe use assembly name instead of marker validator?
-        services.AddValidatorsFromAssemblyContaining(typeof(SignInRequestDtoValidator));
+        services.AddValidatorsFromAssemblyContaining(typeof(SignInRequestValidator));
         services.AddFluentValidationAutoValidation();
     }
 

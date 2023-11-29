@@ -1,4 +1,4 @@
-﻿using Dumbogram.Application.Chats.Dto;
+﻿using Dumbogram.Application.Chats.Controllers.Dto;
 using Dumbogram.Application.Chats.Services;
 using Dumbogram.Application.Users.Services;
 using Dumbogram.Infrasctructure.Controller;
@@ -43,7 +43,7 @@ public class ChatMembersController : ApplicationController
 
         var chat = chatResult.Value;
         var members = await _chatMembershipService.ReadAllChatJoinedUsers(chat);
-        var membersDto = new ReadMultipleMembersShortInfoResponseDto(members);
+        var membersDto = new ReadMultipleMembersShortInfoResponse(members);
 
         return Ok(membersDto);
     }
@@ -61,7 +61,7 @@ public class ChatMembersController : ApplicationController
 
         var chat = chatResult.Value;
         var members = await _chatMembershipService.ReadAllChatJoinedUsers(chat);
-        var membersDto = new ReadMultipleMembersShortInfoResponseDto(members);
+        var membersDto = new ReadMultipleMembersShortInfoResponse(members);
 
         return Ok(membersDto);
     }

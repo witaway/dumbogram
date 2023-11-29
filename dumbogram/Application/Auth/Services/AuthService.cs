@@ -1,7 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Dumbogram.Application.Auth.Controllers;
-using Dumbogram.Application.Auth.Errors;
+using Dumbogram.Application.Auth.Services.Errors;
 using Dumbogram.Application.Users.Services;
 using Dumbogram.Database.Identity;
 using Dumbogram.Infrasctructure.Extensions;

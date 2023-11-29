@@ -1,10 +1,10 @@
 ﻿using Dumbogram.Models.Chats;
 
-namespace Dumbogram.Application.Chats.Dto;
+namespace Dumbogram.Application.Chats.Controllers.Dto;
 
-public class ReadSingleChatShortInfoResponseDto
+public class ReadSingleChatShortInfoResponse
 {
-    public ReadSingleChatShortInfoResponseDto(Chat chat)
+    public ReadSingleChatShortInfoResponse(Chat chat)
     {
         Title = chat.Title;
         Description = chat.Description;

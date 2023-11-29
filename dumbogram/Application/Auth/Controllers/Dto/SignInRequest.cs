@@ -1,8 +1,8 @@
 ﻿using FluentValidation;
 
-namespace Dumbogram.Application.Auth.Dto;
+namespace Dumbogram.Application.Auth.Controllers.Dto;
 
-public class SignInRequestDto
+public class SignInRequest
 {
     public string? Username { get; set; }
 
@@ -11,9 +11,9 @@ public class SignInRequestDto
     public string Password { get; set; }
 }
 
-public class SignInRequestDtoValidator : AbstractValidator<SignInRequestDto>
+public class SignInRequestValidator : AbstractValidator<SignInRequest>
 {
-    public SignInRequestDtoValidator()
+    public SignInRequestValidator()
     {
         RuleFor(credentials => credentials)
             .Must(credentials =>

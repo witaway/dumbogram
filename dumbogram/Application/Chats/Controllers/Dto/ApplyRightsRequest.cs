@@ -1,9 +1,9 @@
 ﻿using Dumbogram.Models.Chats;
 using FluentValidation;
 
-namespace Dumbogram.Application.Chats.Dto;
+namespace Dumbogram.Application.Chats.Controllers.Dto;
 
-public class ApplyRightsRequestDto : List<string>
+public class ApplyRightsRequest : List<string>
 {
     public List<MembershipRight> ConvertToRightsList()
     {
@@ -16,9 +16,9 @@ public class ApplyRightsRequestDto : List<string>
     }
 }
 
-public class ApplyRightsRequestDtoValidator : AbstractValidator<ApplyRightsRequestDto>
+public class ApplyRightsRequestValidator : AbstractValidator<ApplyRightsRequest>
 {
-    public ApplyRightsRequestDtoValidator()
+    public ApplyRightsRequestValidator()
     {
         bool RightNameMatchesExistingRight(string rightName)
         {

@@ -1,4 +1,4 @@
-﻿using Dumbogram.Application.Chats.Dto;
+﻿using Dumbogram.Application.Chats.Controllers.Dto;
 using Dumbogram.Application.Chats.Services;
 using Dumbogram.Application.Users.Services;
 using Dumbogram.Infrasctructure.Controller;
@@ -36,7 +36,7 @@ public class ChatsController : ApplicationController
     }
 
     [ProducesResponseType(
-        StatusCodes.Status200OK, Type = typeof(ResponseSuccess<ReadMultipleChatsShortInfoResponseDto>)
+        StatusCodes.Status200OK, Type = typeof(ResponseSuccess<ReadMultipleChatsShortInfoResponse>)
     )]
     [HttpGet("search")]
     public async Task<IActionResult> ReadAllChats()
@@ -44,14 +44,14 @@ public class ChatsController : ApplicationController
         var userProfile = await _userResolverService.GetApplicationUser();
 
         var chats = await _chatService.ReadAllPublicOrAccessibleChats(userProfile!);
-        var chatsDto = new ReadMultipleChatsShortInfoResponseDto(chats);
+        var chatsDto = new ReadMultipleChatsShortInfoResponse(chats);
 
         return Ok(chatsDto);
     }
 
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(ResponseSuccess))]
     [HttpPost]
-    public async Task<IActionResult> CreateChat([FromBody] CreateChatRequestDto dto)
+    public async Task<IActionResult> CreateChat([FromBody] CreateChatRequest dto)
     {
         var userProfile = await _userResolverService.GetApplicationUser();
 

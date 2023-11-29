@@ -1,6 +1,4 @@
-﻿using ApplicationException = Dumbogram.Infrasctructure.Exceptions.ApplicationException;
-
-namespace Dumbogram.Application.Users.Exceptions;
+﻿namespace Dumbogram.Application.Users.Services.Exceptions;
 
 public class UnauthorizedException : Infrasctructure.Exceptions.ApplicationException
 {

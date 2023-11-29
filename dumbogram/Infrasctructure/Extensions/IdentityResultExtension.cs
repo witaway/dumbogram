@@ -1,4 +1,4 @@
-﻿using Dumbogram.Application.Auth.Errors;
+﻿using Dumbogram.Application.Auth.Services.Errors;
 using FluentResults;
 using Microsoft.AspNetCore.Identity;
 

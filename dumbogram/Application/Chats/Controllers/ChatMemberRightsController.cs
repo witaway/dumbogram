@@ -1,6 +1,6 @@
-﻿using Dumbogram.Application.Chats.Dto;
-using Dumbogram.Application.Chats.Errors;
+﻿using Dumbogram.Application.Chats.Controllers.Dto;
 using Dumbogram.Application.Chats.Services;
+using Dumbogram.Application.Chats.Services.Errors;
 using Dumbogram.Application.Users.Services;
 using Dumbogram.Infrasctructure.Controller;
 using Microsoft.AspNetCore.Authorization;
@@ -62,7 +62,7 @@ public class ChatMemberRightsController : ApplicationController
         var memberProfile = memberProfileResult.Value;
         var rights = await _chatPermissionsService.ReadAllRightsAppliedToUsersInChat(chat, memberProfile);
 
-        var rightsDto = new ReadMultipleRightsResponseDto(rights);
+        var rightsDto = new ReadMultipleRightsResponse(rights);
 
         return Ok(rightsDto);
     }
@@ -71,7 +71,7 @@ public class ChatMemberRightsController : ApplicationController
     public async Task<IActionResult> ApplyRightsToMember(
         Guid chatId,
         Guid memberId,
-        [FromBody] ApplyRightsRequestDto dto)
+        [FromBody] ApplyRightsRequest dto)
     {
         var userProfile = await _userResolverService.GetApplicationUser();
 

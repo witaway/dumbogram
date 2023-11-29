@@ -1,4 +1,4 @@
-﻿using Dumbogram.Application.Chats.Dto;
+﻿using Dumbogram.Application.Chats.Controllers.Dto;
 using Dumbogram.Application.Chats.Services;
 using Dumbogram.Application.Users.Services;
 using Dumbogram.Infrasctructure.Controller;
@@ -32,7 +32,7 @@ public class ChatController : ApplicationController
     }
 
     [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ResponseFailure))]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccess<ReadSingleChatShortInfoResponseDto>))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccess<ReadSingleChatShortInfoResponse>))]
     [HttpGet]
     public async Task<IActionResult> ReadChat([FromRoute] Guid chatId)
     {
@@ -45,7 +45,7 @@ public class ChatController : ApplicationController
         }
 
         var chat = chatResult.Value;
-        var chatDto = new ReadSingleChatShortInfoResponseDto(chatResult.Value);
+        var chatDto = new ReadSingleChatShortInfoResponse(chatResult.Value);
 
         return Ok(chatDto);
     }

@@ -1,4 +1,4 @@
-﻿using Dumbogram.Application.Chats.Errors;
+﻿using Dumbogram.Application.Chats.Services.Errors;
 using Dumbogram.Database;
 using Dumbogram.Models.Chats;
 using Dumbogram.Models.Users;

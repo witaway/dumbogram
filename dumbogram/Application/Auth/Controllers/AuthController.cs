@@ -1,6 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Runtime.CompilerServices;
-using Dumbogram.Application.Auth.Dto;
+using Dumbogram.Application.Auth.Controllers.Dto;
 using Dumbogram.Application.Auth.Services;
 using Dumbogram.Application.Users.Services;
 using Dumbogram.Database.Identity;
@@ -38,8 +38,8 @@ public class AuthController : ApplicationController
     [HttpPost]
     [Route("sign-in")]
     [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ResponseFailure))]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccess<SignInResponseDto>))]
-    public async Task<IActionResult> SignIn([FromBody] SignInRequestDto dto)
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccess<SignInResponse>))]
+    public async Task<IActionResult> SignIn([FromBody] SignInRequest dto)
     {
         var userResult = dto switch
         {
@@ -61,7 +61,7 @@ public class AuthController : ApplicationController
         var token = signInResult.Value;
         var tokenStringRepresentation = new JwtSecurityTokenHandler().WriteToken(token);
 
-        return Ok(new SignInResponseDto
+        return Ok(new SignInResponse
         {
             Token = tokenStringRepresentation,
             Expiration = token.ValidTo
@@ -73,7 +73,7 @@ public class AuthController : ApplicationController
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccess))]
     [ProducesResponseType(StatusCodes.Status409Conflict, Type = typeof(ResponseFailure))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ResponseFailure))]
-    public async Task<IActionResult> SignUp([FromBody] SignUpRequestDto dto)
+    public async Task<IActionResult> SignUp([FromBody] SignUpRequest dto)
     {
         ApplicationIdentityUser user = new()
         {
@@ -97,7 +97,7 @@ public class AuthController : ApplicationController
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccess))]
     [ProducesResponseType(StatusCodes.Status409Conflict, Type = typeof(ResponseFailure))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ResponseFailure))]
-    public async Task<IActionResult> SignUpAdmin([FromBody] SignUpRequestDto dto)
+    public async Task<IActionResult> SignUpAdmin([FromBody] SignUpRequest dto)
     {
         // Reuse Signing Up code
         var result = await SignUp(dto);

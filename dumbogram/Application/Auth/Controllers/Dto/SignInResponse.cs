@@ -1,6 +1,6 @@
-﻿namespace Dumbogram.Application.Auth.Dto;
+﻿namespace Dumbogram.Application.Auth.Controllers.Dto;
 
-public class SignInResponseDto
+public class SignInResponse
 {
     public required string Token { get; set; }
     public required DateTime Expiration { get; set; }

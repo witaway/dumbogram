@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using Dumbogram.Infrasctructure.Errors;
 
-namespace Dumbogram.Application.Users.Errors;
+namespace Dumbogram.Application.Users.Services.Errors;
 
 public class UserNotFoundError : ApplicationApiError
 {

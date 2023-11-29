@@ -1,16 +1,16 @@
 ﻿using Dumbogram.Database.Identity;
 
-namespace Dumbogram.Application.Users.Dto;
+namespace Dumbogram.Application.Users.Controllers.Dto;
 
-public class GetIdentityUserByUserIdResponseDto
+public class GetIdentityUserByUserIdResponse
 {
     public required string Id { get; set; }
     public required string UserName { get; set; }
     public required string Email { get; set; }
 
-    public static GetIdentityUserByUserIdResponseDto MapFromModel(ApplicationIdentityUser user)
+    public static GetIdentityUserByUserIdResponse MapFromModel(ApplicationIdentityUser user)
     {
-        return new GetIdentityUserByUserIdResponseDto
+        return new GetIdentityUserByUserIdResponse
         {
             Id = user.Id,
             Email = user.Email!,

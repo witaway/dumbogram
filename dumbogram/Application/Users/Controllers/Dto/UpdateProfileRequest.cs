@@ -1,15 +1,15 @@
 ﻿using FluentValidation;
 
-namespace Dumbogram.Application.Users.Dto;
+namespace Dumbogram.Application.Users.Controllers.Dto;
 
-public class UpdateProfileDto
+public class UpdateProfileRequest
 {
     // public string? Name { get; set; }
 
     public string? Description { get; set; }
 }
 
-public class UpdateProfileDtoValidator : AbstractValidator<UpdateProfileDto>
+public class UpdateProfileDtoValidator : AbstractValidator<UpdateProfileRequest>
 {
     public UpdateProfileDtoValidator()
     {
