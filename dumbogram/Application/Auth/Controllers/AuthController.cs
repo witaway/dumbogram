@@ -11,8 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Dumbogram.Application.Auth.Controllers;
 
-[Route("api/[controller]")]
 [ApiController]
+[Route("api/[controller]", Name = "Auth")]
 public class AuthController : ApplicationController
 {
     private readonly AuthService _authService;
@@ -35,8 +35,7 @@ public class AuthController : ApplicationController
         _logger = logger;
     }
 
-    [HttpPost]
-    [Route("sign-in")]
+    [HttpPost("sign-in", Name = nameof(SignIn))]
     [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ResponseFailure))]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccess<SignInResponse>))]
     public async Task<IActionResult> SignIn([FromBody] SignInRequest dto)
@@ -68,8 +67,7 @@ public class AuthController : ApplicationController
         });
     }
 
-    [HttpPost]
-    [Route("sign-up")]
+    [HttpPost("sign-up", Name = nameof(SignUp))]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccess))]
     [ProducesResponseType(StatusCodes.Status409Conflict, Type = typeof(ResponseFailure))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ResponseFailure))]
@@ -92,8 +90,7 @@ public class AuthController : ApplicationController
     }
 
     [DevOnly]
-    [HttpPost]
-    [Route("sign-up-admin")]
+    [HttpPost("sign-up-admin", Name = nameof(SignUpAdmin))]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccess))]
     [ProducesResponseType(StatusCodes.Status409Conflict, Type = typeof(ResponseFailure))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ResponseFailure))]

@@ -40,39 +40,36 @@ public class TestController : ControllerBase
     }
 
 
-    [Route("echo")]
-    [HttpPost(Name = "Echo")]
+    [HttpPost("echo", Name = "Echo")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccess<object>))]
     public IActionResult Echo([FromBody] object model)
     {
-        return Ok(Infrasctructure.Dto.Response.Success(model));
+        return Ok(model);
     }
 
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseSuccess<SignInRequest>))]
     [HttpPost("echo-validate")]
     public IActionResult EchoValidate([FromBody] SignInRequest model)
     {
-        return Ok(Infrasctructure.Dto.Response.Success(model));
+        return Ok(model);
     }
 
-    [HttpGet(Name = "UnhandledException")]
-    [Route("seppuku")]
+    [HttpGet("seppuku", Name = "UnhandledException")]
     public IActionResult UnhandledException()
     {
         throw new Exception("Application has committed seppuku just now!");
     }
 
-    [Authorize]
-    [HttpPost(Name = "GetCurrentUser")]
-    [Route("me")]
     [ProducesResponseType(
         StatusCodes.Status200OK, Type = typeof(ResponseSuccess<GetIdentityUserByUserIdResponse>)
     )]
+    [Authorize]
+    [HttpPost("me", Name = "GetCurrentUser")]
     public async Task<IActionResult> GetCurrentUser()
     {
         var user = await _userManager.FindByIdAsync(User.GetIdentityUserId());
         var userDto = GetIdentityUserByUserIdResponse.MapFromModel(user!);
-        return Ok(Infrasctructure.Dto.Response.Success(userDto));
+        return Ok(userDto);
     }
 
     [HttpGet("supclass")]

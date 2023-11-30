@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Dumbogram.Application.Chats.Controllers;
 
 [Authorize]
-[Route("/api/chats/private")]
+[Route("/api/chats/private", Name = "Private chats")]
 [ApiController]
 public class PrivateChatsController : ApplicationController
 {

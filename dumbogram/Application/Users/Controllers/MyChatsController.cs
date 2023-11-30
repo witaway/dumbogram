@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Dumbogram.Application.Users.Controllers;
 
 [Authorize]
-[Route("/api/users/me/chats")]
+[Route("/api/users/me/chats", Name = "My chats")]
 [ApiController]
 public class MyChatsController : ApplicationController
 {
@@ -32,7 +32,7 @@ public class MyChatsController : ApplicationController
     [ProducesResponseType(StatusCodes.Status200OK,
         Type = typeof(ResponseSuccess<ReadMultipleChatsShortInfoResponse>)
     )]
-    [HttpGet("owned")]
+    [HttpGet("owned", Name = nameof(ReadOwnedChats))]
     public async Task<IActionResult> ReadOwnedChats()
     {
         var userProfile = await _userResolverService.GetApplicationUser();
@@ -46,7 +46,7 @@ public class MyChatsController : ApplicationController
     [ProducesResponseType(StatusCodes.Status200OK,
         Type = typeof(ResponseSuccess<ReadMultipleChatsShortInfoResponse>)
     )]
-    [HttpGet("joined")]
+    [HttpGet("joined", Name = nameof(ReadJoinedChats))]
     public async Task<IActionResult> ReadJoinedChats()
     {
         var userProfile = await _userResolverService.GetApplicationUser();

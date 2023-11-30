@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Dumbogram.Application.Chats.Controllers;
 
 [Authorize]
-[Route("/api/chats/{chatId:guid}/members/{memberId:guid}")]
+[Route("/api/chats/{chatId:guid}/members/{memberId:guid}", Name = "Rights")]
 [ApiController]
 public class ChatMemberRightsController : ApplicationController
 {
@@ -34,7 +34,7 @@ public class ChatMemberRightsController : ApplicationController
         _logger = logger;
     }
 
-    [HttpGet]
+    [HttpGet(Name = nameof(GetRightsOfMember))]
     public async Task<IActionResult> GetRightsOfMember(Guid chatId, Guid memberId)
     {
         var userProfile = await _userResolverService.GetApplicationUser();
@@ -67,7 +67,7 @@ public class ChatMemberRightsController : ApplicationController
         return Ok(rightsDto);
     }
 
-    [HttpPut]
+    [HttpPut(Name = nameof(ApplyRightsToMember))]
     public async Task<IActionResult> ApplyRightsToMember(
         Guid chatId,
         Guid memberId,

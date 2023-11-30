@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Dumbogram.Application.Chats.Controllers;
 
 [Authorize]
-[Route("/api/chats/{chatId:guid}/members")]
+[Route("/api/chats/{chatId:guid}/members", Name = "Members")]
 [ApiController]
 public class ChatMembersController : ApplicationController
 {
@@ -30,7 +30,7 @@ public class ChatMembersController : ApplicationController
         _logger = logger;
     }
 
-    [HttpGet]
+    [HttpGet(Name = nameof(GetMembers))]
     public async Task<IActionResult> GetMembers(Guid chatId)
     {
         var userProfile = await _userResolverService.GetApplicationUser();
@@ -48,7 +48,7 @@ public class ChatMembersController : ApplicationController
         return Ok(membersDto);
     }
 
-    [HttpGet]
+    [HttpGet("banned", Name = nameof(GetBanned))]
     public async Task<IActionResult> GetBanned(Guid chatId)
     {
         var userProfile = await _userResolverService.GetApplicationUser();
