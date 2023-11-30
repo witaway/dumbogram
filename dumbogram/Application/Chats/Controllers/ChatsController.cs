@@ -10,11 +10,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace Dumbogram.Application.Chats.Controllers;
 
 [Authorize]
-[Route("/api/chats")]
+[Route("/api/chats", Name = "Chats")]
 [ApiController]
 public class ChatsController : ApplicationController
 {
     private readonly ChatMembershipService _chatMembershipService;
+    private readonly ChatPermissionsService _chatPermissionsService;
     private readonly ChatService _chatService;
     private readonly ILogger<ChatsController> _logger;
     private readonly UserResolverService _userResolverService;
@@ -25,6 +26,7 @@ public class ChatsController : ApplicationController
         ChatMembershipService chatMembershipService,
         UserService userService,
         UserResolverService userResolverService,
+        ChatPermissionsService chatPermissionsService,
         ILogger<ChatsController> logger
     )
     {
@@ -32,13 +34,14 @@ public class ChatsController : ApplicationController
         _userService = userService;
         _chatMembershipService = chatMembershipService;
         _userResolverService = userResolverService;
+        _chatPermissionsService = chatPermissionsService;
         _logger = logger;
     }
 
     [ProducesResponseType(
         StatusCodes.Status200OK, Type = typeof(ResponseSuccess<ReadMultipleChatsShortInfoResponse>)
     )]
-    [HttpGet("search")]
+    [HttpGet("search", Name = nameof(ReadAllChats))]
     public async Task<IActionResult> ReadAllChats()
     {
         var userProfile = await _userResolverService.GetApplicationUser();
@@ -50,7 +53,7 @@ public class ChatsController : ApplicationController
     }
 
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(ResponseSuccess))]
-    [HttpPost]
+    [HttpPost(Name = nameof(CreateChat))]
     public async Task<IActionResult> CreateChat([FromBody] CreateChatRequest dto)
     {
         var userProfile = await _userResolverService.GetApplicationUser();
@@ -63,7 +66,8 @@ public class ChatsController : ApplicationController
         };
 
         await _chatService.CreateChat(chat);
-        await _chatMembershipService.EnsureUserJoinedInChat(userProfile!, chat);
+        await _chatMembershipService.EnsureUserJoinedInChat(userProfile, chat);
+        await _chatPermissionsService.EnsureUserHasPermissionInChat(chat, userProfile, MembershipRight.Owner);
 
         var chatUri = $"/api/chats/{chat.Id}";
         return Created(chatUri, null);
