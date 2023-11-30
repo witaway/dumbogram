@@ -19,12 +19,13 @@ public class ApplicationController : ControllerBase
     }
 
     [NonAction]
-    public virtual ObjectResult Failure([ActionResultObjectValue] List<IError> errors)
+    protected virtual ObjectResult Failure([ActionResultObjectValue] List<IError> errors)
     {
         return new FailureObjectResult(errors);
     }
 
-    public virtual ObjectResult Failure([ActionResultObjectValue] IError error)
+    [NonAction]
+    protected virtual ObjectResult Failure([ActionResultObjectValue] IError error)
     {
         return new FailureObjectResult(error);
     }
