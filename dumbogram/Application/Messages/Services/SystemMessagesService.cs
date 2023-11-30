@@ -24,42 +24,52 @@ public class SystemMessagesService
 
     public async Task CreateJoinedMessage(Chat chat, UserProfile joinedUser)
     {
-        var message = new JoinedSystemMessage
+        var message = new SystemMessage
         {
             Chat = chat,
-            SubjectProfile = joinedUser
+            SubjectProfile = joinedUser,
+            SystemMessageType = SystemMessageType.UserJoined
         };
         await EnsureSystemMessageCreated(message);
     }
 
     public async Task CreateLeftMessage(Chat chat, UserProfile leftUser)
     {
-        var message = new LeftSystemMessage
+        var message = new SystemMessage
         {
             Chat = chat,
-            SubjectProfile = leftUser
+            SubjectProfile = leftUser,
+            SystemMessageType = SystemMessageType.UserLeft
         };
         await EnsureSystemMessageCreated(message);
     }
 
     public async Task CreateEditedTitleMessage(Chat chat, UserProfile subject, string newTitle)
     {
-        var message = new EditedTitleSystemMessage
+        var message = new SystemMessage
         {
             Chat = chat,
             SubjectProfile = subject,
-            NewTitle = newTitle
+            SystemMessageType = SystemMessageType.ChatTitleEdited,
+            SystemMessageDetails = new SystemMessageDetails.ChatTitleEdited
+            {
+                NewTitle = newTitle
+            }
         };
         await EnsureSystemMessageCreated(message);
     }
 
     public async Task CreateEditedDescriptionMessage(Chat chat, UserProfile subject, string newDescription)
     {
-        var message = new EditedDescriptionSystemMessage
+        var message = new SystemMessage
         {
             Chat = chat,
             SubjectProfile = subject,
-            NewDescription = newDescription
+            SystemMessageType = SystemMessageType.ChatDescriptionEdited,
+            SystemMessageDetails = new SystemMessageDetails.ChatDescriptionEdited
+            {
+                NewDescription = newDescription
+            }
         };
         await EnsureSystemMessageCreated(message);
     }

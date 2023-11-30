@@ -31,10 +31,6 @@ public class ApplicationDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // We don't need public DbSets for all those system message types
-        modelBuilder.Entity<EditedDescriptionSystemMessage>();
-        modelBuilder.Entity<EditedTitleSystemMessage>();
-        modelBuilder.Entity<JoinedSystemMessage>();
-        modelBuilder.Entity<LeftSystemMessage>();
+        modelBuilder.HasPostgresEnum<SystemMessageType>();
     }
 }

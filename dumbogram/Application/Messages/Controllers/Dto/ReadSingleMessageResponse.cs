@@ -22,25 +22,10 @@ public class ReadSingleMessageResponse
                 );
             }
         }
-
-        if (message is SystemMessage systemMessage)
+        else if (message is SystemMessage systemMessage)
         {
-            SystemMessage = systemMessage.GetType().ToString();
-            if (systemMessage is EditedTitleSystemMessage editedTitleSystemMessage)
-            {
-                SystemMessageDetails = new
-                {
-                    editedTitleSystemMessage.NewTitle
-                };
-            }
-
-            if (systemMessage is EditedDescriptionSystemMessage editedDescriptionSystemMessage)
-            {
-                SystemMessageDetails = new
-                {
-                    editedDescriptionSystemMessage.NewDescription
-                };
-            }
+            SystemMessage = systemMessage.SystemMessageType.ToString();
+            SystemMessageDetails = systemMessage.SystemMessageDetails;
         }
     }
 

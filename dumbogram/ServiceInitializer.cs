@@ -8,6 +8,7 @@ using Dumbogram.Database;
 using Dumbogram.Database.Identity;
 using Dumbogram.Infrasctructure.Filters;
 using Dumbogram.Infrasctructure.Middlewares;
+using Dumbogram.Models.Messages.SystemMessages;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -15,6 +16,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Npgsql;
 
 namespace Dumbogram;
 
@@ -141,8 +143,13 @@ public static class ServiceInitializer
             options =>
             {
                 var connectionString = configuration.GetConnectionString("DumbogramApplicationDbConnection");
+
+                var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+                dataSourceBuilder.MapEnum<SystemMessageType>();
+                var dataSource = dataSourceBuilder.Build();
+
                 options
-                    .UseNpgsql(connectionString)
+                    .UseNpgsql(dataSource)
                     .UseSnakeCaseNamingConvention();
             }
         );
