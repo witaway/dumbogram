@@ -7,7 +7,7 @@ namespace Dumbogram.Models.Messages.UserMessages;
 public class RegularUserMessage : UserMessage
 {
     public string Content { get; set; } = null!;
-    public int? RepliedMessageId { get; private set; }
+    public int? RepliedMessageId { get; set; }
 
     public Message? RepliedMessage { get; set; }
 }

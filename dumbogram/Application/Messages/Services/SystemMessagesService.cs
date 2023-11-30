@@ -48,7 +48,7 @@ public class SystemMessagesService
         {
             Chat = chat,
             SubjectProfile = subject,
-            NewContent = newTitle
+            NewTitle = newTitle
         };
         await EnsureSystemMessageCreated(message);
     }
@@ -59,7 +59,7 @@ public class SystemMessagesService
         {
             Chat = chat,
             SubjectProfile = subject,
-            NewContent = newDescription
+            NewDescription = newDescription
         };
         await EnsureSystemMessageCreated(message);
     }

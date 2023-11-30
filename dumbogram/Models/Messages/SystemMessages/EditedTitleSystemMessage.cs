@@ -6,7 +6,7 @@ namespace Dumbogram.Models.Messages.SystemMessages;
 [EntityTypeConfiguration(typeof(EditedTitleSystemMessageConfiguration))]
 public class EditedTitleSystemMessage : SystemMessage
 {
-    public string NewContent { get; set; } = null!;
+    public string NewTitle { get; set; } = null!;
 }
 
 public class EditedTitleSystemMessageConfiguration : IEntityTypeConfiguration<EditedTitleSystemMessage>
