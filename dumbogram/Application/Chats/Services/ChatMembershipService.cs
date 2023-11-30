@@ -173,43 +173,31 @@ public class ChatMembershipService
 
     public async Task<bool> IsUserJoinedToChat(UserProfile userProfile, Chat chat)
     {
-        var aliveMembershipStatus = new ChatMembership
-        {
-            Chat = chat,
-            MemberProfile = userProfile,
-            MembershipStatus = MembershipStatus.Joined
-        };
-
-        var isMember = await _dbContext.ChatMemberships.AnyAsync(m => m == aliveMembershipStatus);
-
-        return isMember;
+        return await _dbContext
+            .ChatMemberships
+            .Where(m => m.Chat == chat)
+            .Where(m => m.MemberProfile == userProfile)
+            .Where(m => m.MembershipStatus == MembershipStatus.Joined)
+            .AnyAsync();
     }
 
     public async Task<bool> IsUserBannedInChat(UserProfile userProfile, Chat chat)
     {
-        var bannedMembershipStatus = new ChatMembership
-        {
-            Chat = chat,
-            MemberProfile = userProfile,
-            MembershipStatus = MembershipStatus.Banned
-        };
-
-        var isBanned = await _dbContext.ChatMemberships.AnyAsync(m => m == bannedMembershipStatus);
-
-        return isBanned;
+        return await _dbContext
+            .ChatMemberships
+            .Where(m => m.Chat == chat)
+            .Where(m => m.MemberProfile == userProfile)
+            .Where(m => m.MembershipStatus == MembershipStatus.Banned)
+            .AnyAsync();
     }
 
     public async Task<bool> IsUserLeavedInChat(UserProfile userProfile, Chat chat)
     {
-        var leavedMembershipStatus = new ChatMembership
-        {
-            Chat = chat,
-            MemberProfile = userProfile,
-            MembershipStatus = MembershipStatus.Leaved
-        };
-
-        var isLeaved = await _dbContext.ChatMemberships.AnyAsync(m => m == leavedMembershipStatus);
-
-        return isLeaved;
+        return await _dbContext
+            .ChatMemberships
+            .Where(m => m.Chat == chat)
+            .Where(m => m.MemberProfile == userProfile)
+            .Where(m => m.MembershipStatus == MembershipStatus.Leaved)
+            .AnyAsync();
     }
 }
