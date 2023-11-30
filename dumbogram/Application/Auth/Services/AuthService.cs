@@ -76,7 +76,7 @@ public class AuthService
         var claims = claimsResult.Value;
         var tokenResult = _tokenService.CreateJwtSecurityToken(claims);
 
-        return tokenResult.ToResult<JwtSecurityToken>();
+        return tokenResult;
     }
 
     public async Task<Result> SignUp(ApplicationIdentityUser user, string password)
