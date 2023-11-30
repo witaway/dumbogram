@@ -2,6 +2,7 @@ using System.Text;
 using Dumbogram.Application.Auth.Controllers.Dto;
 using Dumbogram.Application.Auth.Services;
 using Dumbogram.Application.Chats.Services;
+using Dumbogram.Application.Messages.Services;
 using Dumbogram.Application.Users.Services;
 using Dumbogram.Database;
 using Dumbogram.Database.Identity;
@@ -73,6 +74,11 @@ public static class ServiceInitializer
         services.AddScoped<ChatPermissionsService>();
         services.AddScoped<ChatMembershipService>();
         services.AddScoped<ChatVisibilityService>();
+
+        // Messages-related services
+        services.AddScoped<MessagesService>();
+        services.AddScoped<SystemMessagesService>();
+        services.AddScoped<MessageActionsGuardService>();
     }
 
     private static void RegisterIdentity(IServiceCollection services)
