@@ -1,4 +1,4 @@
-﻿using Dumbogram.Infrasctructure.Models;
+﻿using Dumbogram.Models.Base;
 using Dumbogram.Models.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

@@ -1,4 +1,6 @@
-using Dumbogram.Infrasctructure.Models;
+using Dumbogram.Database.Extensions;
+using Dumbogram.Database.Interceptors;
+using Dumbogram.Models.Base;
 using Dumbogram.Models.Chats;
 using Dumbogram.Models.Messages;
 using Dumbogram.Models.Users;
@@ -25,47 +27,17 @@ public class ApplicationDbContext : DbContext
     public DbSet<UserMessage> UserMessages { get; set; }
     public DbSet<SystemMessage> SystemMessages { get; set; }
 
-    // Todo: FIX THE NOT WORKING SHIT. UpdatedDate and CreatedDate are always -Infinity.
-    // But it's better for now, than conflicting with not-null constraint for these fields
-
-    private void BeforeSaveChanges()
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        var now = DateTime.UtcNow;
-
-        foreach (var changedEntity in ChangeTracker.Entries())
-        {
-            if (changedEntity.Entity is BaseEntity entity)
-            {
-                switch (changedEntity.State)
-                {
-                    case EntityState.Added:
-                        entity.CreatedDate = now;
-                        entity.UpdatedDate = now;
-                        break;
-
-                    case EntityState.Modified:
-                        Entry(entity).Property(x => x.CreatedDate).IsModified = false;
-                        entity.UpdatedDate = now;
-                        break;
-                }
-            }
-        }
-    }
-
-    public override int SaveChanges()
-    {
-        BeforeSaveChanges();
-        return base.SaveChanges();
-    }
-
-    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
-    {
-        BeforeSaveChanges();
-        return await base.SaveChangesAsync(cancellationToken);
+        optionsBuilder.AddInterceptors(
+            new SoftDeleteInterceptor(),
+            new TrackUpdatesInterceptor()
+        );
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.ApplyGlobalFilters<ISoftDelete>(e => e.DeletedDate == null);
         modelBuilder.HasPostgresEnum<SystemMessageType>();
     }
 }
