@@ -1,4 +1,4 @@
-﻿namespace Dumbogram.Models.Messages.SystemMessages;
+﻿namespace Dumbogram.Models.Messages;
 
 public enum SystemMessageType
 {

@@ -2,7 +2,6 @@
 using Dumbogram.Application.Chats.Services.Errors;
 using Dumbogram.Models.Chats;
 using Dumbogram.Models.Messages;
-using Dumbogram.Models.Messages.UserMessages;
 using Dumbogram.Models.Users;
 using FluentResults;
 
@@ -73,32 +72,9 @@ public class MessageActionsGuardService
         return Result.Ok();
     }
 
-    private async Task<Result> CheckForwardAbility(UserProfile subjectUser, ForwardUserMessage message)
-    {
-        var sourceChat = message.ForwardedMessage.Chat;
-
-        var isMember = await _chatMembershipService.IsUserJoinedToChat(
-            subjectUser,
-            sourceChat
-        );
-
-        if (!isMember)
-        {
-            return Result.Fail(new UserNotInChatError());
-        }
-
-        return Result.Ok();
-    }
-
     public async Task<Result> CheckMessageCanBeSend(UserProfile subjectUser, UserMessage message)
     {
         var errors = new List<IError>();
-
-        if (message is ForwardUserMessage forwardMessage)
-        {
-            var forwardAbilityResult = await CheckForwardAbility(subjectUser, forwardMessage);
-            errors.AddRange(forwardAbilityResult.Errors);
-        }
 
         var sendAbilityResult = await CheckSendAbility(subjectUser, message);
         errors.AddRange(sendAbilityResult.Errors);

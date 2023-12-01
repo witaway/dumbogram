@@ -3,7 +3,7 @@ using Dumbogram.Application.Messages.Controllers.Dto;
 using Dumbogram.Application.Messages.Services;
 using Dumbogram.Application.Users.Services;
 using Dumbogram.Infrasctructure.Controller;
-using Dumbogram.Models.Messages.UserMessages;
+using Dumbogram.Models.Messages;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -92,11 +92,18 @@ public class MessagesController : ApplicationController
 
         var chat = chatResult.Value;
 
-        var message = new RegularUserMessage
+        var messageContentResult = new UserMessageContentBuilder(request).Build();
+
+        if (messageContentResult.IsFailed)
+        {
+            return Failure(messageContentResult.Errors);
+        }
+
+        var message = new UserMessage
         {
             Chat = chat,
             SubjectProfile = subjectUser,
-            Content = request.Content!,
+            Content = messageContentResult.Value,
             RepliedMessageId = request.ReplyTo
         };
 

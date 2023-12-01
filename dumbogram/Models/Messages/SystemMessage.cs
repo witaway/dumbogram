@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Dumbogram.Models.Messages.SystemMessages;
+namespace Dumbogram.Models.Messages;
 
 [EntityTypeConfiguration(typeof(SystemMessageConfiguration))]
 public class SystemMessage : Message

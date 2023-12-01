@@ -4,17 +4,20 @@ using Dumbogram.Database;
 using Dumbogram.Models.Messages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Dumbogram.Migrations.Application
+namespace Dumbogram.Database.Migrations.Application
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231130234911_Improved_UserMessage_Scheme_For_Flexibility")]
+    partial class Improved_UserMessage_Scheme_For_Flexibility
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,10 +38,6 @@ namespace Dumbogram.Migrations.Application
                         .HasColumnType("integer")
                         .HasColumnName("chat_visibility");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_date");
-
                     b.Property<string>("Description")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)")
@@ -53,10 +52,6 @@ namespace Dumbogram.Migrations.Application
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)")
                         .HasColumnName("title");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_date");
 
                     b.HasKey("Id")
                         .HasName("pk_chats");
@@ -77,17 +72,9 @@ namespace Dumbogram.Migrations.Application
                         .HasColumnType("uuid")
                         .HasColumnName("member_id");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_date");
-
                     b.Property<int>("MembershipRight")
                         .HasColumnType("integer")
                         .HasColumnName("membership_right");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_date");
 
                     b.HasKey("ChatId", "MemberId")
                         .HasName("pk_chat_member_permissions");
@@ -108,17 +95,9 @@ namespace Dumbogram.Migrations.Application
                         .HasColumnType("uuid")
                         .HasColumnName("member_id");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_date");
-
                     b.Property<int>("MembershipStatus")
                         .HasColumnType("integer")
                         .HasColumnName("membership_status");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_date");
 
                     b.HasKey("ChatId", "MemberId")
                         .HasName("pk_chat_memberships");
@@ -136,23 +115,17 @@ namespace Dumbogram.Migrations.Application
                         .HasColumnName("chat_id");
 
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasColumnName("id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
                     b.Property<DateTime>("CreatedDate")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_date");
 
                     b.Property<Guid>("SubjectId")
                         .HasColumnType("uuid")
                         .HasColumnName("subject_id");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_date");
 
                     b.Property<string>("message_type")
                         .IsRequired()
@@ -186,18 +159,10 @@ namespace Dumbogram.Migrations.Application
                         .HasColumnType("uuid")
                         .HasColumnName("user_id");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_date");
-
                     b.Property<string>("Description")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)")
                         .HasColumnName("description");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_date");
 
                     b.Property<string>("Username")
                         .IsRequired()
@@ -323,10 +288,6 @@ namespace Dumbogram.Migrations.Application
 
                             b1.Property<int>("SystemMessageId")
                                 .HasColumnType("integer");
-
-                            b1.Property<string>("NewDescription")
-                                .IsRequired()
-                                .HasColumnType("text");
 
                             b1.HasKey("SystemMessageChatId", "SystemMessageId")
                                 .HasName("pk_messages");

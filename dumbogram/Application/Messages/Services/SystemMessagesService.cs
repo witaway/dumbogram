@@ -1,6 +1,6 @@
 ﻿using Dumbogram.Database;
 using Dumbogram.Models.Chats;
-using Dumbogram.Models.Messages.SystemMessages;
+using Dumbogram.Models.Messages;
 using Dumbogram.Models.Users;
 
 namespace Dumbogram.Application.Chats.Services;
@@ -51,10 +51,7 @@ public class SystemMessagesService
             Chat = chat,
             SubjectProfile = subject,
             SystemMessageType = SystemMessageType.ChatTitleEdited,
-            SystemMessageDetails = new SystemMessageDetails.ChatTitleEdited
-            {
-                NewTitle = newTitle
-            }
+            SystemMessageDetails = SystemMessageDetails.ChatTitleEdited(newTitle)
         };
         await EnsureSystemMessageCreated(message);
     }
@@ -66,10 +63,7 @@ public class SystemMessagesService
             Chat = chat,
             SubjectProfile = subject,
             SystemMessageType = SystemMessageType.ChatDescriptionEdited,
-            SystemMessageDetails = new SystemMessageDetails.ChatDescriptionEdited
-            {
-                NewDescription = newDescription
-            }
+            SystemMessageDetails = SystemMessageDetails.ChatDescriptionEdited(newDescription)
         };
         await EnsureSystemMessageCreated(message);
     }
