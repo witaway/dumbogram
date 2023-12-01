@@ -40,8 +40,8 @@ public class RolesConfiguration : IEntityTypeConfiguration<UserProfile>
 
         builder
             .HasMany(p => p.Messages)
-            .WithOne(m => m.SubjectProfile)
-            .HasForeignKey(m => m.SubjectId)
+            .WithOne(m => m.SenderProfile)
+            .HasForeignKey(m => m.SenderId)
             .HasPrincipalKey(p => p.UserId);
 
         builder

@@ -38,7 +38,7 @@ public class MessageActionsGuardService
 
     private async Task<Result> CheckSendAbility(UserProfile subjectUser, UserMessage message)
     {
-        var senderUser = message.SubjectProfile;
+        var senderUser = message.SenderProfile;
         var destinationChat = message.Chat;
 
         var isMember = await _chatMembershipService.IsUserJoinedToChat(
@@ -98,7 +98,7 @@ public class MessageActionsGuardService
             return Result.Fail(new UserNotInChatError());
         }
 
-        var isSenderOfMessage = subjectUser == message.SubjectProfile;
+        var isSenderOfMessage = subjectUser == message.SenderProfile;
         var isSenderOwnerOfChat = subjectUser == message.Chat.OwnerProfile;
 
         if (!isSenderOfMessage && !isSenderOwnerOfChat)
@@ -123,7 +123,7 @@ public class MessageActionsGuardService
             return Result.Fail(new UserNotInChatError());
         }
 
-        var isSenderOfMessage = subjectUser == message.SubjectProfile;
+        var isSenderOfMessage = subjectUser == message.SenderProfile;
 
         if (!isSenderOfMessage)
         {

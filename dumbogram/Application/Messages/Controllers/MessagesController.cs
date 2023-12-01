@@ -102,7 +102,7 @@ public class MessagesController : ApplicationController
         var message = new UserMessage
         {
             Chat = chat,
-            SubjectProfile = subjectUser,
+            SenderProfile = subjectUser,
             Content = messageContentResult.Value,
             RepliedMessageId = request.ReplyTo
         };

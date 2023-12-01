@@ -6,6 +6,9 @@ namespace Dumbogram.Models.Messages;
 [EntityTypeConfiguration(typeof(RegularUserMessageConfiguration))]
 public class UserMessage : Message
 {
+    // Sender Id is derived from Message, but it's required for UserMessage
+    public new Guid SenderId { get; private set; }
+
     public UserMessageContent Content { get; set; } = null!;
 
     public int? RepliedMessageId { get; set; }

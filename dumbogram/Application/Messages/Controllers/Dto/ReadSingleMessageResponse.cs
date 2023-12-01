@@ -7,7 +7,7 @@ public class ReadSingleMessageResponse
     public ReadSingleMessageResponse(Message message, bool isReplyInner = false)
     {
         MessageId = message.Id;
-        SenderId = message.SubjectId;
+        SenderId = message.SenderId;
         ChatId = message.ChatId;
 
         if (message is UserMessage userMessage)
@@ -29,7 +29,7 @@ public class ReadSingleMessageResponse
     }
 
     public int MessageId { get; set; }
-    public Guid SenderId { get; set; }
+    public Guid? SenderId { get; set; }
     public Guid ChatId { get; set; }
     public object? Content { get; set; }
     public ReadSingleMessageResponse? ReplyToMessage { get; set; }

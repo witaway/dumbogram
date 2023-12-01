@@ -27,7 +27,7 @@ public class SystemMessagesService
         var message = new SystemMessage
         {
             Chat = chat,
-            SubjectProfile = joinedUser,
+            SenderProfile = joinedUser,
             SystemMessageType = SystemMessageType.UserJoined
         };
         await EnsureSystemMessageCreated(message);
@@ -38,7 +38,7 @@ public class SystemMessagesService
         var message = new SystemMessage
         {
             Chat = chat,
-            SubjectProfile = leftUser,
+            SenderProfile = leftUser,
             SystemMessageType = SystemMessageType.UserLeft
         };
         await EnsureSystemMessageCreated(message);
@@ -49,7 +49,7 @@ public class SystemMessagesService
         var message = new SystemMessage
         {
             Chat = chat,
-            SubjectProfile = subject,
+            SenderProfile = subject,
             SystemMessageType = SystemMessageType.ChatTitleEdited,
             SystemMessageDetails = SystemMessageDetails.ChatTitleEdited(newTitle)
         };
@@ -61,7 +61,7 @@ public class SystemMessagesService
         var message = new SystemMessage
         {
             Chat = chat,
-            SubjectProfile = subject,
+            SenderProfile = subject,
             SystemMessageType = SystemMessageType.ChatDescriptionEdited,
             SystemMessageDetails = SystemMessageDetails.ChatDescriptionEdited(newDescription)
         };

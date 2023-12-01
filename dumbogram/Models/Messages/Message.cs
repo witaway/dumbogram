@@ -11,10 +11,10 @@ public class Message : BaseEntity
 {
     public int Id { get; private set; }
     public Guid ChatId { get; private set; }
-    public Guid SubjectId { get; private set; }
+    public Guid? SenderId { get; private set; }
 
     public Chat Chat { get; set; } = null!;
-    public UserProfile SubjectProfile { get; set; } = null!;
+    public UserProfile? SenderProfile { get; set; }
     public IEnumerable<UserMessage> Replies { get; } = null!;
 }
 
@@ -28,7 +28,7 @@ public class ChatMessageConfiguration : IEntityTypeConfiguration<Message>
         // Maybe should use HasComputedColumnSql or HasDefaultColumnSql
         // Or use triggers such as: https://stackoverflow.com/questions/38927629/column-value-autoincrement-depending-on-another-column-value-entity-framework-co
         builder.Property(message => message.Id).ValueGeneratedOnAdd();
-        
+
         // Inheritance
         builder.HasDiscriminator<string>("message_type")
             .HasValue<SystemMessage>("system_message")
@@ -36,14 +36,14 @@ public class ChatMessageConfiguration : IEntityTypeConfiguration<Message>
 
         // Indexes
         builder.HasIndex(message => message.ChatId);
-        builder.HasIndex(message => message.SubjectId);
+        builder.HasIndex(message => message.SenderId);
         builder.HasIndex(message => message.CreatedDate);
 
         // Relations
         builder
-            .HasOne(message => message.SubjectProfile)
+            .HasOne(message => message.SenderProfile)
             .WithMany(profile => profile.Messages)
-            .HasForeignKey(message => message.SubjectId)
+            .HasForeignKey(message => message.SenderId)
             .HasPrincipalKey(profile => profile.UserId);
 
         builder
