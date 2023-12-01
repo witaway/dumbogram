@@ -22,6 +22,16 @@ public class SystemMessagesService
         await _dbContext.SaveChangesAsync();
     }
 
+    public async Task CreateChatCreatedMessage(Chat chat)
+    {
+        var message = new SystemMessage
+        {
+            Chat = chat,
+            SystemMessageType = SystemMessageType.ChatCreated
+        };
+        await EnsureSystemMessageCreated(message);
+    }
+
     public async Task CreateJoinedMessage(Chat chat, UserProfile joinedUser)
     {
         var message = new SystemMessage

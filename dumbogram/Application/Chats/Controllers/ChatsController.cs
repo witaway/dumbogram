@@ -18,23 +18,23 @@ public class ChatsController : ApplicationController
     private readonly ChatPermissionsService _chatPermissionsService;
     private readonly ChatService _chatService;
     private readonly ILogger<ChatsController> _logger;
+    private readonly SystemMessagesService _systemMessagesService;
     private readonly UserResolverService _userResolverService;
-    private readonly UserService _userService;
 
     public ChatsController(
         ChatService chatService,
         ChatMembershipService chatMembershipService,
-        UserService userService,
+        SystemMessagesService systemMessagesService,
         UserResolverService userResolverService,
         ChatPermissionsService chatPermissionsService,
         ILogger<ChatsController> logger
     )
     {
         _chatService = chatService;
-        _userService = userService;
         _chatMembershipService = chatMembershipService;
         _userResolverService = userResolverService;
         _chatPermissionsService = chatPermissionsService;
+        _systemMessagesService = systemMessagesService;
         _logger = logger;
     }
 
@@ -68,6 +68,7 @@ public class ChatsController : ApplicationController
         await _chatService.CreateChat(chat);
         await _chatMembershipService.EnsureUserJoinedInChat(userProfile, chat);
         await _chatPermissionsService.EnsureUserHasPermissionInChat(chat, userProfile, MembershipRight.Owner);
+        await _systemMessagesService.CreateChatCreatedMessage(chat);
 
         var chatUri = $"/api/chats/{chat.Id}";
         return Created(chatUri, null);

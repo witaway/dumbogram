@@ -18,6 +18,7 @@ public class ChatController : ApplicationController
     private readonly ChatPermissionsService _chatPermissionsService;
     private readonly ChatService _chatService;
     private readonly ILogger<ChatsController> _logger;
+    private readonly SystemMessagesService _systemMessagesService;
     private readonly UserResolverService _userResolverService;
 
     public ChatController(
@@ -25,7 +26,8 @@ public class ChatController : ApplicationController
         ChatMembershipService chatMembershipService,
         ILogger<ChatsController> logger,
         UserResolverService userResolverService,
-        ChatPermissionsService chatPermissionsService
+        ChatPermissionsService chatPermissionsService,
+        SystemMessagesService systemMessagesService
     )
     {
         _chatService = chatService;
@@ -33,6 +35,7 @@ public class ChatController : ApplicationController
         _userResolverService = userResolverService;
         _chatMembershipService = chatMembershipService;
         _chatPermissionsService = chatPermissionsService;
+        _systemMessagesService = systemMessagesService;
         _logger = logger;
     }
 
@@ -81,6 +84,7 @@ public class ChatController : ApplicationController
         }
 
         await _chatPermissionsService.EnsureUserHasPermissionInChat(chat, userProfile, MembershipRight.Write);
+        await _systemMessagesService.CreateJoinedMessage(chat, userProfile);
 
         return Ok();
     }
@@ -102,6 +106,8 @@ public class ChatController : ApplicationController
         {
             return Failure(leaveResult.Errors);
         }
+
+        await _systemMessagesService.CreateLeftMessage(chat, userProfile);
 
         return Ok();
     }
