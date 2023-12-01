@@ -73,7 +73,7 @@ public class ChatService
             .Where(chat => chat.Id == chatId)
             .Where(chat => chat.ChatVisibility == ChatVisibility.Public);
 
-        return await query.SingleAsync();
+        return await query.SingleOrDefaultAsync();
     }
 
     public async Task<Result<Chat>> RequestPublicChatByChatId(Guid chatId)
@@ -130,7 +130,7 @@ public class ChatService
                 )
             );
 
-        return await query.SingleAsync();
+        return await query.SingleOrDefaultAsync();
     }
 
     public async Task<Result<Chat>> RequestPublicOrAccessibleChatByChatId(Guid chatId, UserProfile userProfile)
@@ -173,7 +173,7 @@ public class ChatService
             .Where(chat => chat.Id == chatId)
             .Where(chat => chat.OwnerProfile == userProfile);
 
-        return await query.SingleAsync();
+        return await query.SingleOrDefaultAsync();
     }
 
     public async Task<Result<Chat>> RequestChatOwnedBy(Guid chatId, UserProfile userProfile)
@@ -224,7 +224,7 @@ public class ChatService
                 )
             );
 
-        return await query.SingleAsync();
+        return await query.SingleOrDefaultAsync();
     }
 
     public async Task<Result<Chat>> RequestChatJoinedBy(Guid chatId, UserProfile userProfile)

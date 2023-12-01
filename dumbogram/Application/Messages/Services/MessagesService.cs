@@ -1,4 +1,5 @@
-﻿using Dumbogram.Database;
+﻿using Dumbogram.Application.Messages.Services.Errors;
+using Dumbogram.Database;
 using Dumbogram.Models.Chats;
 using Dumbogram.Models.Messages;
 using Dumbogram.Models.Users;
@@ -21,14 +22,14 @@ public class MessagesService
         _messageActionsGuardService = messageActionsGuardService;
     }
 
-    public async Task<Message> ReadSingleMessageById(Chat chat, int messageId)
+    public async Task<Message?> ReadSingleMessageById(Chat chat, int messageId)
     {
         var query = _dbContext
             .Messages
             .Where(message => message.Chat == chat)
             .Where(message => message.Id == messageId);
 
-        var message = await query.SingleAsync();
+        var message = await query.SingleOrDefaultAsync();
         return message;
     }
 
@@ -51,6 +52,12 @@ public class MessagesService
         }
 
         var message = await ReadSingleMessageById(chat, messageId);
+
+        if (message == null)
+        {
+            return Result.Fail(new MessageNotFoundError());
+        }
+
         return message;
     }
 

@@ -3,7 +3,7 @@ using Dumbogram.Models.Chats;
 using Dumbogram.Models.Messages;
 using Dumbogram.Models.Users;
 
-namespace Dumbogram.Application.Chats.Services;
+namespace Dumbogram.Application.Messages.Services;
 
 public class SystemMessagesService
 {
