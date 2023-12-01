@@ -1,6 +1,5 @@
 ﻿using Dumbogram.Infrasctructure.Models;
 using Dumbogram.Models.Chats;
-using Dumbogram.Models.Messages.UserMessages;
 using Dumbogram.Models.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -16,7 +15,7 @@ public class Message : BaseEntity
 
     public Chat Chat { get; set; } = null!;
     public UserProfile SubjectProfile { get; set; } = null!;
-    public IEnumerable<RegularUserMessage> Replies { get; } = null!;
+    public IEnumerable<UserMessage> Replies { get; } = null!;
 }
 
 public class ChatMessageConfiguration : IEntityTypeConfiguration<Message>
@@ -25,6 +24,15 @@ public class ChatMessageConfiguration : IEntityTypeConfiguration<Message>
     {
         // Keys
         builder.HasKey(message => new { message.ChatId, message.Id });
+        // Todo: Use ROW_NUMBER() as here: https://stackoverflow.com/questions/27946892/auto-increment-id-based-on-composite-primary-key
+        // Maybe should use HasComputedColumnSql or HasDefaultColumnSql
+        // Or use triggers such as: https://stackoverflow.com/questions/38927629/column-value-autoincrement-depending-on-another-column-value-entity-framework-co
+        builder.Property(message => message.Id).ValueGeneratedOnAdd();
+        
+        // Inheritance
+        builder.HasDiscriminator<string>("message_type")
+            .HasValue<SystemMessage>("system_message")
+            .HasValue<UserMessage>("user_message");
 
         // Indexes
         builder.HasIndex(message => message.ChatId);

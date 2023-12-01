@@ -4,17 +4,20 @@ using Dumbogram.Database;
 using Dumbogram.Models.Messages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Dumbogram.Migrations.Application
+namespace Dumbogram.Database.Migrations.Application
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231201001630_Fixed_Missing_CreatedDate_ModifiedDate")]
+    partial class Fixed_Missing_CreatedDate_ModifiedDate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -136,11 +139,8 @@ namespace Dumbogram.Migrations.Application
                         .HasColumnName("chat_id");
 
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone")
@@ -323,10 +323,6 @@ namespace Dumbogram.Migrations.Application
 
                             b1.Property<int>("SystemMessageId")
                                 .HasColumnType("integer");
-
-                            b1.Property<string>("NewDescription")
-                                .IsRequired()
-                                .HasColumnType("text");
 
                             b1.HasKey("SystemMessageChatId", "SystemMessageId")
                                 .HasName("pk_messages");

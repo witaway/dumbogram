@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json.Serialization;
 using Dumbogram.Application.Auth.Controllers.Dto;
 using Dumbogram.Application.Auth.Services;
 using Dumbogram.Application.Chats.Services;
@@ -8,7 +9,7 @@ using Dumbogram.Database;
 using Dumbogram.Database.Identity;
 using Dumbogram.Infrasctructure.Filters;
 using Dumbogram.Infrasctructure.Middlewares;
-using Dumbogram.Models.Messages.SystemMessages;
+using Dumbogram.Models.Messages;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -36,7 +37,12 @@ public static class ServiceInitializer
         RegisterCustomMiddlewares(services);
         RegisterCustomServices(services);
 
-        services.AddControllers(ConfigureMvc);
+        services
+            .AddControllers(ConfigureMvc)
+            .AddJsonOptions((options) =>
+            {
+                options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+            });
 
         RegisterFluentValidation(services);
         RegisterSwagger(services);
