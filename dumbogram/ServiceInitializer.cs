@@ -39,7 +39,7 @@ public static class ServiceInitializer
 
         services
             .AddControllers(ConfigureMvc)
-            .AddJsonOptions((options) =>
+            .AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
             });
@@ -152,6 +152,7 @@ public static class ServiceInitializer
 
                 var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
                 dataSourceBuilder.MapEnum<SystemMessageType>();
+                dataSourceBuilder.UseNodaTime();
                 var dataSource = dataSourceBuilder.Build();
 
                 options
