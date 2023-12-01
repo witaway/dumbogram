@@ -145,18 +145,18 @@ public static class ServiceInitializer
 
     private static void RegisterDbContext(IServiceCollection services, IConfiguration configuration)
     {
+        var applicationConnectionString = configuration.GetConnectionString("DumbogramApplicationDbConnection");
+
+        var applicationDataSourceBuilder = new NpgsqlDataSourceBuilder(applicationConnectionString);
+        applicationDataSourceBuilder.MapEnum<SystemMessageType>();
+        applicationDataSourceBuilder.UseNodaTime();
+        var applicationDataSource = applicationDataSourceBuilder.Build();
+        
         services.AddDbContext<ApplicationDbContext>(
             options =>
             {
-                var connectionString = configuration.GetConnectionString("DumbogramApplicationDbConnection");
-
-                var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
-                dataSourceBuilder.MapEnum<SystemMessageType>();
-                dataSourceBuilder.UseNodaTime();
-                var dataSource = dataSourceBuilder.Build();
-
                 options
-                    .UseNpgsql(dataSource)
+                    .UseNpgsql(applicationDataSource)
                     .UseSnakeCaseNamingConvention();
             }
         );
