@@ -27,30 +27,41 @@ public class ApplicationDbContext : DbContext
 
     // Todo: FIX THE NOT WORKING SHIT. UpdatedDate and CreatedDate are always -Infinity.
     // But it's better for now, than conflicting with not-null constraint for these fields
-    public override int SaveChanges()
+
+    private void BeforeSaveChanges()
     {
-        var entries = ChangeTracker
-            .Entries()
-            .Where(e =>
-                e.Entity is BaseEntity && (
-                    e.State == EntityState.Added ||
-                    e.State == EntityState.Modified
-                )
-            );
+        var now = DateTime.UtcNow;
 
-        foreach (var entityEntry in entries)
+        foreach (var changedEntity in ChangeTracker.Entries())
         {
-            var entity = (BaseEntity)entityEntry.Entity;
-
-            entity.UpdatedDate = DateTime.Now;
-
-            if (entityEntry.State == EntityState.Added)
+            if (changedEntity.Entity is BaseEntity entity)
             {
-                entity.CreatedDate = DateTime.Now;
+                switch (changedEntity.State)
+                {
+                    case EntityState.Added:
+                        entity.CreatedDate = now;
+                        entity.UpdatedDate = now;
+                        break;
+
+                    case EntityState.Modified:
+                        Entry(entity).Property(x => x.CreatedDate).IsModified = false;
+                        entity.UpdatedDate = now;
+                        break;
+                }
             }
         }
+    }
 
+    public override int SaveChanges()
+    {
+        BeforeSaveChanges();
         return base.SaveChanges();
+    }
+
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
+    {
+        BeforeSaveChanges();
+        return await base.SaveChangesAsync(cancellationToken);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
