@@ -88,12 +88,14 @@ public class FileTransferService
         return await WriteFileAsync(writer, fileContainer);
     }
 
-    public async Task<List<File>> UploadMultipleLargeFiles(
+    public async Task<List<Result<File>>> UploadMultipleLargeFiles(
         HttpRequest request,
-        StorageWriter.StorageWriter writer
+        StorageWriter.StorageWriter writer,
+        int uploadsLimit = int.MaxValue
     )
     {
-        var uploadedFiles = new List<File>();
+        var uploadedFiles = new List<Result<File>>();
+        var successfullyUploadedCount = 0;
 
         var contentType = request.ContentType ?? "";
 
@@ -106,48 +108,70 @@ public class FileTransferService
             MediaTypeHeaderValue.Parse(contentType),
             DefaultFormOptions.MultipartBoundaryLengthLimit
         );
-
+        
         var multipartReader = new MultipartReader(boundary, request.Body);
-
+        
         await foreach (var fileSection in multipartReader.GetFileMultipartSections())
         {
-            var writeFileResult = await WriteFileAsync(writer, fileSection);
-            if (writeFileResult.IsSuccess)
+            if (successfullyUploadedCount == uploadsLimit)
             {
-                var file = writeFileResult.Value;
-                uploadedFiles.Add(file);
+                var error = new UploadLimitExceededError();
+                uploadedFiles.Add(error);
+                continue;
             }
+
+            var writeFileResult = await WriteFileAsync(writer, fileSection);
+            if (writeFileResult.IsSuccess) successfullyUploadedCount++;
+            uploadedFiles.Add(writeFileResult);
         }
 
         return uploadedFiles;
     }
 
-    public async Task<List<File>> UploadMultipleSmallFiles(List<IFormFile> formFiles,
-        StorageWriter.StorageWriter writer)
+    public async Task<Result<File>> UploadSingleLargeFile(
+        HttpRequest request,
+        StorageWriter.StorageWriter writer
+    )
     {
-        var uploadedFiles = new List<File>();
+        return (await UploadMultipleLargeFiles(request, writer, 1))
+            .First();
+    }
 
+    public async Task<List<Result<File>>> UploadMultipleSmallFiles(
+        HttpRequest request,
+        StorageWriter.StorageWriter writer,
+        int uploadsLimit = int.MaxValue
+    )
+    {
+        var uploadedFiles = new List<Result<File>>();
+        var successfullyUploadedCount = 0;
+
+        var formFiles = request.Form.Files;
+        
         foreach (var formFile in formFiles)
         {
-            var writeFileResult = await WriteFileAsync(writer, formFile);
-            if (writeFileResult.IsSuccess)
+            if (successfullyUploadedCount == uploadsLimit)
             {
-                var file = writeFileResult.Value;
-                uploadedFiles.Add(file);
+                var error = new UploadLimitExceededError();
+                uploadedFiles.Add(error);
+                continue;
             }
+
+            var writeFileResult = await WriteFileAsync(writer, formFile);
+            if (writeFileResult.IsSuccess) successfullyUploadedCount++;
+            uploadedFiles.Add(writeFileResult);
         }
 
         return uploadedFiles;
     }
 
-    public async Task<File?> UploadSingleSmallFile(IFormFile formFile, StorageWriter.StorageWriter writer)
+    public async Task<Result<File>> UploadSingleSmallFile(
+        HttpRequest request,
+        StorageWriter.StorageWriter writer
+    )
     {
-        var uploaded = await UploadMultipleSmallFiles(
-            new List<IFormFile> { formFile },
-            writer
-        );
-
-        return uploaded.FirstOrDefault();
+        return (await UploadMultipleSmallFiles(request, writer, 1))
+            .First();
     }
 
     public Stream DownloadFile(File file)

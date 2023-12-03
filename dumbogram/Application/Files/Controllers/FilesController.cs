@@ -4,7 +4,6 @@ using Dumbogram.Application.Files.Services.StorageWriter;
 using Dumbogram.Infrasctructure.Controller;
 using Dumbogram.Infrasctructure.Filters;
 using Dumbogram.Models.Files;
-using FluentResults;
 using Microsoft.AspNetCore.Mvc;
 using SkiaSharp;
 
@@ -56,14 +55,14 @@ public class FileController : ApplicationController
             .MatchPolicy(FileFormatValidationPolicy.ValidateByExtensionAndSignature)
             .AddFileFormats(FileFormatGroups.Photo);
 
-        var formFile = Request.Form.Files.First();
-        var file = await _fileTransferService.UploadSingleSmallFile(formFile, writer);
+        var fileResult = await _fileTransferService.UploadSingleSmallFile(Request, writer);
 
-        if (file == null)
+        if (fileResult.IsFailed)
         {
-            return Failure(new Error("Error during download"));
+            return Failure(fileResult.Errors);
         }
 
+        var file = fileResult.Value;
         await using var imageFile = _fileStorageService.ReadFile(file.StoredFileName);
 
         using var bitmap = SKBitmap.Decode(imageFile);
@@ -92,9 +91,13 @@ public class FileController : ApplicationController
         var writer = new StorageWriter()
             .MatchPolicy(FileFormatValidationPolicy.DoNotValidate);
 
-        var files = await _fileTransferService.UploadMultipleLargeFiles(Request, writer);
+        var filesResult = await _fileTransferService.UploadMultipleLargeFiles(Request, writer);
 
-        await _fileService.AddFilesRange(files);
+        var successfullyUploadedFiles = filesResult
+            .Where(fileResult => fileResult.IsSuccess)
+            .Select(fileResult => fileResult.Value);
+
+        await _fileService.AddFilesRange(successfullyUploadedFiles);
 
         var fileUri = "/api/files/bzzzzzzzzzzzzzz";
         return Created(fileUri, null);
