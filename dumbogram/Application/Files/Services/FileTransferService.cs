@@ -2,6 +2,7 @@
 using Dumbogram.Application.Files.Services.Errors;
 using Dumbogram.Application.Files.Services.Exceptions;
 using Dumbogram.Application.Files.Services.StorageWriter;
+using Dumbogram.Infrasctructure.Classes;
 using Dumbogram.Infrasctructure.Errors;
 using Dumbogram.Infrasctructure.Extensions;
 using Dumbogram.Infrasctructure.Utilities;
@@ -28,9 +29,9 @@ public class FileTransferService
         _fileStorageService = fileStorageService;
     }
 
-    private async Task<Result<File>> WriteFileAsync(
+    private async Task<Result<File>> WriteSingleFileAsync(
         StorageWriter.StorageWriter writer,
-        FileContainerAdapter fileContainer
+        FileContainer fileContainer
     )
     {
         var fileMetadata = fileContainer.FileMetadata;
@@ -54,6 +55,7 @@ public class FileTransferService
         }
         catch (FileUploadException exception)
         {
+            await destination.DisposeAsync();
             _fileStorageService.DeleteFile(filePath);
             ApplicationApiError error = exception switch
             {
@@ -65,38 +67,46 @@ public class FileTransferService
         }
         catch (Exception exception)
         {
+            await destination.DisposeAsync();
             _fileStorageService.DeleteFile(filePath);
             throw;
         }
     }
 
-    private async Task<Result<File>> WriteFileAsync(
+    private async Task<Results<string, File>> WriteMultipleFilesAsync(
         StorageWriter.StorageWriter writer,
-        FileMultipartSection fileMultipartSection
+        IAsyncEnumerable<FileContainer> fileContainers,
+        int uploadsLimit = int.MaxValue
     )
     {
-        var fileContainer = new FileContainerAdapter(fileMultipartSection);
-        return await WriteFileAsync(writer, fileContainer);
+        var uploadedFiles = new Results<string, File>();
+        var successfullyUploadedCount = 0;
+
+        await foreach (var fileContainer in fileContainers)
+        {
+            var fileName = fileContainer.Filename;
+
+            if (successfullyUploadedCount == uploadsLimit)
+            {
+                var error = new UploadLimitExceededError();
+                uploadedFiles.Add(fileName, error);
+                continue;
+            }
+
+            var writeFileResult = await WriteSingleFileAsync(writer, fileContainer);
+            if (writeFileResult.IsSuccess) successfullyUploadedCount++;
+            uploadedFiles.Add(fileName, writeFileResult);
+        }
+
+        return uploadedFiles;
     }
 
-    private async Task<Result<File>> WriteFileAsync(
-        StorageWriter.StorageWriter writer,
-        IFormFile formFile
-    )
-    {
-        var fileContainer = new FileContainerAdapter(formFile);
-        return await WriteFileAsync(writer, fileContainer);
-    }
-
-    public async Task<List<Result<File>>> UploadMultipleLargeFiles(
+    public async Task<Results<string, File>> UploadLargeFiles(
         HttpRequest request,
         StorageWriter.StorageWriter writer,
         int uploadsLimit = int.MaxValue
     )
     {
-        var uploadedFiles = new List<Result<File>>();
-        var successfullyUploadedCount = 0;
-
         var contentType = request.ContentType ?? "";
 
         if (!MultipartRequestHelper.IsMultipartContentType(contentType))
@@ -108,70 +118,27 @@ public class FileTransferService
             MediaTypeHeaderValue.Parse(contentType),
             DefaultFormOptions.MultipartBoundaryLengthLimit
         );
-        
+
         var multipartReader = new MultipartReader(boundary, request.Body);
-        
-        await foreach (var fileSection in multipartReader.GetFileMultipartSections())
-        {
-            if (successfullyUploadedCount == uploadsLimit)
-            {
-                var error = new UploadLimitExceededError();
-                uploadedFiles.Add(error);
-                continue;
-            }
 
-            var writeFileResult = await WriteFileAsync(writer, fileSection);
-            if (writeFileResult.IsSuccess) successfullyUploadedCount++;
-            uploadedFiles.Add(writeFileResult);
-        }
+        var fileContainers = multipartReader.GetFileContainers();
+        var uploadedFilesResults = await WriteMultipleFilesAsync(writer, fileContainers, uploadsLimit);
 
-        return uploadedFiles;
+        return uploadedFilesResults;
     }
 
-    public async Task<Result<File>> UploadSingleLargeFile(
-        HttpRequest request,
-        StorageWriter.StorageWriter writer
-    )
-    {
-        return (await UploadMultipleLargeFiles(request, writer, 1))
-            .First();
-    }
-
-    public async Task<List<Result<File>>> UploadMultipleSmallFiles(
+    public async Task<Results<string, File>> UploadSmallFiles(
         HttpRequest request,
         StorageWriter.StorageWriter writer,
         int uploadsLimit = int.MaxValue
     )
     {
-        var uploadedFiles = new List<Result<File>>();
-        var successfullyUploadedCount = 0;
-
         var formFiles = request.Form.Files;
-        
-        foreach (var formFile in formFiles)
-        {
-            if (successfullyUploadedCount == uploadsLimit)
-            {
-                var error = new UploadLimitExceededError();
-                uploadedFiles.Add(error);
-                continue;
-            }
 
-            var writeFileResult = await WriteFileAsync(writer, formFile);
-            if (writeFileResult.IsSuccess) successfullyUploadedCount++;
-            uploadedFiles.Add(writeFileResult);
-        }
+        var fileContainers = formFiles.GetFileContainers();
+        var uploadedFilesResults = await WriteMultipleFilesAsync(writer, fileContainers, uploadsLimit);
 
-        return uploadedFiles;
-    }
-
-    public async Task<Result<File>> UploadSingleSmallFile(
-        HttpRequest request,
-        StorageWriter.StorageWriter writer
-    )
-    {
-        return (await UploadMultipleSmallFiles(request, writer, 1))
-            .First();
+        return uploadedFilesResults;
     }
 
     public Stream DownloadFile(File file)

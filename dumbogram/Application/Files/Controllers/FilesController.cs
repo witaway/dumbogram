@@ -1,4 +1,5 @@
-﻿using Dumbogram.Application.Files.Services;
+﻿using Dumbogram.Application.Files.Controllers.Dto;
+using Dumbogram.Application.Files.Services;
 using Dumbogram.Application.Files.Services.FileFormats;
 using Dumbogram.Application.Files.Services.StorageWriter;
 using Dumbogram.Infrasctructure.Controller;
@@ -55,30 +56,32 @@ public class FileController : ApplicationController
             .MatchPolicy(FileFormatValidationPolicy.ValidateByExtensionAndSignature)
             .AddFileFormats(FileFormatGroups.Photo);
 
-        var fileResult = await _fileTransferService.UploadSingleSmallFile(Request, writer);
+        var filesResults = await _fileTransferService.UploadSmallFiles(Request, writer, 3);
 
-        if (fileResult.IsFailed)
+        var uploadedFiles = filesResults.GetSucceededValues();
+        var uploadedPhotoFiles = new List<FilePhoto>();
+
+        foreach (var file in uploadedFiles)
         {
-            return Failure(fileResult.Errors);
+            await using var imageFile = _fileStorageService.ReadFile(file.StoredFileName);
+
+            using var bitmap = SKBitmap.Decode(imageFile);
+            var width = bitmap.Width;
+            var height = bitmap.Height;
+
+            var filePhoto = new FilePhoto(file, new FilePhotoMetadata
+            {
+                Width = width,
+                Height = height
+            });
+
+            uploadedPhotoFiles.Add(filePhoto);
         }
 
-        var file = fileResult.Value;
-        await using var imageFile = _fileStorageService.ReadFile(file.StoredFileName);
+        await _fileService.AddFilesRange(uploadedPhotoFiles);
 
-        using var bitmap = SKBitmap.Decode(imageFile);
-        var width = bitmap.Width;
-        var height = bitmap.Height;
-
-        var filePhoto = new FilePhoto(file, new FilePhotoMetadata
-        {
-            Width = width,
-            Height = height
-        });
-
-        await _fileService.AddFile(filePhoto);
-
-        var fileUri = $"/api/files/{filePhoto.Id}";
-        return Created(fileUri, null);
+        var response = new FilesUploadResponse(filesResults);
+        return Created("", response);
     }
 
     [HttpPost("document")]
@@ -91,15 +94,12 @@ public class FileController : ApplicationController
         var writer = new StorageWriter()
             .MatchPolicy(FileFormatValidationPolicy.DoNotValidate);
 
-        var filesResult = await _fileTransferService.UploadMultipleLargeFiles(Request, writer);
+        var filesResults = await _fileTransferService.UploadLargeFiles(Request, writer);
 
-        var successfullyUploadedFiles = filesResult
-            .Where(fileResult => fileResult.IsSuccess)
-            .Select(fileResult => fileResult.Value);
+        var uploadedFiles = filesResults.GetSucceededValues();
+        await _fileService.AddFilesRange(uploadedFiles);
 
-        await _fileService.AddFilesRange(successfullyUploadedFiles);
-
-        var fileUri = "/api/files/bzzzzzzzzzzzzzz";
-        return Created(fileUri, null);
+        var response = new FilesUploadResponse(filesResults);
+        return Created("", response);
     }
 }

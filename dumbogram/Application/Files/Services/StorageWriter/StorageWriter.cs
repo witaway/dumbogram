@@ -77,7 +77,7 @@ public class StorageWriter
         }
     }
 
-    public async Task Write(FileContainerAdapter fileContainer, Stream destination)
+    public async Task Write(FileContainer fileContainer, Stream destination)
     {
         var fileMetadata = fileContainer.FileMetadata;
         var fileStream = fileContainer.Stream;

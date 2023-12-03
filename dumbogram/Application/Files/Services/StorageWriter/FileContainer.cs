@@ -2,9 +2,9 @@
 
 namespace Dumbogram.Application.Files.Services.StorageWriter;
 
-public class FileContainerAdapter
+public class FileContainer
 {
-    public FileContainerAdapter(IFormFile formFile)
+    public FileContainer(IFormFile formFile)
     {
         Filename = formFile.FileName;
         FileMetadata = new FileMetadata(Filename)
@@ -15,7 +15,7 @@ public class FileContainerAdapter
         Stream = formFile.OpenReadStream();
     }
 
-    public FileContainerAdapter(FileMultipartSection fileMultipartSection)
+    public FileContainer(FileMultipartSection fileMultipartSection)
     {
         Filename = fileMultipartSection.FileName;
         FileMetadata = new FileMetadata(Filename)
