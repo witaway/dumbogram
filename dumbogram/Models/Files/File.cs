@@ -27,7 +27,7 @@ public class File : BaseEntity
     public string StoredFileName { get; set; } = null!;
 
     public string MimeType { get; set; } = null!;
-    public int FileSize { get; set; }
+    public long FileSize { get; set; }
 
     public FilesGroup? FilesGroup { get; set; }
 }

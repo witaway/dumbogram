@@ -6,6 +6,12 @@ namespace Dumbogram.Models.Files;
 [EntityTypeConfiguration(typeof(FilePhotoConfiguration))]
 public class FilePhoto : File
 {
+    public FilePhoto(File file, FilePhotoMetadata metadata)
+        : this(file)
+    {
+        Metadata = metadata;
+    }
+
     public FilePhoto(File file)
         : base(file)
     {
@@ -15,20 +21,16 @@ public class FilePhoto : File
     {
     }
 
-    public int Width { get; set; }
-    public int Height { get; set; }
+    public FilePhotoMetadata Metadata { get; set; }
 }
 
 public class FilePhotoConfiguration : IEntityTypeConfiguration<FilePhoto>
 {
     public void Configure(EntityTypeBuilder<FilePhoto> builder)
     {
-        builder
-            .Property(e => e.Width)
-            .HasColumnName("width");
-
-        builder
-            .Property(e => e.Height)
-            .HasColumnName("height");
+        builder.OwnsOne(
+            file => file.Metadata,
+            ownedNavigationBuilder => { ownedNavigationBuilder.ToJson("photo_metadata"); }
+        );
     }
 }

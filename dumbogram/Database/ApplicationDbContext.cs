@@ -44,7 +44,9 @@ public class ApplicationDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyGlobalFilters<ISoftDelete>(e => e.DeletedDate == null);
+
         modelBuilder.HasPostgresEnum<SystemMessageType>();
+        modelBuilder.HasPostgresEnum<FilesGroupType>();
 
         // We don't need public DbSets for all those system message types
         modelBuilder.Entity<FileDocument>();

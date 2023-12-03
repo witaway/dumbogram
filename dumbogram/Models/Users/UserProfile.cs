@@ -1,5 +1,6 @@
 using Dumbogram.Models.Base;
 using Dumbogram.Models.Chats;
+using Dumbogram.Models.Files;
 using Dumbogram.Models.Messages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -17,6 +18,7 @@ public class UserProfile : BaseEntity
 
     public IEnumerable<Chat> OwnedChats { get; } = null!;
     public IEnumerable<Message> Messages { get; } = null!;
+    public ICollection<FilesGroup> FilesGroups { get; } = null!;
     public IEnumerable<ChatMembership> Memberships { get; } = null!;
     public IEnumerable<ChatMemberPermission> Permissions { get; } = null!;
 }
@@ -54,6 +56,12 @@ public class RolesConfiguration : IEntityTypeConfiguration<UserProfile>
             .HasMany(p => p.Permissions)
             .WithOne(m => m.MemberProfile)
             .HasForeignKey(m => m.MemberId)
+            .HasPrincipalKey(p => p.UserId);
+
+        builder
+            .HasMany(p => p.FilesGroups)
+            .WithOne(m => m.Owner)
+            .HasForeignKey(m => m.OwnerId)
             .HasPrincipalKey(p => p.UserId);
 
         // Constraints

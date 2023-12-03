@@ -10,6 +10,7 @@ using Dumbogram.Database;
 using Dumbogram.Database.Identity;
 using Dumbogram.Infrasctructure.Filters;
 using Dumbogram.Infrasctructure.Middlewares;
+using Dumbogram.Models.Files;
 using Dumbogram.Models.Messages;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -157,6 +158,7 @@ public static class ServiceInitializer
 
         var applicationDataSourceBuilder = new NpgsqlDataSourceBuilder(applicationConnectionString);
         applicationDataSourceBuilder.MapEnum<SystemMessageType>();
+        applicationDataSourceBuilder.MapEnum<FilesGroupType>();
         applicationDataSourceBuilder.UseNodaTime();
         var applicationDataSource = applicationDataSourceBuilder.Build();
 

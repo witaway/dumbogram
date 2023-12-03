@@ -10,11 +10,6 @@ using SkiaSharp;
 
 namespace Dumbogram.Application.Files.Controllers;
 
-public class UploadSingleFileRequest
-{
-    public IFormFile File;
-}
-
 [Route("api/files")]
 public class FileController : ApplicationController
 {
@@ -50,7 +45,7 @@ public class FileController : ApplicationController
         var contentType = file.MimeType;
         var downloadName = file.OriginalFileName;
         var fileStream = _fileTransferService.DownloadFile(file);
-        
+
         return File(fileStream, contentType, downloadName);
     }
 
@@ -71,15 +66,15 @@ public class FileController : ApplicationController
 
         await using var imageFile = _fileStorageService.ReadFile(file.StoredFileName);
 
-        var bitmap = SKBitmap.Decode(imageFile);
+        using var bitmap = SKBitmap.Decode(imageFile);
         var width = bitmap.Width;
         var height = bitmap.Height;
 
-        var filePhoto = new FilePhoto(file)
+        var filePhoto = new FilePhoto(file, new FilePhotoMetadata
         {
             Width = width,
             Height = height
-        };
+        });
 
         await _fileService.AddFile(filePhoto);
 

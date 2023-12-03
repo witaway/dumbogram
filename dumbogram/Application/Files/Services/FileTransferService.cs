@@ -49,7 +49,7 @@ public class FileTransferService
                 StoredFileName = filePath,
                 OriginalFileName = fileMetadata.TrustedFileNameForDisplay,
                 MimeType = fileMetadata.MimeType,
-                FileSize = (int)savedFileInfo.Length
+                FileSize = savedFileInfo.Length
             };
         }
         catch (FileUploadException exception)

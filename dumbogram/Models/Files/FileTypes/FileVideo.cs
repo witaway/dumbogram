@@ -6,6 +6,12 @@ namespace Dumbogram.Models.Files;
 [EntityTypeConfiguration(typeof(FileVideoConfiguration))]
 public class FileVideo : File
 {
+    public FileVideo(File file, FileVideoMetadata metadata)
+        : this(file)
+    {
+        Metadata = metadata;
+    }
+
     public FileVideo(File file)
         : base(file)
     {
@@ -15,25 +21,16 @@ public class FileVideo : File
     {
     }
 
-    public int Width { get; set; }
-    public int Height { get; set; }
-    public int Duration { get; set; }
+    public FileVideoMetadata Metadata { get; set; }
 }
 
 public class FileVideoConfiguration : IEntityTypeConfiguration<FileVideo>
 {
     public void Configure(EntityTypeBuilder<FileVideo> builder)
     {
-        builder
-            .Property(e => e.Width)
-            .HasColumnName("width");
-
-        builder
-            .Property(e => e.Height)
-            .HasColumnName("height");
-
-        builder
-            .Property(e => e.Duration)
-            .HasColumnName("duration");
+        builder.OwnsOne(
+            file => file.Metadata,
+            ownedNavigationBuilder => { ownedNavigationBuilder.ToJson("video_metadata"); }
+        );
     }
 }
