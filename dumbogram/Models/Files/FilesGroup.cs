@@ -8,7 +8,7 @@ namespace Dumbogram.Models.Files;
 public class FilesGroup : BaseEntity
 {
     public Guid Id { get; set; }
-    public IEnumerable<File> Files { get; set; }
+    public IList<File> Files { get; set; }
 }
 
 public class FilesGroupConfiguration : IEntityTypeConfiguration<FilesGroup>

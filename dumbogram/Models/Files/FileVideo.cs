@@ -6,6 +6,15 @@ namespace Dumbogram.Models.Files;
 [EntityTypeConfiguration(typeof(FileVideoConfiguration))]
 public class FileVideo : File
 {
+    public FileVideo(File file)
+        : base(file)
+    {
+    }
+
+    public FileVideo()
+    {
+    }
+
     public int Width { get; set; }
     public int Height { get; set; }
     public int Duration { get; set; }

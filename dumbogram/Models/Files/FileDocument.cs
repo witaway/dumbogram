@@ -6,6 +6,14 @@ namespace Dumbogram.Models.Files;
 [EntityTypeConfiguration(typeof(FileDocumentConfiguration))]
 public class FileDocument : File
 {
+    public FileDocument(File file)
+        : base(file)
+    {
+    }
+
+    public FileDocument()
+    {
+    }
 }
 
 public class FileDocumentConfiguration : IEntityTypeConfiguration<FileDocument>

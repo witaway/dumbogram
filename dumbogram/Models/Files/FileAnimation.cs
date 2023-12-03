@@ -6,6 +6,15 @@ namespace Dumbogram.Models.Files;
 [EntityTypeConfiguration(typeof(FileAnimationConfiguration))]
 public class FileAnimation : File
 {
+    public FileAnimation(File file)
+        : base(file)
+    {
+    }
+
+    public FileAnimation()
+    {
+    }
+
     public int Width { get; set; }
     public int Height { get; set; }
     public int Duration { get; set; }

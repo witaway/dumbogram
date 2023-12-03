@@ -6,6 +6,15 @@ namespace Dumbogram.Models.Files;
 [EntityTypeConfiguration(typeof(FilePhotoConfiguration))]
 public class FilePhoto : File
 {
+    public FilePhoto(File file)
+        : base(file)
+    {
+    }
+
+    public FilePhoto()
+    {
+    }
+
     public int Width { get; set; }
     public int Height { get; set; }
 }

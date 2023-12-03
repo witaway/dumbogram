@@ -7,10 +7,22 @@ namespace Dumbogram.Models.Files;
 [EntityTypeConfiguration(typeof(FileConfiguration))]
 public class File : BaseEntity
 {
+    public File()
+    {
+    }
+
+    protected File(File other)
+    {
+        Id = other.Id;
+        FilesGroupId = other.FilesGroupId;
+        OriginalFileName = other.OriginalFileName;
+        StoredFileName = other.StoredFileName;
+        MimeType = other.MimeType;
+        FileSize = other.FileSize;
+    }
+
     public Guid Id { get; private set; }
     public Guid? FilesGroupId { get; private set; }
-    public Guid? ThumbnailId { get; }
-
     public string? OriginalFileName { get; set; }
     public string StoredFileName { get; set; } = null!;
 
@@ -18,7 +30,6 @@ public class File : BaseEntity
     public int FileSize { get; set; }
 
     public FilesGroup? FilesGroup { get; set; }
-    public FilePhoto? Thumbnail { get; set; }
 }
 
 public class FileConfiguration : IEntityTypeConfiguration<File>
@@ -45,20 +56,10 @@ public class FileConfiguration : IEntityTypeConfiguration<File>
             .HasForeignKey(file => file.FilesGroupId)
             .HasPrincipalKey(filesGroup => filesGroup.Id);
 
-        builder
-            .OwnsOne(file => file.Thumbnail)
-            .WithOwner()
-            .HasForeignKey(e => e.Id)
-            .HasPrincipalKey(e => e.ThumbnailId);
-
         // Properties
         builder
             .Property(file => file.Id)
             .HasColumnName("id");
-
-        builder
-            .Property(file => file.ThumbnailId)
-            .HasColumnName("thumbnail_id");
 
         builder
             .Property(file => file.FilesGroupId)
