@@ -28,21 +28,27 @@ public class FileTransferService
         _fileStorageService = fileStorageService;
     }
 
-    private async Task<Result<File>> WriteFileAsync(StorageWriter.StorageWriter writer, FileMetadata fileMetadata, Stream source)
+    private async Task<Result<File>> WriteFileAsync(
+        StorageWriter.StorageWriter writer,
+        FileContainerAdapter fileContainer
+    )
     {
-        var filePath = Path.ChangeExtension(_fileStorageService.GenerateRelativeFilePath(), fileMetadata.Extension);
+        var fileMetadata = fileContainer.FileMetadata;
+        await using var destination = _fileStorageService.CreateFile(
+            out var filePath,
+            fileMetadata.Extension
+        );
+
         try
         {
-            await using var destination = _fileStorageService.CreateFile(filePath);
-
-            var savedFileMetadata = await writer.Write(fileMetadata, source, destination);
+            await writer.Write(fileContainer, destination);
             var savedFileInfo = _fileStorageService.GetFileInfo(filePath);
 
             return new File
             {
                 StoredFileName = filePath,
-                OriginalFileName = savedFileMetadata.TrustedFileNameForDisplay,
-                MimeType = savedFileMetadata.MimeType,
+                OriginalFileName = fileMetadata.TrustedFileNameForDisplay,
+                MimeType = fileMetadata.MimeType,
                 FileSize = (int)savedFileInfo.Length
             };
         }
@@ -64,20 +70,22 @@ public class FileTransferService
         }
     }
 
-    private async Task<Result<File>> WriteFileAsync(StorageWriter.StorageWriter writer, FileMultipartSection fileMultipartSection)
+    private async Task<Result<File>> WriteFileAsync(
+        StorageWriter.StorageWriter writer,
+        FileMultipartSection fileMultipartSection
+    )
     {
-        var fileMetadata = writer.GetMetadata(fileMultipartSection);
-        var fileStream = fileMultipartSection.FileStream;
-
-        return await WriteFileAsync(writer, fileMetadata, fileStream!);
+        var fileContainer = new FileContainerAdapter(fileMultipartSection);
+        return await WriteFileAsync(writer, fileContainer);
     }
 
-    private async Task<Result<File>> WriteFileAsync(StorageWriter.StorageWriter writer, IFormFile formFile)
+    private async Task<Result<File>> WriteFileAsync(
+        StorageWriter.StorageWriter writer,
+        IFormFile formFile
+    )
     {
-        var fileMetadata = writer.GetMetadata(formFile);
-        var fileStream = formFile.OpenReadStream();
-
-        return await WriteFileAsync(writer, fileMetadata, fileStream);
+        var fileContainer = new FileContainerAdapter(formFile);
+        return await WriteFileAsync(writer, fileContainer);
     }
 
     public async Task<List<File>> UploadMultipleLargeFiles(
@@ -114,7 +122,8 @@ public class FileTransferService
         return uploadedFiles;
     }
 
-    public async Task<List<File>> UploadMultipleSmallFiles(List<IFormFile> formFiles, StorageWriter.StorageWriter writer)
+    public async Task<List<File>> UploadMultipleSmallFiles(List<IFormFile> formFiles,
+        StorageWriter.StorageWriter writer)
     {
         var uploadedFiles = new List<File>();
 

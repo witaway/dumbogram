@@ -10,7 +10,7 @@ public class FileMetadata
     {
         OriginalFileName = Path.GetFileName(originalFilename);
 
-        TrustedFileNameForDisplay = sanitizeFileName(originalFilename);
+        TrustedFileNameForDisplay = SanitizeFileName(originalFilename);
 
         Extension = Path.GetExtension(OriginalFileName).ToLowerInvariant();
 
@@ -26,7 +26,7 @@ public class FileMetadata
     public string Extension { get; set; }
     public FileFormat FileFormat { get; set; }
 
-    private string sanitizeFileName(string fileName)
+    private static string SanitizeFileName(string fileName)
     {
         // Make sure user doesn't sent path to another directory. Just in case.
         var extractedFileName = Path.GetFileName(fileName);

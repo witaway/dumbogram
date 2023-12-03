@@ -13,8 +13,9 @@ public class FileStorageService
         FileSystem.CreateDirectory(_storagePath);
     }
 
-    public FileStream CreateFile(string relativeFilePath)
+    public FileStream CreateFile(out string relativeFilePath, string? extension = null)
     {
+        relativeFilePath = GenerateRelativeFilePath(extension);
         var absoluteFilePath = GetFullFilePath(relativeFilePath);
 
         return new FileStream(
@@ -51,9 +52,15 @@ public class FileStorageService
         return FileSystem.GetFileInfo(absoluteFilePath);
     }
 
-    public string GenerateRelativeFilePath()
+    private string GenerateRelativeFilePath(string? extension)
     {
-        return Guid.NewGuid().ToString();
+        var filename = Guid.NewGuid().ToString();
+        if (extension != null)
+        {
+            filename = Path.ChangeExtension(filename, extension);
+        }
+
+        return filename;
     }
 
     private string GetFullFilePath(string relativeFilePath)

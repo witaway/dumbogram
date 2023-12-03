@@ -1,6 +1,5 @@
 ﻿using Dumbogram.Application.Files.Services.Exceptions;
 using Dumbogram.Application.Files.Services.FileFormats;
-using Microsoft.AspNetCore.WebUtilities;
 
 namespace Dumbogram.Application.Files.Services.StorageWriter;
 
@@ -53,7 +52,7 @@ public class StorageWriter
         }
     }
 
-    public async Task<FileMetadata> Write(
+    private async Task Write(
         FileMetadata fileMetadata,
         Stream source,
         Stream destination
@@ -76,40 +75,14 @@ public class StorageWriter
                 ? new FileTypeIncorrectException(FileTypeIncorrectness.FileExtensionDoesNotMatchSignature)
                 : new FileTypeIncorrectException(FileTypeIncorrectness.FileSignatureIncorrect);
         }
-
-        return fileMetadata;
     }
 
-    public FileMetadata GetMetadata(IFormFile formFile)
+    public async Task Write(FileContainerAdapter fileContainer, Stream destination)
     {
-        var fileName = formFile.FileName;
-        var metadata = new FileMetadata(fileName);
-        metadata.AnnouncedLength = formFile.Length;
-        return metadata;
-    }
+        var fileMetadata = fileContainer.FileMetadata;
+        var fileStream = fileContainer.Stream;
 
-    public FileMetadata GetMetadata(FileMultipartSection fileMultipartSection)
-    {
-        var fileName = fileMultipartSection.FileName;
-        var metadata = new FileMetadata(fileName);
-        metadata.AnnouncedLength = fileMultipartSection.FileStream!.Length;
-        return metadata;
-    }
-
-    public async Task<FileMetadata> Write(IFormFile formFile, Stream destination)
-    {
-        var fileMetadata = GetMetadata(formFile);
-        var fileStream = formFile.OpenReadStream();
-
-        return await Write(fileMetadata, fileStream, destination);
-    }
-
-    public async Task<FileMetadata> Write(FileMultipartSection fileMultipartSection, Stream destination)
-    {
-        var fileMetadata = GetMetadata(fileMultipartSection);
-        var fileStream = fileMultipartSection.FileStream;
-
-        return await Write(fileMetadata, fileStream!, destination);
+        await Write(fileMetadata, fileStream, destination);
     }
 
     public StorageWriter MatchPolicy(FileFormatValidationPolicy fileFormatValidationPolicy)
