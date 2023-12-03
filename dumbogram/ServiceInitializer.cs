@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using Dumbogram.Application.Auth.Controllers.Dto;
 using Dumbogram.Application.Auth.Services;
 using Dumbogram.Application.Chats.Services;
+using Dumbogram.Application.Files.Services;
 using Dumbogram.Application.Messages.Services;
 using Dumbogram.Application.Users.Services;
 using Dumbogram.Database;
@@ -87,6 +88,13 @@ public static class ServiceInitializer
         services.AddScoped<MessagesService>();
         services.AddScoped<SystemMessagesService>();
         services.AddScoped<MessageActionsGuardService>();
+
+        // Files-related services
+        services.AddSingleton<FileStorageService>();
+        services.AddSingleton<FileTransferService>();
+        services.AddScoped<FileService>();
+        services.AddScoped<FilesGroupService>();
+        services.AddScoped<FileTransferService>();
     }
 
     private static void RegisterIdentity(IServiceCollection services)
@@ -151,7 +159,7 @@ public static class ServiceInitializer
         applicationDataSourceBuilder.MapEnum<SystemMessageType>();
         applicationDataSourceBuilder.UseNodaTime();
         var applicationDataSource = applicationDataSourceBuilder.Build();
-        
+
         services.AddDbContext<ApplicationDbContext>(
             options =>
             {
