@@ -30,5 +30,5 @@ public class UploadResultDto
     public int Number { get; set; }
     public string FileName { get; set; }
     public bool Success { get; set; }
-    public List<ErrorDto>? Errors { get; set; }
+    public List<ErrorDto> Errors { get; set; }
 }

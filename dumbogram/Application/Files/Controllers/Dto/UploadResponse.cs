@@ -5,15 +5,20 @@ namespace Dumbogram.Application.Files.Controllers.Dto;
 
 public class FilesUploadResponse : List<UploadResultDto>
 {
-    public FilesUploadResponse(Results<string, File> filesUploadResults)
+    private FilesUploadResponse(Results<string, File> filesUploadResults)
     {
         var allResults = filesUploadResults.GetAllResultsWithIdentity();
         var uploadResultDtos = allResults.Select(x => new UploadResultDto(x));
         AddRange(uploadResultDtos);
     }
 
-    public FilesUploadResponse(IEnumerable<UploadResultDto> uploadResultDtos)
+    private FilesUploadResponse(IEnumerable<UploadResultDto> uploadResultDtos)
     {
         AddRange(uploadResultDtos);
+    }
+
+    public static FilesUploadResponse Parse<TFile>(Results<string, TFile> filesUploadResults) where TFile : File
+    {
+        return new FilesUploadResponse((Results<string, File>)(object)filesUploadResults);
     }
 }

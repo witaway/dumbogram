@@ -29,10 +29,10 @@ public class FileTransferService
         _fileStorageService = fileStorageService;
     }
 
-    private async Task<Result<File>> WriteSingleFileAsync(
+    private async Task<Result<TFile>> WriteSingleFileAsync<TFile>(
         StorageWriter.StorageWriter writer,
         FileContainer fileContainer
-    )
+    ) where TFile : File, new()
     {
         var fileMetadata = fileContainer.FileMetadata;
         await using var destination = _fileStorageService.CreateFile(
@@ -45,7 +45,7 @@ public class FileTransferService
             await writer.Write(fileContainer, destination);
             var savedFileInfo = _fileStorageService.GetFileInfo(filePath);
 
-            return new File
+            return new TFile
             {
                 StoredFileName = filePath,
                 OriginalFileName = fileMetadata.TrustedFileNameForDisplay,
@@ -73,13 +73,13 @@ public class FileTransferService
         }
     }
 
-    private async Task<Results<string, File>> WriteMultipleFilesAsync(
+    private async Task<Results<string, TFile>> WriteMultipleFilesAsync<TFile>(
         StorageWriter.StorageWriter writer,
         IAsyncEnumerable<FileContainer> fileContainers,
         int uploadsLimit = int.MaxValue
-    )
+    ) where TFile : File, new()
     {
-        var uploadedFiles = new Results<string, File>();
+        var uploadedFiles = new Results<string, TFile>();
         var successfullyUploadedCount = 0;
 
         await foreach (var fileContainer in fileContainers)
@@ -93,7 +93,7 @@ public class FileTransferService
                 continue;
             }
 
-            var writeFileResult = await WriteSingleFileAsync(writer, fileContainer);
+            var writeFileResult = await WriteSingleFileAsync<TFile>(writer, fileContainer);
             if (writeFileResult.IsSuccess) successfullyUploadedCount++;
             uploadedFiles.Add(fileName, writeFileResult);
         }
@@ -101,11 +101,11 @@ public class FileTransferService
         return uploadedFiles;
     }
 
-    public async Task<Results<string, File>> UploadLargeFiles(
+    public async Task<Results<string, TFile>> UploadLargeFiles<TFile>(
         HttpRequest request,
         StorageWriter.StorageWriter writer,
         int uploadsLimit = int.MaxValue
-    )
+    ) where TFile : File, new()
     {
         var contentType = request.ContentType ?? "";
 
@@ -122,21 +122,21 @@ public class FileTransferService
         var multipartReader = new MultipartReader(boundary, request.Body);
 
         var fileContainers = multipartReader.GetFileContainers();
-        var uploadedFilesResults = await WriteMultipleFilesAsync(writer, fileContainers, uploadsLimit);
+        var uploadedFilesResults = await WriteMultipleFilesAsync<TFile>(writer, fileContainers, uploadsLimit);
 
         return uploadedFilesResults;
     }
 
-    public async Task<Results<string, File>> UploadSmallFiles(
+    public async Task<Results<string, TFile>> UploadSmallFiles<TFile>(
         HttpRequest request,
         StorageWriter.StorageWriter writer,
         int uploadsLimit = int.MaxValue
-    )
+    ) where TFile : File, new()
     {
         var formFiles = request.Form.Files;
 
         var fileContainers = formFiles.GetFileContainers();
-        var uploadedFilesResults = await WriteMultipleFilesAsync(writer, fileContainers, uploadsLimit);
+        var uploadedFilesResults = await WriteMultipleFilesAsync<TFile>(writer, fileContainers, uploadsLimit);
 
         return uploadedFilesResults;
     }

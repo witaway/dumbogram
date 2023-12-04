@@ -7,6 +7,7 @@ using Dumbogram.Infrasctructure.Filters;
 using Dumbogram.Models.Files;
 using Microsoft.AspNetCore.Mvc;
 using SkiaSharp;
+using File = Dumbogram.Models.Files.File;
 
 namespace Dumbogram.Application.Files.Controllers;
 
@@ -56,10 +57,9 @@ public class FileController : ApplicationController
             .MatchPolicy(FileFormatValidationPolicy.ValidateByExtensionAndSignature)
             .AddFileFormats(FileFormatGroups.Photo);
 
-        var filesResults = await _fileTransferService.UploadSmallFiles(Request, writer, 3);
+        var filesResults = await _fileTransferService.UploadSmallFiles<FilePhoto>(Request, writer, 3);
 
-        var uploadedFiles = filesResults.GetSucceededValues();
-        var uploadedPhotoFiles = new List<FilePhoto>();
+        var uploadedFiles = filesResults.GetSucceededValues().ToList();
 
         foreach (var file in uploadedFiles)
         {
@@ -69,18 +69,13 @@ public class FileController : ApplicationController
             var width = bitmap.Width;
             var height = bitmap.Height;
 
-            var filePhoto = new FilePhoto(file, new FilePhotoMetadata
-            {
-                Width = width,
-                Height = height
-            });
-
-            uploadedPhotoFiles.Add(filePhoto);
+            file.Metadata.Width = width;
+            file.Metadata.Height = height;
         }
 
-        await _fileService.AddFilesRange(uploadedPhotoFiles);
+        await _fileService.AddFilesRange(uploadedFiles);
 
-        var response = new FilesUploadResponse(filesResults);
+        var response = FilesUploadResponse.Parse(filesResults);
         return Created("", response);
     }
 
@@ -94,12 +89,12 @@ public class FileController : ApplicationController
         var writer = new StorageWriter()
             .MatchPolicy(FileFormatValidationPolicy.DoNotValidate);
 
-        var filesResults = await _fileTransferService.UploadLargeFiles(Request, writer);
+        var filesResults = await _fileTransferService.UploadLargeFiles<File>(Request, writer);
 
         var uploadedFiles = filesResults.GetSucceededValues();
         await _fileService.AddFilesRange(uploadedFiles);
 
-        var response = new FilesUploadResponse(filesResults);
+        var response = FilesUploadResponse.Parse(filesResults);
         return Created("", response);
     }
 }
