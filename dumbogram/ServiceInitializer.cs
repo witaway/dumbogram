@@ -87,6 +87,7 @@ public static class ServiceInitializer
         services.AddScoped<ChatVisibilityService>();
 
         // Messages-related services
+        services.AddScoped<MessageContentBuilderService>();
         services.AddScoped<MessagesService>();
         services.AddScoped<SystemMessagesService>();
         services.AddScoped<MessageActionsGuardService>();

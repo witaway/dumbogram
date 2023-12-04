@@ -15,18 +15,21 @@ namespace Dumbogram.Application.Messages.Controllers;
 public class MessagesController : ApplicationController
 {
     private readonly ChatService _chatService;
+    private readonly MessageContentBuilderService _messageContentBuilderService;
     private readonly MessagesService _messagesService;
     private readonly UserResolverService _userResolverService;
 
     public MessagesController(
         UserResolverService userResolverService,
         MessagesService messagesService,
-        ChatService chatService
+        ChatService chatService,
+        MessageContentBuilderService messageContentBuilderService
     )
     {
         _userResolverService = userResolverService;
         _messagesService = messagesService;
         _chatService = chatService;
+        _messageContentBuilderService = messageContentBuilderService;
     }
 
     [HttpGet("{messageId:Guid}", Name = nameof(ReadSingleMessage))]
@@ -80,7 +83,7 @@ public class MessagesController : ApplicationController
     }
 
     [HttpPost(Name = nameof(SendSingleMessage))]
-    public async Task<IActionResult> SendSingleMessage(Guid chatId, [FromBody] SendSingleMessageRequest request)
+    public async Task<IActionResult> SendSingleMessage(Guid chatId, [FromBody] MessageContentRequest request)
     {
         var subjectUser = await _userResolverService.GetApplicationUser();
 
@@ -92,7 +95,7 @@ public class MessagesController : ApplicationController
 
         var chat = chatResult.Value;
 
-        var messageContentResult = new UserMessageContentBuilder(request).Build();
+        var messageContentResult = await _messageContentBuilderService.BuildMessageContent(subjectUser, request);
 
         if (messageContentResult.IsFailed)
         {
@@ -103,8 +106,8 @@ public class MessagesController : ApplicationController
         {
             Chat = chat,
             SenderProfile = subjectUser,
-            Content = messageContentResult.Value,
-            RepliedMessageId = request.ReplyTo
+            Content = messageContentResult.Value
+            // RepliedMessageId = request.ReplyTo
         };
 
         var sendMessageResult = await _messagesService.SendMessage(subjectUser, message);

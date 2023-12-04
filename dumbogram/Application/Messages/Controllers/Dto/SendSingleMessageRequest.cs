@@ -1,14 +1,14 @@
-﻿using Dumbogram.Models.Messages;
-using FluentValidation;
+﻿using FluentValidation;
 
 namespace Dumbogram.Application.Messages.Controllers.Dto;
 
-public class SendSingleMessageRequest : UserMessageContent
+public class MessageContentRequest
 {
-    public int? ReplyTo { get; set; }
+    public string? Text { get; set; }
+    public Guid? AttachedPhotosGroupId { get; set; }
 }
 
-public class SendSingleMessageRequestValidator : AbstractValidator<SendSingleMessageRequest>
+public class SendSingleMessageRequestValidator : AbstractValidator<MessageContentRequest>
 {
     public SendSingleMessageRequestValidator()
     {
