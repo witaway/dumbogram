@@ -57,12 +57,7 @@ public class FileController : ApplicationController
 
         var group = await _filesGroupService.CreateFilesGroup(subjectUser, groupType);
 
-        FilesUploadResponse? uploadDto = null;
-
-        if (Request.Form.Files.Count > 0)
-        {
-            uploadDto = await _uploadService.UploadIntoGroup(group);
-        }
+        var uploadDto = await _uploadService.UploadIntoGroup(group);
 
         var response = new CreateSingleGroupRequest(group, uploadDto);
         return Created("", response);
