@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using Dumbogram.Application.Auth.Controllers.Dto;
 using Dumbogram.Application.Auth.Services;
 using Dumbogram.Application.Chats.Services;
+using Dumbogram.Application.Files.Controllers;
 using Dumbogram.Application.Files.Services;
 using Dumbogram.Application.Messages.Services;
 using Dumbogram.Application.Users.Services;
@@ -93,6 +94,7 @@ public static class ServiceInitializer
         // Files-related services
         services.AddSingleton<FileStorageService>();
         services.AddSingleton<FileTransferService>();
+        services.AddScoped<UploadService>();
         services.AddScoped<FileService>();
         services.AddScoped<FilesGroupService>();
         services.AddScoped<FileTransferService>();

@@ -29,7 +29,7 @@ public class MessagesController : ApplicationController
         _chatService = chatService;
     }
 
-    [HttpGet("{messageId:int}", Name = nameof(ReadSingleMessage))]
+    [HttpGet("{messageId:Guid}", Name = nameof(ReadSingleMessage))]
     public async Task<IActionResult> ReadSingleMessage(Guid chatId, int messageId)
     {
         var subjectUser = await _userResolverService.GetApplicationUser();

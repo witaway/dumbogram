@@ -1,6 +1,8 @@
-﻿using Dumbogram.Application.Files.Services.Errors;
+﻿using Dumbogram.Application.Chats.Services.Errors;
+using Dumbogram.Application.Files.Services.Errors;
 using Dumbogram.Database;
 using Dumbogram.Models.Files;
+using Dumbogram.Models.Users;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
 using File = Dumbogram.Models.Files.File;
@@ -22,10 +24,17 @@ public class FilesGroupService
         _dbContext = dbContext;
     }
 
-    public async Task CreateFilesGroup(FilesGroup filesGroup)
+    public async Task<FilesGroup> CreateFilesGroup(UserProfile subjectUser, FilesGroupType groupType)
     {
+        var filesGroup = new FilesGroup
+        {
+            Owner = subjectUser,
+            GroupType = groupType
+        };
         _dbContext.FilesGroups.Add(filesGroup);
         await _dbContext.SaveChangesAsync();
+
+        return (await GetFilesGroupById(filesGroup.Id))!;
     }
 
     public async Task DeleteFilesGroup(FilesGroup filesGroup)
@@ -47,6 +56,7 @@ public class FilesGroupService
     public async Task<Result<FilesGroup>> RequestFilesGroupById(Guid filesGroupId)
     {
         var filesGroup = await GetFilesGroupById(filesGroupId);
+
         if (filesGroup == null)
         {
             return Result.Fail(new FilesGroupNotExistError());
@@ -55,9 +65,42 @@ public class FilesGroupService
         return Result.Ok(filesGroup);
     }
 
+    public async Task<Result<FilesGroup>> RequestOwnedFilesGroupById(UserProfile subjectUser, Guid filesGroupId)
+    {
+        var filesGroup = await GetFilesGroupById(filesGroupId);
+
+        if (filesGroup == null)
+        {
+            return Result.Fail(new FilesGroupNotExistError());
+        }
+
+        if (filesGroup.Owner != subjectUser)
+        {
+            return Result.Fail(new NotEnoughRightsError());
+        }
+
+        return Result.Ok(filesGroup);
+    }
+
     public async Task AddFileToFilesGroup(FilesGroup filesGroup, File file)
     {
         filesGroup.Files.Add(file);
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task AddFilesRangeToFilesGroup(FilesGroup filesGroup, IEnumerable<File> files)
+    {
+        foreach (var file in files)
+        {
+            filesGroup.Files.Add(file);
+        }
+
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task RemoveFileFromFilesGroup(FilesGroup filesGroup, File file)
+    {
+        filesGroup.Files.Remove(file);
         await _dbContext.SaveChangesAsync();
     }
 }
