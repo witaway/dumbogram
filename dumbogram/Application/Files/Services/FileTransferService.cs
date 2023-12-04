@@ -82,7 +82,7 @@ public class FileTransferService
         var uploadedFiles = new Results<string, TFile>();
         var successfullyUploadedCount = 0;
 
-        await foreach (var fileContainer in fileContainers)
+        foreach (var fileContainer in fileContainers.ToBlockingEnumerable())
         {
             var fileName = fileContainer.Filename;
 

@@ -50,8 +50,8 @@ public class UploadService
     {
         var writer = new StorageWriter()
             .SetFileFormatValidationPolicy(FileFormatValidationPolicy.ValidateByExtensionAndSignature)
-            .AddPermittedFileFormats(FileFormatGroups.Photo)
-            .SetFileLengthLimit(50_000);
+            .AddPermittedFileFormats(FileFormatGroups.Photo);
+        // .SetFileLengthLimit(50_000);
 
         var filesQuantityLimit = FilesGroupLimits.GetFilesQuantityLimit(group.GroupType);
         var uploadsLimit = filesQuantityLimit - group.Files.Count();

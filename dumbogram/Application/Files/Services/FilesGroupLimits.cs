@@ -4,7 +4,7 @@ public static class FilesGroupLimits
 {
     private static readonly Dictionary<FilesGroupType, int> FilesQuantityLimit = new()
     {
-        { FilesGroupType.AttachedPhotos, 10 },
+        { FilesGroupType.AttachedPhotos, 4 },
         { FilesGroupType.AttachedVideos, 5 },
         { FilesGroupType.AttachedDocuments, 5 }
     };

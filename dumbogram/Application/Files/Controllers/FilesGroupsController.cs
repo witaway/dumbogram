@@ -42,6 +42,7 @@ public class FileController : ApplicationController
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
     [MultipartFormData]
+    [DisableRequestSizeLimit]
     [DisableFormValueModelBinding]
     public async Task<IActionResult> CreateGroup([FromQuery(Name = "group_type")] string groupTypeName)
     {
@@ -88,6 +89,7 @@ public class FileController : ApplicationController
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
     [MultipartFormData]
+    [DisableRequestSizeLimit]
     [DisableFormValueModelBinding]
     public async Task<IActionResult> UploadFilesToGroup(Guid groupId)
     {
