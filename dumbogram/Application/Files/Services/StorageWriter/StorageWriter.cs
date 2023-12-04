@@ -6,9 +6,11 @@ namespace Dumbogram.Application.Files.Services.StorageWriter;
 public class StorageWriter
 {
     private readonly List<FileFormat> _permittedFileFormats = new();
-    private FileFormatValidationPolicy _fileFormatMatchPolicy = FileFormatValidationPolicy.DoNotValidate;
 
-    private long LengthLimitBytes { get; } = long.MaxValue;
+    private FileFormatValidationPolicy _fileFormatMatchPolicy =
+        FileFormatValidationPolicy.DoNotValidate;
+
+    private long LengthLimitBytes { get; set; } = long.MaxValue;
 
     private bool ShouldValidateExtension =>
         _fileFormatMatchPolicy != FileFormatValidationPolicy.ValidateBySignatureOnly &&
@@ -44,7 +46,8 @@ public class StorageWriter
     {
         if (ShouldValidateSignature)
         {
-            var signatures = _fileFormatMatchPolicy == FileFormatValidationPolicy.ValidateByExtensionAndSignatureStrict
+            var signatures = _fileFormatMatchPolicy ==
+                             FileFormatValidationPolicy.ValidateByExtensionAndSignatureStrict
                 ? FileFormatSignatures.GetSignatures(fileFormat)
                 : FileFormatSignatures.GetSignatures(_permittedFileFormats);
 
@@ -85,19 +88,25 @@ public class StorageWriter
         await Write(fileMetadata, fileStream, destination);
     }
 
-    public StorageWriter MatchPolicy(FileFormatValidationPolicy fileFormatValidationPolicy)
+    public StorageWriter SetFileFormatValidationPolicy(FileFormatValidationPolicy fileFormatValidationPolicy)
     {
         _fileFormatMatchPolicy = fileFormatValidationPolicy;
         return this;
     }
 
-    public StorageWriter AddFileFormats(IEnumerable<FileFormat> fileFormats)
+    public StorageWriter SetFileLengthLimit(long bytes)
+    {
+        LengthLimitBytes = bytes;
+        return this;
+    }
+
+    public StorageWriter AddPermittedFileFormats(IEnumerable<FileFormat> fileFormats)
     {
         _permittedFileFormats.AddRange(fileFormats);
         return this;
     }
 
-    public StorageWriter AddFileFormat(FileFormat fileFormat)
+    public StorageWriter AddPermittedFileFormat(FileFormat fileFormat)
     {
         _permittedFileFormats.Add(fileFormat);
         return this;

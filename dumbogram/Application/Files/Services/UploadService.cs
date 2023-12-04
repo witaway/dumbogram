@@ -49,8 +49,9 @@ public class UploadService
     private async Task<FilesUploadResponse> UploadPhoto(FilesGroup group)
     {
         var writer = new StorageWriter()
-            .MatchPolicy(FileFormatValidationPolicy.ValidateByExtensionAndSignature)
-            .AddFileFormats(FileFormatGroups.Photo);
+            .SetFileFormatValidationPolicy(FileFormatValidationPolicy.ValidateByExtensionAndSignature)
+            .AddPermittedFileFormats(FileFormatGroups.Photo)
+            .SetFileLengthLimit(50_000);
 
         var filesQuantityLimit = FilesGroupLimits.GetFilesQuantityLimit(group.GroupType);
         var uploadsLimit = filesQuantityLimit - group.Files.Count();
@@ -86,7 +87,7 @@ public class UploadService
     private async Task<FilesUploadResponse> UploadDocument(FilesGroup group)
     {
         var writer = new StorageWriter()
-            .MatchPolicy(FileFormatValidationPolicy.DoNotValidate);
+            .SetFileFormatValidationPolicy(FileFormatValidationPolicy.DoNotValidate);
 
         var filesQuantityLimit = FilesGroupLimits.GetFilesQuantityLimit(group.GroupType);
         var uploadsLimit = filesQuantityLimit - group.Files.Count();
