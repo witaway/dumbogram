@@ -40,18 +40,18 @@ public class UploadService
     {
         return group.GroupType switch
         {
-            FilesGroupType.AttachedPhotos => await UploadPhoto(group),
-            FilesGroupType.AttachedDocuments => await UploadDocument(group),
+            FilesGroupType.AttachedPhotos => await UploadPhotos(group),
+            FilesGroupType.AttachedDocuments => await UploadDocuments(group),
             _ => throw new SwitchExpressionException()
         };
     }
 
-    private async Task<FilesUploadResponse> UploadPhoto(FilesGroup group)
+    private async Task<FilesUploadResponse> UploadPhotos(FilesGroup group)
     {
         var writer = new StorageWriter()
             .SetFileFormatValidationPolicy(FileFormatValidationPolicy.ValidateByExtensionAndSignature)
-            .AddPermittedFileFormats(FileFormatGroups.Photo);
-        // .SetFileLengthLimit(50_000);
+            .AddPermittedFileFormats(FileFormatGroups.Photo)
+            .SetFileLengthLimit(50_000);
 
         var filesQuantityLimit = FilesGroupLimits.GetFilesQuantityLimit(group.GroupType);
         var uploadsLimit = filesQuantityLimit - group.Files.Count();
@@ -84,7 +84,7 @@ public class UploadService
     }
 
 
-    private async Task<FilesUploadResponse> UploadDocument(FilesGroup group)
+    private async Task<FilesUploadResponse> UploadDocuments(FilesGroup group)
     {
         var writer = new StorageWriter()
             .SetFileFormatValidationPolicy(FileFormatValidationPolicy.DoNotValidate);

@@ -1,5 +1,6 @@
 ﻿using Dumbogram.Application.Files.Services;
 using Dumbogram.Application.Messages.Controllers.Dto;
+using Dumbogram.Application.Messages.Services.Errors;
 using Dumbogram.Database;
 using Dumbogram.Models.Files;
 using Dumbogram.Models.Messages;
@@ -56,7 +57,7 @@ public class MessageContentBuilderService
 
             if (attachedPhotosGroup.GroupType != FilesGroupType.AttachedPhotos)
             {
-                return Result.Fail("Incorrect group type");
+                return Result.Fail(new BadMessageContent());
             }
 
             content.AttachedPhotosGroupId = (Guid)attachedPhotosGroupId;
@@ -69,7 +70,7 @@ public class MessageContentBuilderService
 
         if (propertiesSet == 0)
         {
-            return Result.Fail("Message cannot be empty");
+            return Result.Fail(new MessageCannotBeEmpty());
         }
 
         return Result.Ok(content);

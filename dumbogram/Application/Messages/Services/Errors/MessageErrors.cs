@@ -10,3 +10,19 @@ public class MessageNotFoundError : ApplicationApiError
     {
     }
 }
+
+public class MessageCannotBeEmpty : ApplicationApiError
+{
+    public MessageCannotBeEmpty()
+        : base(nameof(MessageCannotBeEmpty), HttpStatusCode.BadRequest)
+    {
+    }
+}
+
+public class BadMessageContent : ApplicationApiError
+{
+    public BadMessageContent()
+        : base(nameof(BadMessageContent), HttpStatusCode.BadRequest)
+    {
+    }
+}
