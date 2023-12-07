@@ -33,6 +33,11 @@ public static class Extension
             throw new Exception();
         }
 
+        if (cursor.Take == 0)
+        {
+            throw new Exception();
+        }
+
         var total = await query.CountAsync(token);
         var sortDirection = GetDirection(cursor.Direction, cursor.Type);
 
