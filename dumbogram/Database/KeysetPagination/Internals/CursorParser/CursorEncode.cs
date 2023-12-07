@@ -7,11 +7,11 @@ namespace Dumbogram.Database.KeysetPagination;
 
 public partial class Cursor<TEntity> where TEntity : BaseEntity
 {
-    public static string Encode(KeysetOrder<TEntity> keysetOrder, TEntity entity)
+    public static string Encode(Keyset<TEntity> keyset, TEntity entity)
     {
         var jsonElement = new JsonObject();
 
-        foreach (var column in keysetOrder.Columns)
+        foreach (var column in keyset.Columns)
         {
             var propertyName = column.Name;
 

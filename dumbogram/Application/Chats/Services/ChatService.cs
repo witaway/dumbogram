@@ -94,7 +94,7 @@ public class ChatService
     /// </summary>
     /// <param name="userProfile"></param>
     /// <returns></returns>
-    public async Task<PagedList<Chat>> ReadAllPublicOrAccessibleChats(UserProfile userProfile, KeysetOrder<Chat> keyset,
+    public async Task<PagedList<Chat>> ReadAllPublicOrAccessibleChats(UserProfile userProfile, Keyset<Chat> keyset,
         Cursor<Chat> cursor)
     {
         return await _dbContext

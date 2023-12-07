@@ -35,26 +35,26 @@ public class ChatsPagingQuery
 
         if (PrevPageToken != null)
         {
-            return Cursor<Chat>.Decode(GetKeyset(), PrevPageToken, KeysetPaginationDirection.Backward, Take);
+            return Cursor<Chat>.Decode(GetKeyset(), PrevPageToken, PaginationDirection.Backward, Take);
         }
 
         if (NextPageToken != null)
         {
-            return Cursor<Chat>.Decode(GetKeyset(), NextPageToken, KeysetPaginationDirection.Forward, Take);
+            return Cursor<Chat>.Decode(GetKeyset(), NextPageToken, PaginationDirection.Forward, Take);
         }
 
         throw new Exception();
     }
 
-    public KeysetOrder<Chat> GetKeyset()
+    public Keyset<Chat> GetKeyset()
     {
         return SortBy switch
         {
-            "latest" => new KeysetOrder<Chat>()
+            "latest" => new Keyset<Chat>()
                 .Descending(m => m.CreatedDate)
                 .Ascending(m => m.Id),
 
-            "oldest" => new KeysetOrder<Chat>()
+            "oldest" => new Keyset<Chat>()
                 .Ascending(m => m.CreatedDate)
                 .Ascending(m => m.Id),
 

@@ -11,12 +11,12 @@ public interface IKeysetColumnOrder<TEntity>
 
     public IOrderedQueryable<TEntity> ApplyOrderBy(
         IQueryable<TEntity> query,
-        KeysetPaginationDirection direction
+        PaginationDirection direction
     );
 
     public IOrderedQueryable<TEntity> ApplyThenOrderBy(
         IOrderedQueryable<TEntity> query,
-        KeysetPaginationDirection direction
+        PaginationDirection direction
     );
 }
 
@@ -38,7 +38,7 @@ public class KeysetColumnOrder<TEntity, TColumn> : KeysetColumn<TEntity, TColumn
 
     public IOrderedQueryable<TEntity> ApplyOrderBy(
         IQueryable<TEntity> query,
-        KeysetPaginationDirection direction
+        PaginationDirection direction
     )
     {
         return ApplyOrderByVariant(
@@ -49,7 +49,7 @@ public class KeysetColumnOrder<TEntity, TColumn> : KeysetColumn<TEntity, TColumn
 
     public IOrderedQueryable<TEntity> ApplyThenOrderBy(
         IOrderedQueryable<TEntity> query,
-        KeysetPaginationDirection direction
+        PaginationDirection direction
     )
     {
         return ApplyOrderByVariant(
@@ -60,12 +60,12 @@ public class KeysetColumnOrder<TEntity, TColumn> : KeysetColumn<TEntity, TColumn
 
     private IOrderedQueryable<TEntity> ApplyOrderByVariant<TQueryable>(
         TQueryable query,
-        KeysetPaginationDirection direction,
+        PaginationDirection direction,
         Func<TQueryable, Expression<Func<TEntity, TColumn>>, IOrderedQueryable<TEntity>> ascendingVariant,
         Func<TQueryable, Expression<Func<TEntity, TColumn>>, IOrderedQueryable<TEntity>> descendingVariant)
         where TQueryable : IQueryable<TEntity>
     {
-        var isDescending = direction == KeysetPaginationDirection.Backward
+        var isDescending = direction == PaginationDirection.Backward
             ? Order == KeysetColumnOrder.Descending
             : Order == KeysetColumnOrder.Ascending;
 

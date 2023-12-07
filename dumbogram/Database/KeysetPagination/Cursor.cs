@@ -13,15 +13,15 @@ public enum CursorType
 public partial class Cursor<TEntity> where TEntity : BaseEntity
 {
     public readonly List<IKeysetColumnValue<TEntity>> Values = new();
-    public KeysetPaginationDirection Direction;
-    public KeysetOrder<TEntity> KeysetOrder;
+    public PaginationDirection Direction;
+    public Keyset<TEntity> Keyset;
     public int Take;
     public CursorType Type;
 
 
-    public Cursor(KeysetOrder<TEntity> keysetOrder, KeysetPaginationDirection direction, int take)
+    public Cursor(Keyset<TEntity> keyset, PaginationDirection direction, int take)
     {
-        KeysetOrder = keysetOrder;
+        Keyset = keyset;
         Direction = direction;
         Take = take;
         Type = CursorType.Default;

@@ -3,15 +3,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Dumbogram.Database.KeysetPagination;
 
-public static class Extension
+public static class EFCoreExtension
 {
-    private static KeysetPaginationDirection GetDirection(KeysetPaginationDirection direction, CursorType cursorType)
+    private static PaginationDirection GetDirection(PaginationDirection direction, CursorType cursorType)
     {
         if (cursorType == CursorType.Last)
         {
-            direction = direction == KeysetPaginationDirection.Backward
-                ? KeysetPaginationDirection.Forward
-                : KeysetPaginationDirection.Backward;
+            direction = direction == PaginationDirection.Backward
+                ? PaginationDirection.Forward
+                : PaginationDirection.Backward;
         }
 
         return direction;
@@ -19,7 +19,7 @@ public static class Extension
 
     public static async Task<PagedList<TEntity>> ToPagedListAsync<TEntity>(
         this IQueryable<TEntity> query,
-        KeysetOrder<TEntity> keysetOrder,
+        Keyset<TEntity> keyset,
         Cursor<TEntity> cursor,
         CancellationToken token = default) where TEntity : BaseEntity
     {
@@ -28,7 +28,7 @@ public static class Extension
             throw new Exception();
         }
 
-        if (keysetOrder.Columns.Count == 0)
+        if (keyset.Columns.Count == 0)
         {
             throw new Exception();
         }
@@ -41,7 +41,7 @@ public static class Extension
         var total = await query.CountAsync(token);
         var sortDirection = GetDirection(cursor.Direction, cursor.Type);
 
-        var columns = keysetOrder.Columns;
+        var columns = keyset.Columns;
 
         var orderedQuery = columns[0]
             .ApplyOrderBy(query, sortDirection);
@@ -54,7 +54,7 @@ public static class Extension
         var filteredQuery = orderedQuery.AsQueryable();
         if (cursor.Type == CursorType.Default)
         {
-            var filter = CBuildExpression<TEntity>.BuildExpression(keysetOrder, cursor.Direction, cursor);
+            var filter = ExpressionBuilder<TEntity>.BuildFilterExpression(keyset, cursor.Direction, cursor);
             filteredQuery = filteredQuery.Where(filter);
         }
 
@@ -66,23 +66,23 @@ public static class Extension
         {
             var pagedResult = new PagedList<TEntity>(result.Slice(0, Math.Min(cursor.Take, result.Count)), total);
 
-            if (cursor.Type == CursorType.Last || cursor.Direction == KeysetPaginationDirection.Backward)
+            if (cursor.Type == CursorType.Last || cursor.Direction == PaginationDirection.Backward)
             {
                 pagedResult.Reverse();
             }
 
-            pagedResult.Forward = Cursor<TEntity>.Encode(keysetOrder, pagedResult.Last());
+            pagedResult.Forward = Cursor<TEntity>.Encode(keyset, pagedResult.Last());
             if (cursor.Type == CursorType.Last || (
-                    cursor.Direction == KeysetPaginationDirection.Forward &&
+                    cursor.Direction == PaginationDirection.Forward &&
                     result.Count < cursor.Take + 1
                 ))
             {
                 pagedResult.Forward = null;
             }
 
-            pagedResult.Backward = Cursor<TEntity>.Encode(keysetOrder, pagedResult.First());
+            pagedResult.Backward = Cursor<TEntity>.Encode(keyset, pagedResult.First());
             if (cursor.Type == CursorType.First || (
-                    cursor.Direction == KeysetPaginationDirection.Backward &&
+                    cursor.Direction == PaginationDirection.Backward &&
                     result.Count < cursor.Take + 1
                 ))
             {
