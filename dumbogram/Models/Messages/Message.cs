@@ -9,9 +9,9 @@ namespace Dumbogram.Models.Messages;
 [EntityTypeConfiguration(typeof(ChatMessageConfiguration))]
 public class Message : BaseEntity
 {
-    public int Id { get; private set; }
-    public Guid ChatId { get; private set; }
-    public Guid? SenderId { get; private set; }
+    public int Id { get; set; }
+    public Guid ChatId { get; set; }
+    public Guid? SenderId { get; set; }
 
     public Chat Chat { get; set; } = null!;
     public UserProfile? SenderProfile { get; set; }

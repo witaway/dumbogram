@@ -1,5 +1,6 @@
 ﻿using Dumbogram.Application.Chats.Services.Errors;
 using Dumbogram.Database;
+using Dumbogram.Database.KeysetPagination;
 using Dumbogram.Models.Chats;
 using Dumbogram.Models.Users;
 using FluentResults;
@@ -9,6 +10,10 @@ namespace Dumbogram.Application.Chats.Services;
 
 public class ChatService
 {
+    public static KeysetOrder<Chat> ChatsKeyset = new KeysetOrder<Chat>()
+        .Descending(m => m.CreatedDate)
+        .Ascending(m => m.Id);
+
     private readonly ChatMembershipService _chatMembershipService;
     private readonly ApplicationDbContext _dbContext;
 
@@ -93,9 +98,9 @@ public class ChatService
     /// </summary>
     /// <param name="userProfile"></param>
     /// <returns></returns>
-    public async Task<IEnumerable<Chat>> ReadAllPublicOrAccessibleChats(UserProfile userProfile)
+    public async Task<PagedList<Chat>> ReadAllPublicOrAccessibleChats(UserProfile userProfile, Cursor<Chat> cursor)
     {
-        var query = _dbContext
+        return await _dbContext
             .Chats
             .Where(chat => chat.ChatVisibility == ChatVisibility.Public ||
                            chat.OwnerProfile == userProfile ||
@@ -104,9 +109,7 @@ public class ChatService
                                    membership.MemberId == userProfile.UserId &&
                                    membership.MembershipStatus == MembershipStatus.Joined
                            )
-            );
-
-        return await query.ToListAsync();
+            ).ToPagedListAsync(ChatsKeyset, cursor);
     }
 
     /// <summary>

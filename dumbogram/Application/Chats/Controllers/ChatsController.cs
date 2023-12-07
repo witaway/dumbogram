@@ -2,6 +2,7 @@
 using Dumbogram.Application.Chats.Services;
 using Dumbogram.Application.Messages.Services;
 using Dumbogram.Application.Users.Services;
+using Dumbogram.Database.KeysetPagination;
 using Dumbogram.Infrasctructure.Controller;
 using Dumbogram.Infrasctructure.Dto;
 using Dumbogram.Models.Chats;
@@ -9,6 +10,44 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dumbogram.Application.Chats.Controllers;
+
+public class ChatsPagingQuery
+{
+    public int Take { get; set; }
+    public bool? First { get; set; }
+    public bool? Last { get; set; }
+    public string? PrevPageToken { get; set; }
+    public string? NextPageToken { get; set; }
+
+    public Cursor<Chat> GetCursor()
+    {
+        if (First != null)
+        {
+            return Cursor<Chat>.First(Take);
+        }
+
+        if (Last != null)
+        {
+            return Cursor<Chat>.Last(Take);
+        }
+
+        if (PrevPageToken != null)
+        {
+            return Cursor<Chat>.Decode(ChatService.ChatsKeyset, PrevPageToken, KeysetPaginationDirection.Backward,
+                Take);
+        }
+
+        if (NextPageToken != null)
+        {
+            return Cursor<Chat>.Decode(ChatService.ChatsKeyset, NextPageToken, KeysetPaginationDirection.Forward,
+                Take);
+        }
+
+        throw new Exception();
+        // PagingOptions<Message>.Before(x => x.Id, 1).Take(10);
+        // throw new SwitchExpressionException();
+    }
+}
 
 [Authorize]
 [Route("/api/chats", Name = "Chats")]
@@ -43,14 +82,22 @@ public class ChatsController : ApplicationController
         StatusCodes.Status200OK, Type = typeof(ResponseSuccess<ReadMultipleChatsShortInfoResponse>)
     )]
     [HttpGet("search", Name = nameof(ReadAllChats))]
-    public async Task<IActionResult> ReadAllChats()
+    public async Task<IActionResult> ReadAllChats([FromQuery] ChatsPagingQuery pagingQuery)
     {
         var userProfile = await _userResolverService.GetApplicationUser();
 
-        var chats = await _chatService.ReadAllPublicOrAccessibleChats(userProfile!);
-        var chatsDto = new ReadMultipleChatsShortInfoResponse(chats);
+        var chats = await _chatService.ReadAllPublicOrAccessibleChats(userProfile!, pagingQuery.GetCursor());
+        return Ok(new
+        {
+            Chats = chats.Select(chat => new ReadSingleChatShortInfoResponse(chat)),
+            NextPageToken = chats.Forward,
+            PrevPageToken = chats.Backward,
+            chats.Total,
+            chats.Count
+        });
+        // var chatsDto = new ReadMultipleChatsShortInfoResponse(chats);
 
-        return Ok(chatsDto);
+        //return Ok(chatsDto);
     }
 
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(ResponseSuccess))]
