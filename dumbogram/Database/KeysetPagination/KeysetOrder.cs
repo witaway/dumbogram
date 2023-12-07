@@ -24,7 +24,7 @@ public class KeysetOrder<TEntity> where TEntity : BaseEntity
     {
         Columns.Add(new KeysetColumnOrder<TEntity, TColumn>(
             propertySelector,
-            KeysetColumnOrder.Ascending
+            KeysetColumnOrder.Descending
         ));
         return this;
     }

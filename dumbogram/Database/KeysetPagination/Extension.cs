@@ -53,13 +53,13 @@ public static class Extension
             filteredQuery = filteredQuery.Where(filter);
         }
 
-        filteredQuery = filteredQuery.Take(cursor.Take);
+        filteredQuery = filteredQuery.Take(cursor.Take + 1);
 
         var result = await filteredQuery.ToListAsync(token);
 
         if (result.Any())
         {
-            var pagedResult = new PagedList<TEntity>(result, total);
+            var pagedResult = new PagedList<TEntity>(result.Slice(0, Math.Min(cursor.Take, result.Count)), total);
 
             if (cursor.Type == CursorType.Last || cursor.Direction == KeysetPaginationDirection.Backward)
             {
@@ -67,7 +67,22 @@ public static class Extension
             }
 
             pagedResult.Forward = Cursor<TEntity>.Encode(keysetOrder, pagedResult.Last());
+            if (cursor.Type == CursorType.Last || (
+                    cursor.Direction == KeysetPaginationDirection.Forward &&
+                    result.Count < cursor.Take + 1
+                ))
+            {
+                pagedResult.Forward = null;
+            }
+
             pagedResult.Backward = Cursor<TEntity>.Encode(keysetOrder, pagedResult.First());
+            if (cursor.Type == CursorType.First || (
+                    cursor.Direction == KeysetPaginationDirection.Backward &&
+                    result.Count < cursor.Take + 1
+                ))
+            {
+                pagedResult.Backward = null;
+            }
 
             return pagedResult;
         }

@@ -1,4 +1,5 @@
-﻿using Dumbogram.Application.Chats.Controllers.Dto;
+﻿using System.Runtime.CompilerServices;
+using Dumbogram.Application.Chats.Controllers.Dto;
 using Dumbogram.Application.Chats.Services;
 using Dumbogram.Application.Messages.Services;
 using Dumbogram.Application.Users.Services;
@@ -14,6 +15,7 @@ namespace Dumbogram.Application.Chats.Controllers;
 public class ChatsPagingQuery
 {
     public int Take { get; set; }
+    public string SortBy { get; set; }
     public bool? First { get; set; }
     public bool? Last { get; set; }
     public string? PrevPageToken { get; set; }
@@ -33,19 +35,31 @@ public class ChatsPagingQuery
 
         if (PrevPageToken != null)
         {
-            return Cursor<Chat>.Decode(ChatService.ChatsKeyset, PrevPageToken, KeysetPaginationDirection.Backward,
-                Take);
+            return Cursor<Chat>.Decode(GetKeyset(), PrevPageToken, KeysetPaginationDirection.Backward, Take);
         }
 
         if (NextPageToken != null)
         {
-            return Cursor<Chat>.Decode(ChatService.ChatsKeyset, NextPageToken, KeysetPaginationDirection.Forward,
-                Take);
+            return Cursor<Chat>.Decode(GetKeyset(), NextPageToken, KeysetPaginationDirection.Forward, Take);
         }
 
         throw new Exception();
-        // PagingOptions<Message>.Before(x => x.Id, 1).Take(10);
-        // throw new SwitchExpressionException();
+    }
+
+    public KeysetOrder<Chat> GetKeyset()
+    {
+        return SortBy switch
+        {
+            "latest" => new KeysetOrder<Chat>()
+                .Descending(m => m.CreatedDate)
+                .Ascending(m => m.Id),
+
+            "oldest" => new KeysetOrder<Chat>()
+                .Ascending(m => m.CreatedDate)
+                .Ascending(m => m.Id),
+
+            _ => throw new SwitchExpressionException()
+        };
     }
 }
 
@@ -86,7 +100,8 @@ public class ChatsController : ApplicationController
     {
         var userProfile = await _userResolverService.GetApplicationUser();
 
-        var chats = await _chatService.ReadAllPublicOrAccessibleChats(userProfile!, pagingQuery.GetCursor());
+        var chats = await _chatService.ReadAllPublicOrAccessibleChats(userProfile!, pagingQuery.GetKeyset(),
+            pagingQuery.GetCursor());
         return Ok(new
         {
             Chats = chats.Select(chat => new ReadSingleChatShortInfoResponse(chat)),

@@ -10,10 +10,6 @@ namespace Dumbogram.Application.Chats.Services;
 
 public class ChatService
 {
-    public static KeysetOrder<Chat> ChatsKeyset = new KeysetOrder<Chat>()
-        .Descending(m => m.CreatedDate)
-        .Ascending(m => m.Id);
-
     private readonly ChatMembershipService _chatMembershipService;
     private readonly ApplicationDbContext _dbContext;
 
@@ -98,7 +94,8 @@ public class ChatService
     /// </summary>
     /// <param name="userProfile"></param>
     /// <returns></returns>
-    public async Task<PagedList<Chat>> ReadAllPublicOrAccessibleChats(UserProfile userProfile, Cursor<Chat> cursor)
+    public async Task<PagedList<Chat>> ReadAllPublicOrAccessibleChats(UserProfile userProfile, KeysetOrder<Chat> keyset,
+        Cursor<Chat> cursor)
     {
         return await _dbContext
             .Chats
@@ -109,7 +106,7 @@ public class ChatService
                                    membership.MemberId == userProfile.UserId &&
                                    membership.MembershipStatus == MembershipStatus.Joined
                            )
-            ).ToPagedListAsync(ChatsKeyset, cursor);
+            ).ToPagedListAsync(keyset, cursor);
     }
 
     /// <summary>
