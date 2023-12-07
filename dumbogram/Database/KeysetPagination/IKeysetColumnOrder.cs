@@ -24,8 +24,12 @@ public class KeysetColumnOrder<TEntity, TColumn> : KeysetColumn<TEntity, TColumn
     where TEntity : BaseEntity
     where TColumn : IComparable
 {
-    public KeysetColumnOrder(Expression<Func<TEntity, TColumn>> propertySelectorExpression, KeysetColumnOrder order)
-        : base(propertySelectorExpression)
+    public KeysetColumnOrder(
+        Expression<Func<TEntity, TColumn>> propertySelectorExpression,
+        KeysetColumnOrder order,
+        string? name = null
+    )
+        : base(propertySelectorExpression, name)
     {
         Order = order;
     }

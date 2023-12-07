@@ -13,7 +13,7 @@ public partial class Cursor<TEntity> where TEntity : BaseEntity
 
         foreach (var column in keysetOrder.Columns)
         {
-            var propertyName = column.Path;
+            var propertyName = column.Name;
 
             if (column is KeysetColumnOrder<TEntity, int> int32Column)
             {

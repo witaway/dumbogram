@@ -15,8 +15,8 @@ public class KeysetColumnValue<TEntity, TColumn> : KeysetColumn<TEntity, TColumn
 {
     public readonly TColumn Value;
 
-    public KeysetColumnValue(Expression<Func<TEntity, TColumn>> propertySelector, TColumn value)
-        : base(propertySelector)
+    public KeysetColumnValue(Expression<Func<TEntity, TColumn>> propertySelector, TColumn value, string? name = null)
+        : base(propertySelector, name)
     {
         Value = value;
     }

@@ -42,10 +42,14 @@ public partial class Cursor<TEntity> where TEntity : BaseEntity
         return new Cursor<TEntity>(CursorType.Last) { Take = take };
     }
 
-    private Cursor<TEntity> ColumnValue<TColumn>(Expression<Func<TEntity, TColumn>> propertySelector, TColumn value)
+    private Cursor<TEntity> ColumnValue<TColumn>(
+        Expression<Func<TEntity, TColumn>> propertySelector,
+        TColumn value,
+        string? name = null
+    )
         where TColumn : IComparable
     {
-        Values.Add(new KeysetColumnValue<TEntity, TColumn>(propertySelector, value));
+        Values.Add(new KeysetColumnValue<TEntity, TColumn>(propertySelector, value, name));
         return this;
     }
 }

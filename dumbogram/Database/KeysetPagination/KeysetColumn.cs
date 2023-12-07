@@ -10,6 +10,7 @@ public interface IKeysetColumn<TEntity>
     public LambdaExpression PropertySelectorExpression { get; }
     public Type Type { get; }
     public string Path { get; set; }
+    public string Name { get; set; }
     public Expression MakeAccessExpression(ParameterExpression parameter);
 }
 
@@ -23,6 +24,7 @@ public abstract class KeysetColumn<TEntity> : IKeysetColumn<TEntity>
 
     public LambdaExpression PropertySelectorExpression { get; }
     public Type Type => PropertySelectorExpression.ReturnType;
+    public string Name { get; set; }
     public string Path { get; set; }
 
     public abstract Expression MakeAccessExpression(ParameterExpression parameter);
@@ -32,10 +34,11 @@ public class KeysetColumn<TEntity, TColumn> : KeysetColumn<TEntity>
     where TEntity : BaseEntity
     where TColumn : IComparable
 {
-    public KeysetColumn(Expression<Func<TEntity, TColumn>> propertySelectorExpression)
+    public KeysetColumn(Expression<Func<TEntity, TColumn>> propertySelectorExpression, string? name = null)
         : base(propertySelectorExpression)
     {
         Path = PropertyPath<TEntity>.Get(propertySelectorExpression);
+        Name = name ?? Path;
     }
 
     public new Expression<Func<TEntity, TColumn>> PropertySelectorExpression =>
