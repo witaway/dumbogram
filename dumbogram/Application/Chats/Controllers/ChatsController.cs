@@ -6,49 +6,96 @@ using Dumbogram.Application.Users.Services;
 using Dumbogram.Database.KeysetPagination;
 using Dumbogram.Infrasctructure.Controller;
 using Dumbogram.Infrasctructure.Dto;
+using Dumbogram.Models.Base;
 using Dumbogram.Models.Chats;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Dumbogram.Application.Chats.Controllers;
 
-public class ChatsPagingQuery
+public abstract class PagingQueryBase
 {
+    [BindRequired]
+    [FromQuery(Name = "take")]
     public int Take { get; set; }
-    public string SortBy { get; set; }
-    public bool? First { get; set; }
-    public bool? Last { get; set; }
+
+    [BindRequired]
+    [FromQuery(Name = "order")]
+    public string Order { get; set; } = null!;
+
+    [FromQuery(Name = "first")]
+    public bool First { get; set; }
+
+    [FromQuery(Name = "last")]
+    public bool Last { get; set; }
+
+    [FromQuery(Name = "prev_page_token")]
     public string? PrevPageToken { get; set; }
+
+    [FromQuery(Name = "next_page_token")]
     public string? NextPageToken { get; set; }
 
-    public Cursor<Chat> GetCursor()
+    public Cursor<TEntity> GetCursor<TEntity>() where TEntity : BaseEntity
     {
-        if (First != null)
+        if (First == false && Last == false &&
+            PrevPageToken == null && NextPageToken == null)
         {
-            return Cursor<Chat>.First(Take);
+            First = true;
         }
 
-        if (Last != null)
+        if (First)
         {
-            return Cursor<Chat>.Last(Take);
+            return Cursor<TEntity>.First(Take);
+        }
+
+        if (Last)
+        {
+            return Cursor<TEntity>.Last(Take);
         }
 
         if (PrevPageToken != null)
         {
-            return Cursor<Chat>.Decode(GetKeyset(), PrevPageToken, PaginationDirection.Backward, Take);
+            return Cursor<TEntity>.Decode(GetKeyset<TEntity>(), PrevPageToken, PaginationDirection.Backward, Take);
         }
 
         if (NextPageToken != null)
         {
-            return Cursor<Chat>.Decode(GetKeyset(), NextPageToken, PaginationDirection.Forward, Take);
+            return Cursor<TEntity>.Decode(GetKeyset<TEntity>(), NextPageToken, PaginationDirection.Forward, Take);
         }
 
-        throw new Exception();
+        throw new SwitchExpressionException();
     }
 
-    public Keyset<Chat> GetKeyset()
+    public abstract Keyset<TEntity> GetKeyset<TEntity>() where TEntity : BaseEntity;
+}
+
+public class PagingQueryBaseValidator<TEntity> : AbstractValidator<PagingQueryBase> where TEntity : BaseEntity
+{
+    public PagingQueryBaseValidator()
     {
-        return SortBy switch
+        RuleFor(q => q)
+            .Must(q => OptionalsSpecifiedCount(q) <= 0)
+            .WithMessage("Only one of first, last, prev_page_token, next_page_token is allowed");
+    }
+
+    private static int OptionalsSpecifiedCount(PagingQueryBase q)
+    {
+        var count = 0;
+        if (q.First) count++;
+        if (q.Last) count++;
+        if (q.NextPageToken != null) count++;
+        if (q.PrevPageToken != null) count++;
+        return count;
+    }
+}
+
+public class ChatsPagingQuery : PagingQueryBase
+{
+    public override Keyset<Chat> GetKeyset<Chat>()
+    {
+        return Order switch
         {
             "latest" => new Keyset<Chat>()
                 .Descending(m => m.CreatedDate)
@@ -58,9 +105,13 @@ public class ChatsPagingQuery
                 .Ascending(m => m.CreatedDate)
                 .Ascending(m => m.Id),
 
-            _ => throw new SwitchExpressionException()
+            _ => throw new InvalidCastException("Order is not valid")
         };
     }
+}
+
+public class ChatsPagingQueryValidator : PagingQueryBaseValidator<Chat>
+{
 }
 
 [Authorize]

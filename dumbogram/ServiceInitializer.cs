@@ -11,6 +11,7 @@ using Dumbogram.Database;
 using Dumbogram.Database.Identity;
 using Dumbogram.Infrasctructure.Filters;
 using Dumbogram.Infrasctructure.Middlewares;
+using Dumbogram.Infrasctructure.ModelBinders;
 using Dumbogram.Models.Files;
 using Dumbogram.Models.Messages;
 using FluentValidation;
@@ -56,6 +57,7 @@ public static class ServiceInitializer
     private static void ConfigureMvc(MvcOptions options)
     {
         options.Filters.Add<ResultFilter>();
+        options.ModelBinderProviders.Insert(0, new QueryBooleanModelBinderProvider());
     }
 
     private static void RegisterCustomMiddlewares(IServiceCollection services)
