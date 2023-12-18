@@ -13,17 +13,13 @@ public enum CursorType
 public partial class Cursor<TEntity> where TEntity : BaseEntity
 {
     public readonly List<IKeysetColumnValue<TEntity>> Values = new();
-    public PaginationDirection Direction;
     public Keyset<TEntity> Keyset;
-    public int Take;
     public CursorType Type;
 
 
-    public Cursor(Keyset<TEntity> keyset, PaginationDirection direction, int take)
+    public Cursor(Keyset<TEntity> keyset)
     {
         Keyset = keyset;
-        Direction = direction;
-        Take = take;
         Type = CursorType.Default;
     }
 
@@ -32,14 +28,14 @@ public partial class Cursor<TEntity> where TEntity : BaseEntity
         Type = type;
     }
 
-    public static Cursor<TEntity> First(int take)
+    public static Cursor<TEntity> First()
     {
-        return new Cursor<TEntity>(CursorType.First) { Take = take };
+        return new Cursor<TEntity>(CursorType.First);
     }
 
-    public static Cursor<TEntity> Last(int take)
+    public static Cursor<TEntity> Last()
     {
-        return new Cursor<TEntity>(CursorType.Last) { Take = take };
+        return new Cursor<TEntity>(CursorType.Last);
     }
 
     private Cursor<TEntity> ColumnValue<TColumn>(

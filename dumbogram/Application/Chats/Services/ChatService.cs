@@ -1,6 +1,7 @@
 ﻿using Dumbogram.Application.Chats.Services.Errors;
 using Dumbogram.Database;
 using Dumbogram.Database.KeysetPagination;
+using Dumbogram.Database.KeysetPagination.Dto;
 using Dumbogram.Models.Chats;
 using Dumbogram.Models.Users;
 using FluentResults;
@@ -93,9 +94,9 @@ public class ChatService
     ///     Can be used for chat searching.
     /// </summary>
     /// <param name="userProfile"></param>
+    /// <param name="pagingDetails"></param>
     /// <returns></returns>
-    public async Task<PagedList<Chat>> ReadAllPublicOrAccessibleChats(UserProfile userProfile, Keyset<Chat> keyset,
-        Cursor<Chat> cursor)
+    public async Task<PagedList<Chat>> ReadAllPublicOrAccessibleChats(UserProfile userProfile, PagingDetails<Chat> pagingDetails)
     {
         return await _dbContext
             .Chats
@@ -106,7 +107,7 @@ public class ChatService
                                    membership.MemberId == userProfile.UserId &&
                                    membership.MembershipStatus == MembershipStatus.Joined
                            )
-            ).ToPagedListAsync(keyset, cursor);
+            ).ToPagedListAsync(pagingDetails);
     }
 
     /// <summary>

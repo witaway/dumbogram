@@ -12,7 +12,7 @@ public partial class Cursor<TEntity> where TEntity : BaseEntity
         var data = Convert.FromBase64String(token);
         var decodedToken = Encoding.UTF8.GetString(data);
 
-        var cursor = new Cursor<TEntity>(keyset, direction, take);
+        var cursor = new Cursor<TEntity>(keyset);
 
         var jsonElement = JsonSerializer.Deserialize<JsonElement>(decodedToken);
 

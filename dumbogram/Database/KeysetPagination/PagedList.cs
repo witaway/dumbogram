@@ -9,6 +9,8 @@ public class PagedList<T> : List<T>
     }
 
     public int Total { get; set; }
-    public string? Forward { get; set; }
-    public string? Backward { get; set; }
+    public string? NextPageToken { get; set; }
+    public bool CanMoveNext { get; set; } = true;
+    public string? PrevPageToken { get; set; }
+    public bool CanMovePrev { get; set; } = true;
 }

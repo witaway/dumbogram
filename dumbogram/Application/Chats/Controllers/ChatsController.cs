@@ -4,6 +4,7 @@ using Dumbogram.Application.Chats.Services;
 using Dumbogram.Application.Messages.Services;
 using Dumbogram.Application.Users.Services;
 using Dumbogram.Database.KeysetPagination;
+using Dumbogram.Database.KeysetPagination.Dto;
 using Dumbogram.Infrasctructure.Controller;
 using Dumbogram.Infrasctructure.Dto;
 using Dumbogram.Models.Base;
@@ -15,104 +16,6 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Dumbogram.Application.Chats.Controllers;
 
-public abstract class PagingQueryBase
-{
-    [BindRequired]
-    [FromQuery(Name = "take")]
-    public int Take { get; set; }
-
-    [BindRequired]
-    [FromQuery(Name = "order")]
-    public string Order { get; set; } = null!;
-
-    [FromQuery(Name = "first")]
-    public bool First { get; set; }
-
-    [FromQuery(Name = "last")]
-    public bool Last { get; set; }
-
-    [FromQuery(Name = "prev_page_token")]
-    public string? PrevPageToken { get; set; }
-
-    [FromQuery(Name = "next_page_token")]
-    public string? NextPageToken { get; set; }
-
-    public Cursor<TEntity> GetCursor<TEntity>() where TEntity : BaseEntity
-    {
-        if (First == false && Last == false &&
-            PrevPageToken == null && NextPageToken == null)
-        {
-            First = true;
-        }
-
-        if (First)
-        {
-            return Cursor<TEntity>.First(Take);
-        }
-
-        if (Last)
-        {
-            return Cursor<TEntity>.Last(Take);
-        }
-
-        if (PrevPageToken != null)
-        {
-            return Cursor<TEntity>.Decode(GetKeyset<TEntity>(), PrevPageToken, PaginationDirection.Backward, Take);
-        }
-
-        if (NextPageToken != null)
-        {
-            return Cursor<TEntity>.Decode(GetKeyset<TEntity>(), NextPageToken, PaginationDirection.Forward, Take);
-        }
-
-        throw new SwitchExpressionException();
-    }
-
-    public abstract Keyset<TEntity> GetKeyset<TEntity>() where TEntity : BaseEntity;
-}
-
-public class PagingQueryBaseValidator<TEntity> : AbstractValidator<PagingQueryBase> where TEntity : BaseEntity
-{
-    public PagingQueryBaseValidator()
-    {
-        RuleFor(q => q)
-            .Must(q => OptionalsSpecifiedCount(q) <= 0)
-            .WithMessage("Only one of first, last, prev_page_token, next_page_token is allowed");
-    }
-
-    private static int OptionalsSpecifiedCount(PagingQueryBase q)
-    {
-        var count = 0;
-        if (q.First) count++;
-        if (q.Last) count++;
-        if (q.NextPageToken != null) count++;
-        if (q.PrevPageToken != null) count++;
-        return count;
-    }
-}
-
-public class ChatsPagingQuery : PagingQueryBase
-{
-    public override Keyset<Chat> GetKeyset<Chat>()
-    {
-        return Order switch
-        {
-            "latest" => new Keyset<Chat>()
-                .Descending(m => m.CreatedDate)
-                .Ascending(m => m.Id),
-
-            "oldest" => new Keyset<Chat>()
-                .Ascending(m => m.CreatedDate)
-                .Ascending(m => m.Id),
-
-            _ => throw new InvalidCastException("Order is not valid")
-        };
-    }
-}
-
-public class ChatsPagingQueryValidator : PagingQueryBaseValidator<Chat>
-{
-}
 
 [Authorize]
 [Route("/api/chats", Name = "Chats")]
@@ -145,24 +48,36 @@ public class ChatsController : ApplicationController
 
     [ProducesResponseType(
         StatusCodes.Status200OK, Type = typeof(ResponseSuccess<ReadMultipleChatsShortInfoResponse>)
-    )]
+    )] 
     [HttpGet("search", Name = nameof(ReadAllChats))]
-    public async Task<IActionResult> ReadAllChats([FromQuery] ChatsPagingQuery pagingQuery)
+    public async Task<IActionResult> ReadAllChats([FromQuery] PagingQuery pagingQuery)
     {
         var userProfile = await _userResolverService.GetApplicationUser();
 
-        var chats = await _chatService.ReadAllPublicOrAccessibleChats(userProfile!, pagingQuery.GetKeyset(),
-            pagingQuery.GetCursor());
+        var keysetParsingStrategy = new PagingQueryKeysetParsingByOrderNameStrategy<Chat>()
+            .WithName("latest", new Keyset<Chat>()
+                .Descending(m => m.CreatedDate)
+                .Ascending(m => m.Id)
+            )
+            .WithName("oldest", new Keyset<Chat>()
+                .Ascending(m => m.CreatedDate)
+                .Ascending(m => m.Id)
+            );
+        
+        var pagingParser = new PagingQueryParser<Chat>(keysetParsingStrategy, 50);
+        var pagingDetails = pagingParser.GetPagingDetails(pagingQuery);
+        
+        var chats = await _chatService.ReadAllPublicOrAccessibleChats(userProfile!, pagingDetails);
+        
         return Ok(new
         {
             Chats = chats.Select(chat => new ReadSingleChatShortInfoResponse(chat)),
-            NextPageToken = chats.Forward,
-            PrevPageToken = chats.Backward,
+            NextPageToken = chats.NextPageToken,
+            PrevPageToken = chats.PrevPageToken,
             chats.Total,
             chats.Count
         });
-        // var chatsDto = new ReadMultipleChatsShortInfoResponse(chats);
-
+        //var chatsDto = new ReadMultipleChatsShortInfoResponse(chats);
         //return Ok(chatsDto);
     }
 
