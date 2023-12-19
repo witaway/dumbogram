@@ -1,4 +1,12 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=A5BD8140_002D0597_002D43C2_002DA2FD_002D3710E2236C4D_002Fd_003ADatabase_002Fd_003AKeysetPagination_002Fd_003AEnum_002Ff_003ACursorType_002Ecs/@EntryIndexedValue">ExplicitlyExcluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=A5BD8140_002D0597_002D43C2_002DA2FD_002D3710E2236C4D_002Fd_003ADatabase_002Fd_003AKeysetPagination_002Fd_003AInternals_002Fd_003AExpressionBuilder_002Ff_003AExpressionBuilder_002Ecs/@EntryIndexedValue">ExplicitlyExcluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=A5BD8140_002D0597_002D43C2_002DA2FD_002D3710E2236C4D_002Fd_003ADatabase_002Fd_003AKeysetPagination_002Fd_003AInternals_002Ff_003AEFCoreExtension_002Ecs/@EntryIndexedValue">ExplicitlyExcluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=A5BD8140_002D0597_002D43C2_002DA2FD_002D3710E2236C4D_002Fd_003ADatabase_002Fd_003AKeysetPagination_002Fd_003AInternals_002Ff_003AIKeysetColumnOrder_002Ecs/@EntryIndexedValue">ExplicitlyExcluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=A5BD8140_002D0597_002D43C2_002DA2FD_002D3710E2236C4D_002Fd_003ADatabase_002Fd_003AKeysetPagination_002Fd_003APagingQueryParser_002Ff_003APagingQueryParser_002Ecs/@EntryIndexedValue">ExplicitlyExcluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=A5BD8140_002D0597_002D43C2_002DA2FD_002D3710E2236C4D_002Fd_003ADatabase_002Fd_003AKeysetPagination_002Ff_003ACursor_002Ecs/@EntryIndexedValue">ExplicitlyExcluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=A5BD8140_002D0597_002D43C2_002DA2FD_002D3710E2236C4D_002Fd_003ADatabase_002Fd_003AKeysetPagination_002Ff_003ACursorDecode_002Ecs/@EntryIndexedValue">ExplicitlyExcluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=A5BD8140_002D0597_002D43C2_002DA2FD_002D3710E2236C4D_002Fd_003ADatabase_002Fd_003AKeysetPagination_002Ff_003ACursorEncode_002Ecs/@EntryIndexedValue">ExplicitlyExcluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/PencilsConfiguration/ActualSeverity/@EntryValue">INFO</s:String>
 	<s:String x:Key="/Default/CodeInspection/PencilsConfiguration/FiltersState/=SpellingFilter/@EntryIndexedValue">On</s:String>
 	<s:String x:Key="/Default/CodeInspection/PencilsConfiguration/FiltersState/=NamingFilter/@EntryIndexedValue">On</s:String>
@@ -7,6 +15,7 @@
   &lt;Assembly Path="/usr/share/dotnet/packs/Microsoft.NETCore.App.Ref/7.0.13/ref/net7.0/System.ComponentModel.Annotations.dll" /&gt;
 &lt;/AssemblyExplorer&gt;</s:String>
 	<s:Boolean x:Key="/Default/Environment/InlayHints/GeneralInlayHintsOptions/EnableInlayHints/@EntryValue">True</s:Boolean>
+	
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=dumbogram/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Keyset/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=keysets/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>
