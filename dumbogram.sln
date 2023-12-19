@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dumbogram", "dumbogram\dumbogram.csproj", "{A5BD8140-0597-43C2-A2FD-3710E2236C4D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dumbogram.Api", "Dumbogram.Api\Dumbogram.Api.csproj", "{A5BD8140-0597-43C2-A2FD-3710E2236C4D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
