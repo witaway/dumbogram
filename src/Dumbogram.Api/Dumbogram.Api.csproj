@@ -28,6 +28,10 @@
         </PackageReference>
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0"/>
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NodaTime" Version="8.0.0"/>
+        <PackageReference Include="Serilog" Version="3.1.2-dev-02097"/>
+        <PackageReference Include="Serilog.AspNetCore" Version="8.0.0"/>
+        <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1"/>
+        <PackageReference Include="Serilog.Sinks.File" Version="5.0.1-dev-00968"/>
         <PackageReference Include="SkiaSharp" Version="2.88.6"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
     </ItemGroup>
@@ -39,7 +43,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Persistence\Infrastructure\Entitites\" />
+        <Folder Include="Persistence\Infrastructure\Entitites\"/>
     </ItemGroup>
 
 </Project>

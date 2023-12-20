@@ -1,35 +1,53 @@
+using Serilog;
+
 namespace Dumbogram.Api;
 
 internal class Program
 {
-    private static readonly bool IsDevelopment =
-        Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
-
     public static int Main(string[] args)
     {
+        SetupSerilog();
+
         try
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.ConfigureServices(builder.Configuration);
+            builder.Host.UseSerilog();
 
             var app = builder.Build();
             app.ConfigureApplication();
-            
+
             app.Run();
         }
-        // Expose exceptions when environment is Development
+        // Expose exceptions if it's not HostAbortedException
         // That's because there are exception that throws only when development
-        // Example is HostAbortedException, showing up when for example "dotnet ef migrations add"
-        // Todo: Think about it. Maybe use: "when (exception is not HostAbortedException)" is better solution?
-        catch (Exception exception) when (!IsDevelopment)
+        // Just like HostAbortedException, showing up when "dotnet ef migrations add"
+        catch (Exception exception) when (exception is not HostAbortedException)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("[FATAL] Error has occured during initialization");
-            Console.ResetColor();
-            Console.WriteLine(exception);
+            Log.Fatal(exception, "Application terminated unexpectedly");
             return exception.HResult;
+        }
+        finally
+        {
+            Log.CloseAndFlush();
         }
 
         return 0;
+    }
+
+    private static void SetupSerilog()
+    {
+        // Temporary IConfiguration to init serilog
+        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json")
+            .AddJsonFile($"appsettings.{environment}.json", true)
+            .AddEnvironmentVariables()
+            .Build();
+
+        Log.Logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(configuration)
+            .CreateLogger();
     }
 }
