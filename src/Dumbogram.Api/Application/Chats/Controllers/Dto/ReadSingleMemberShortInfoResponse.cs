@@ -1,4 +1,4 @@
-﻿using Dumbogram.Api.Models.Users;
+﻿using Dumbogram.Api.Persistence.Context.Application.Entities.Users;
 
 namespace Dumbogram.Api.Application.Chats.Controllers.Dto;
 

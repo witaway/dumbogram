@@ -4,7 +4,7 @@ using Dumbogram.Api.Application.Files.Services.Errors;
 using Dumbogram.Api.Application.Users.Services;
 using Dumbogram.Api.Infrasctructure.Controller;
 using Dumbogram.Api.Infrasctructure.Filters;
-using Dumbogram.Api.Models.Files;
+using Dumbogram.Api.Persistence.Context.Application.Enumerations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

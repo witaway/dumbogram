@@ -3,10 +3,11 @@ using System.Runtime.CompilerServices;
 using Dumbogram.Api.Application.Auth.Controllers.Dto;
 using Dumbogram.Api.Application.Auth.Services;
 using Dumbogram.Api.Application.Users.Services;
-using Dumbogram.Api.Database.Identity;
 using Dumbogram.Api.Infrasctructure.Controller;
 using Dumbogram.Api.Infrasctructure.Dto;
 using Dumbogram.Api.Infrasctructure.Filters;
+using Dumbogram.Api.Persistence.Context.Identity.Entities;
+using Dumbogram.Api.Persistence.Context.Identity.Enumerations;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dumbogram.Api.Application.Auth.Controllers;
@@ -46,16 +47,10 @@ public class AuthController : ApplicationController
             { Username: not null } => await _identityUserService.RequestUserByUsername(dto.Username),
             _ => throw new SwitchExpressionException()
         };
-        if (userResult.IsFailed)
-        {
-            return Failure(userResult.Errors);
-        }
+        if (userResult.IsFailed) return Failure(userResult.Errors);
 
         var signInResult = await _authService.SignIn(userResult.Value, dto.Password);
-        if (signInResult.IsFailed)
-        {
-            return Failure(signInResult.Errors);
-        }
+        if (signInResult.IsFailed) return Failure(signInResult.Errors);
 
         var token = signInResult.Value;
         var tokenStringRepresentation = new JwtSecurityTokenHandler().WriteToken(token);
@@ -81,10 +76,7 @@ public class AuthController : ApplicationController
         };
 
         var signUpResult = await _authService.SignUp(user, dto.Password);
-        if (signUpResult.IsFailed)
-        {
-            return Failure(signUpResult.Errors);
-        }
+        if (signUpResult.IsFailed) return Failure(signUpResult.Errors);
 
         return Ok();
     }
@@ -102,10 +94,7 @@ public class AuthController : ApplicationController
         // If user is not created (result is not Ok), return this error
         // Otherwise continue, add role and return the same result.
         var okResult = result as OkObjectResult;
-        if (okResult == null || okResult.StatusCode != 200)
-        {
-            return result;
-        }
+        if (okResult == null || okResult.StatusCode != 200) return result;
 
         // We know that user exist because already created it
         var user = (await _identityUserService.ReadUserByEmail(dto.Email))!;

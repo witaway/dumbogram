@@ -1,7 +1,8 @@
 ﻿using Dumbogram.Api.Application.Chats.Services.Errors;
-using Dumbogram.Api.Database;
-using Dumbogram.Api.Models.Chats;
-using Dumbogram.Api.Models.Users;
+using Dumbogram.Api.Persistence.Context.Application;
+using Dumbogram.Api.Persistence.Context.Application.Entities.Chats;
+using Dumbogram.Api.Persistence.Context.Application.Entities.Users;
+using Dumbogram.Api.Persistence.Context.Application.Enumerations;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
 
@@ -107,15 +108,9 @@ public class ChatMembershipService
 
     public async Task<Result> JoinUserToChat(UserProfile userProfile, Chat chat)
     {
-        if (await IsUserBannedInChat(userProfile, chat))
-        {
-            return Result.Fail(new UserBannedInChatError());
-        }
+        if (await IsUserBannedInChat(userProfile, chat)) return Result.Fail(new UserBannedInChatError());
 
-        if (await IsUserJoinedToChat(userProfile, chat))
-        {
-            return Result.Fail(new UserAlreadyJoinedToChatError());
-        }
+        if (await IsUserJoinedToChat(userProfile, chat)) return Result.Fail(new UserAlreadyJoinedToChatError());
 
         await EnsureUserJoinedInChat(userProfile, chat);
 
@@ -124,15 +119,9 @@ public class ChatMembershipService
 
     public async Task<Result> InviteUserToChat(UserProfile userProfile, Chat chat)
     {
-        if (await IsUserJoinedToChat(userProfile, chat))
-        {
-            return Result.Fail(new UserAlreadyJoinedToChatError());
-        }
+        if (await IsUserJoinedToChat(userProfile, chat)) return Result.Fail(new UserAlreadyJoinedToChatError());
 
-        if (await IsUserBannedInChat(userProfile, chat))
-        {
-            return Result.Fail(new UserAlreadyBannedInChatError());
-        }
+        if (await IsUserBannedInChat(userProfile, chat)) return Result.Fail(new UserAlreadyBannedInChatError());
 
         await EnsureUserJoinedInChat(userProfile, chat);
         return Result.Ok();
@@ -140,10 +129,7 @@ public class ChatMembershipService
 
     public async Task<Result> BanUserInChat(UserProfile userProfile, Chat chat)
     {
-        if (await IsUserBannedInChat(userProfile, chat))
-        {
-            return Result.Fail(new UserAlreadyBannedInChatError());
-        }
+        if (await IsUserBannedInChat(userProfile, chat)) return Result.Fail(new UserAlreadyBannedInChatError());
 
         await EnsureUserBannedInChat(userProfile, chat);
         return Result.Ok();
@@ -151,10 +137,7 @@ public class ChatMembershipService
 
     public async Task<Result> UnbanUserInChat(UserProfile userProfile, Chat chat)
     {
-        if (await IsUserBannedInChat(userProfile, chat))
-        {
-            return Result.Fail(new UserAlreadyBannedInChatError());
-        }
+        if (await IsUserBannedInChat(userProfile, chat)) return Result.Fail(new UserAlreadyBannedInChatError());
 
         await EnsureUserLeavedInChat(userProfile, chat);
         return Result.Ok();
@@ -162,10 +145,7 @@ public class ChatMembershipService
 
     public async Task<Result> LeaveUserFromChat(UserProfile userProfile, Chat chat)
     {
-        if (await IsUserBannedInChat(userProfile, chat))
-        {
-            return Result.Fail(new UserAlreadyBannedInChatError());
-        }
+        if (await IsUserBannedInChat(userProfile, chat)) return Result.Fail(new UserAlreadyBannedInChatError());
 
         await EnsureUserBannedInChat(userProfile, chat);
         return Result.Ok();

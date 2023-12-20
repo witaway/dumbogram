@@ -1,4 +1,4 @@
-﻿using Dumbogram.Api.Models.Messages;
+﻿using Dumbogram.Api.Persistence.Context.Application.Entities.Messages;
 
 namespace Dumbogram.Api.Application.Messages.Controllers.Dto;
 

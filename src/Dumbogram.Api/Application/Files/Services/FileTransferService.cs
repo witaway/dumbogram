@@ -6,7 +6,7 @@ using Dumbogram.Api.Infrasctructure.Classes;
 using Dumbogram.Api.Infrasctructure.Errors;
 using Dumbogram.Api.Infrasctructure.Extensions;
 using Dumbogram.Api.Infrasctructure.Utilities;
-using Dumbogram.Api.Models.Files;
+using Dumbogram.Api.Persistence.Context.Application.Entities.Files;
 using FluentResults;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.WebUtilities;
@@ -29,10 +29,10 @@ public class FileTransferService
         _fileStorageService = fileStorageService;
     }
 
-    private async Task<Result<TFile>> WriteSingleFileAsync<TFile>(
+    private async Task<Result<FileRecord>> WriteSingleFileAsync(
         StorageWriter.StorageWriter writer,
         FileContainer fileContainer
-    ) where TFile : FileRecord, new()
+    )
     {
         var fileMetadata = fileContainer.FileMetadata;
         await using var destination = _fileStorageService.CreateFile(
@@ -45,7 +45,7 @@ public class FileTransferService
             await writer.Write(fileContainer, destination);
             var savedFileInfo = _fileStorageService.GetFileInfo(filePath);
 
-            return new TFile
+            return new FileRecord
             {
                 StoredFileName = filePath,
                 OriginalFileName = fileMetadata.TrustedFileNameForDisplay,
@@ -55,7 +55,6 @@ public class FileTransferService
         }
         catch (FileUploadException exception)
         {
-            await destination.DisposeAsync();
             _fileStorageService.DeleteFile(filePath);
             ApplicationApiError error = exception switch
             {
@@ -67,19 +66,18 @@ public class FileTransferService
         }
         catch (Exception exception)
         {
-            await destination.DisposeAsync();
             _fileStorageService.DeleteFile(filePath);
             throw;
         }
     }
 
-    private async Task<Results<string, TFile>> WriteMultipleFilesAsync<TFile>(
+    private async Task<Results<string, FileRecord>> WriteMultipleFilesAsync(
         StorageWriter.StorageWriter writer,
         IAsyncEnumerable<FileContainer> fileContainers,
         int uploadsLimit = int.MaxValue
-    ) where TFile : FileRecord, new()
+    )
     {
-        var uploadedFiles = new Results<string, TFile>();
+        var uploadedFiles = new Results<string, FileRecord>();
         var successfullyUploadedCount = 0;
 
         foreach (var fileContainer in fileContainers.ToBlockingEnumerable())
@@ -93,7 +91,7 @@ public class FileTransferService
                 continue;
             }
 
-            var writeFileResult = await WriteSingleFileAsync<TFile>(writer, fileContainer);
+            var writeFileResult = await WriteSingleFileAsync(writer, fileContainer);
             if (writeFileResult.IsSuccess) successfullyUploadedCount++;
             uploadedFiles.Add(fileName, writeFileResult);
         }
@@ -101,11 +99,11 @@ public class FileTransferService
         return uploadedFiles;
     }
 
-    public async Task<Results<string, TFile>> UploadLargeFiles<TFile>(
+    public async Task<Results<string, FileRecord>> UploadLargeFiles(
         HttpRequest request,
         StorageWriter.StorageWriter writer,
         int uploadsLimit = int.MaxValue
-    ) where TFile : FileRecord, new()
+    )
     {
         var contentType = request.ContentType ?? "";
 
@@ -120,21 +118,21 @@ public class FileTransferService
         var multipartReader = new MultipartReader(boundary, request.Body);
 
         var fileContainers = multipartReader.GetFileContainers();
-        var uploadedFilesResults = await WriteMultipleFilesAsync<TFile>(writer, fileContainers, uploadsLimit);
+        var uploadedFilesResults = await WriteMultipleFilesAsync(writer, fileContainers, uploadsLimit);
 
         return uploadedFilesResults;
     }
 
-    public async Task<Results<string, TFile>> UploadSmallFiles<TFile>(
+    public async Task<Results<string, FileRecord>> UploadSmallFiles(
         HttpRequest request,
         StorageWriter.StorageWriter writer,
         int uploadsLimit = int.MaxValue
-    ) where TFile : FileRecord, new()
+    )
     {
         var formFiles = request.Form.Files;
 
         var fileContainers = formFiles.GetFileContainers();
-        var uploadedFilesResults = await WriteMultipleFilesAsync<TFile>(writer, fileContainers, uploadsLimit);
+        var uploadedFilesResults = await WriteMultipleFilesAsync(writer, fileContainers, uploadsLimit);
 
         return uploadedFilesResults;
     }

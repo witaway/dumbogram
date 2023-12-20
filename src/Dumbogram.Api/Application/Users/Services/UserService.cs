@@ -1,6 +1,6 @@
 ﻿using Dumbogram.Api.Application.Users.Services.Errors;
-using Dumbogram.Api.Database;
-using Dumbogram.Api.Models.Users;
+using Dumbogram.Api.Persistence.Context.Application;
+using Dumbogram.Api.Persistence.Context.Application.Entities.Users;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,10 +27,7 @@ public class UserService
     {
         var userProfile = await ReadUserProfileById(userId);
 
-        if (userProfile == null)
-        {
-            return Result.Fail(new UserNotFoundError());
-        }
+        if (userProfile == null) return Result.Fail(new UserNotFoundError());
 
         return Result.Ok(userProfile);
     }

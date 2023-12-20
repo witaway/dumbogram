@@ -1,6 +1,7 @@
 ﻿using Dumbogram.Api.Application.Chats.Services.Errors;
-using Dumbogram.Api.Database;
-using Dumbogram.Api.Models.Chats;
+using Dumbogram.Api.Persistence.Context.Application;
+using Dumbogram.Api.Persistence.Context.Application.Entities.Chats;
+using Dumbogram.Api.Persistence.Context.Application.Enumerations;
 using FluentResults;
 
 namespace Dumbogram.Api.Application.Chats.Services;
@@ -42,10 +43,7 @@ public class ChatVisibilityService
 
     public async Task<Result> MakeChatPrivate(Chat chat)
     {
-        if (IsChatPrivate(chat))
-        {
-            return Result.Fail(new ChatAlreadyPrivateError());
-        }
+        if (IsChatPrivate(chat)) return Result.Fail(new ChatAlreadyPrivateError());
 
         await EnsureChatPrivate(chat);
 
@@ -54,10 +52,7 @@ public class ChatVisibilityService
 
     public async Task<Result> MakeChatPublic(Chat chat)
     {
-        if (IsChatPublic(chat))
-        {
-            return Result.Fail(new ChatAlreadyPublicError());
-        }
+        if (IsChatPublic(chat)) return Result.Fail(new ChatAlreadyPublicError());
 
         await EnsureChatPublic(chat);
 

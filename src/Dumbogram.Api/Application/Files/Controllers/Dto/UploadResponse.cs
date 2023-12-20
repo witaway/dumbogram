@@ -1,5 +1,5 @@
 ﻿using Dumbogram.Api.Infrasctructure.Classes;
-using Dumbogram.Api.Models.Files;
+using Dumbogram.Api.Persistence.Context.Application.Entities.Files;
 using FluentResults;
 
 namespace Dumbogram.Api.Application.Files.Controllers.Dto;

@@ -1,7 +1,8 @@
-﻿using Dumbogram.Api.Database;
-using Dumbogram.Api.Models.Chats;
-using Dumbogram.Api.Models.Messages;
-using Dumbogram.Api.Models.Users;
+﻿using Dumbogram.Api.Persistence.Context.Application;
+using Dumbogram.Api.Persistence.Context.Application.Entities.Chats;
+using Dumbogram.Api.Persistence.Context.Application.Entities.Messages;
+using Dumbogram.Api.Persistence.Context.Application.Entities.Users;
+using Dumbogram.Api.Persistence.Context.Application.Enumerations;
 
 namespace Dumbogram.Api.Application.Messages.Services;
 

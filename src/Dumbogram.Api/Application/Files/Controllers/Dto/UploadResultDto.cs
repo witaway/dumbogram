@@ -1,6 +1,6 @@
 ﻿using Dumbogram.Api.Infrasctructure.Classes;
 using Dumbogram.Api.Infrasctructure.Dto;
-using Dumbogram.Api.Models.Files;
+using Dumbogram.Api.Persistence.Context.Application.Entities.Files;
 
 namespace Dumbogram.Api.Application.Files.Controllers.Dto;
 

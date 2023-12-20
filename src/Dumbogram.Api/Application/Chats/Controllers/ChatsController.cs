@@ -2,18 +2,18 @@
 using Dumbogram.Api.Application.Chats.Services;
 using Dumbogram.Api.Application.Messages.Services;
 using Dumbogram.Api.Application.Users.Services;
-using Dumbogram.Api.Database.KeysetPagination;
-using Dumbogram.Api.Database.KeysetPagination.Dto;
-using Dumbogram.Api.Database.KeysetPagination.PagingQueryParser;
-using Dumbogram.Api.Database.KeysetPagination.PagingQueryParser.Strategies;
 using Dumbogram.Api.Infrasctructure.Controller;
 using Dumbogram.Api.Infrasctructure.Dto;
-using Dumbogram.Api.Models.Chats;
+using Dumbogram.Api.Persistence.Context.Application.Entities.Chats;
+using Dumbogram.Api.Persistence.Context.Application.Enumerations;
+using Dumbogram.Api.Persistence.Infrastructure.KeysetPagination;
+using Dumbogram.Api.Persistence.Infrastructure.KeysetPagination.Dto;
+using Dumbogram.Api.Persistence.Infrastructure.KeysetPagination.PagingQueryParser;
+using Dumbogram.Api.Persistence.Infrastructure.KeysetPagination.PagingQueryParser.Strategies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dumbogram.Api.Application.Chats.Controllers;
-
 
 [Authorize]
 [Route("/api/chats", Name = "Chats")]
@@ -46,7 +46,7 @@ public class ChatsController : ApplicationController
 
     [ProducesResponseType(
         StatusCodes.Status200OK, Type = typeof(ResponseSuccess<ReadMultipleChatsShortInfoResponse>)
-    )] 
+    )]
     [HttpGet("search", Name = nameof(ReadAllChats))]
     public async Task<IActionResult> ReadAllChats([FromQuery] PagingQuery pagingQuery)
     {
@@ -61,17 +61,17 @@ public class ChatsController : ApplicationController
                 .Ascending(m => m.CreatedDate)
                 .Ascending(m => m.Id)
             );
-        
+
         var pagingParser = new PagingQueryParser<Chat>(keysetParsingStrategy, 50);
         var pagingDetails = pagingParser.GetPagingDetails(pagingQuery);
-        
+
         var chats = await _chatService.ReadAllPublicOrAccessibleChats(userProfile!, pagingDetails);
-        
+
         return Ok(new
         {
             Chats = chats.Select(chat => new ReadSingleChatShortInfoResponse(chat)),
-            NextPageToken = chats.NextPageToken,
-            PrevPageToken = chats.PrevPageToken,
+            chats.NextPageToken,
+            chats.PrevPageToken,
             chats.Total,
             chats.Count
         });

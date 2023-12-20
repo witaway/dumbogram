@@ -1,4 +1,4 @@
-﻿using Dumbogram.Api.Database.Identity;
+﻿using Dumbogram.Api.Persistence.Context.Identity.Entities;
 using Microsoft.AspNetCore.Identity;
 
 namespace Dumbogram.Api.Application.Users.Services;

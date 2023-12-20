@@ -1,10 +1,10 @@
 ﻿using Dumbogram.Api.Application.Auth.Controllers.Dto;
 using Dumbogram.Api.Application.Users.Controllers.Dto;
-using Dumbogram.Api.Database;
-using Dumbogram.Api.Database.Identity;
 using Dumbogram.Api.Infrasctructure.Dto;
 using Dumbogram.Api.Infrasctructure.Extensions;
 using Dumbogram.Api.Infrasctructure.Filters;
+using Dumbogram.Api.Persistence.Context.Application;
+using Dumbogram.Api.Persistence.Context.Identity.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

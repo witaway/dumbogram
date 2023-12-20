@@ -1,7 +1,8 @@
-﻿using Dumbogram.Api.Database;
-using Dumbogram.Api.Infrasctructure.Utilities;
-using Dumbogram.Api.Models.Chats;
-using Dumbogram.Api.Models.Users;
+﻿using Dumbogram.Api.Infrasctructure.Utilities;
+using Dumbogram.Api.Persistence.Context.Application;
+using Dumbogram.Api.Persistence.Context.Application.Entities.Chats;
+using Dumbogram.Api.Persistence.Context.Application.Entities.Users;
+using Dumbogram.Api.Persistence.Context.Application.Enumerations;
 using Microsoft.EntityFrameworkCore;
 
 namespace Dumbogram.Api.Application.Chats.Services;
@@ -60,8 +61,11 @@ public class ChatPermissionsService
         return rights.Contains(right);
     }
 
-    public async Task EnsureRightsAppliedToUserInChat(Chat chat, UserProfile userProfile,
-        List<MembershipRight> newRights)
+    public async Task EnsureRightsAppliedToUserInChat(
+        Chat chat,
+        UserProfile userProfile,
+        List<MembershipRight> newRights
+    )
     {
         var oldRights = (await ReadAllRightsAppliedToUsersInChat(chat, userProfile)).ToList();
 
@@ -89,10 +93,7 @@ public class ChatPermissionsService
         UserProfile userProfile,
         IEnumerable<MembershipRight> membershipRights)
     {
-        foreach (var right in membershipRights)
-        {
-            await EnsureUserHasPermissionInChat(chat, userProfile, right);
-        }
+        foreach (var right in membershipRights) await EnsureUserHasPermissionInChat(chat, userProfile, right);
 
         await _dbContext.SaveChangesAsync();
     }
@@ -115,10 +116,7 @@ public class ChatPermissionsService
         UserProfile userProfile,
         IEnumerable<MembershipRight> membershipRights)
     {
-        foreach (var right in membershipRights)
-        {
-            await EnsureUserHasNotPermissionInChat(chat, userProfile, right);
-        }
+        foreach (var right in membershipRights) await EnsureUserHasNotPermissionInChat(chat, userProfile, right);
 
         await _dbContext.SaveChangesAsync();
     }

@@ -1,5 +1,5 @@
 ﻿using Dumbogram.Api.Application.Users.Services.Errors;
-using Dumbogram.Api.Database.Identity;
+using Dumbogram.Api.Persistence.Context.Identity.Entities;
 using FluentResults;
 using Microsoft.AspNetCore.Identity;
 
@@ -22,10 +22,7 @@ public class IdentityUserService
     public async Task<Result<ApplicationIdentityUser>> RequestUserByUsername(string username)
     {
         var identityUser = await ReadUserByUsername(username);
-        if (identityUser == null)
-        {
-            return Result.Fail(new UserNotFoundError());
-        }
+        if (identityUser == null) return Result.Fail(new UserNotFoundError());
 
         return Result.Ok(identityUser);
     }
@@ -38,10 +35,7 @@ public class IdentityUserService
     public async Task<Result<ApplicationIdentityUser>> RequestUserByEmail(string email)
     {
         var identityUser = await ReadUserByEmail(email);
-        if (identityUser == null)
-        {
-            return Result.Fail(new UserNotFoundError());
-        }
+        if (identityUser == null) return Result.Fail(new UserNotFoundError());
 
         return Result.Ok(identityUser);
     }
@@ -54,10 +48,7 @@ public class IdentityUserService
     public async Task<Result<ApplicationIdentityUser>> RequestUserById(string userId)
     {
         var identityUser = await ReadUserById(userId);
-        if (identityUser == null)
-        {
-            return Result.Fail(new UserNotFoundError());
-        }
+        if (identityUser == null) return Result.Fail(new UserNotFoundError());
 
         return Result.Ok(identityUser);
     }

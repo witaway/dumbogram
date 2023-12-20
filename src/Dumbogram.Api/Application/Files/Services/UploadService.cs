@@ -3,9 +3,10 @@ using Dumbogram.Api.Application.Files.Controllers.Dto;
 using Dumbogram.Api.Application.Files.Services.FileFormats;
 using Dumbogram.Api.Application.Files.Services.StorageWriter;
 using Dumbogram.Api.Application.Users.Services;
-using Dumbogram.Api.Models.Files;
-using Dumbogram.Api.Models.Files.FileTypes;
+using Dumbogram.Api.Persistence.Context.Application.Entities.Files;
+using Dumbogram.Api.Persistence.Context.Application.Enumerations;
 using SkiaSharp;
+using FileMetadata = Dumbogram.Api.Persistence.Context.Application.Entities.Files.FileMetadata;
 
 namespace Dumbogram.Api.Application.Files.Services;
 
@@ -56,7 +57,7 @@ public class UploadService
         var uploadsLimit = filesQuantityLimit - group.Files.Count();
 
         var request = _httpContextAccessor.HttpContext!.Request;
-        var filesResults = await _fileTransferService.UploadSmallFiles<FileRecordPhoto>(request, writer, uploadsLimit);
+        var filesResults = await _fileTransferService.UploadSmallFiles(request, writer, uploadsLimit);
 
         var uploadedFiles = filesResults.GetSucceededValues().ToList();
 
@@ -68,11 +69,12 @@ public class UploadService
             var width = bitmap.Width;
             var height = bitmap.Height;
 
-            file.Metadata = new FilePhotoMetadata
+            file.Type = FileType.Photo;
+            file.Metadata = FileMetadata.Image(new ImageFileMetadataContent
             {
                 Width = width,
                 Height = height
-            };
+            });
         }
 
         await _fileRecordService.AddFilesRange(uploadedFiles);
@@ -92,7 +94,7 @@ public class UploadService
         var uploadsLimit = filesQuantityLimit - group.Files.Count();
 
         var request = _httpContextAccessor.HttpContext!.Request;
-        var filesResults = await _fileTransferService.UploadLargeFiles<FileRecord>(request, writer, uploadsLimit);
+        var filesResults = await _fileTransferService.UploadLargeFiles(request, writer, uploadsLimit);
 
         var uploadedFiles = filesResults.GetSucceededValues();
 

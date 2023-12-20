@@ -1,8 +1,9 @@
 ﻿using Dumbogram.Api.Application.Chats.Services;
 using Dumbogram.Api.Application.Chats.Services.Errors;
-using Dumbogram.Api.Models.Chats;
-using Dumbogram.Api.Models.Messages;
-using Dumbogram.Api.Models.Users;
+using Dumbogram.Api.Persistence.Context.Application.Entities.Chats;
+using Dumbogram.Api.Persistence.Context.Application.Entities.Messages;
+using Dumbogram.Api.Persistence.Context.Application.Entities.Users;
+using Dumbogram.Api.Persistence.Context.Application.Enumerations;
 using FluentResults;
 
 namespace Dumbogram.Api.Application.Messages.Services;
@@ -28,10 +29,7 @@ public class MessageActionsGuardService
             chat
         );
 
-        if (!isMember)
-        {
-            return Result.Fail(new UserNotInChatError());
-        }
+        if (!isMember) return Result.Fail(new UserNotInChatError());
 
         return Result.Ok();
     }
@@ -46,17 +44,11 @@ public class MessageActionsGuardService
             destinationChat
         );
 
-        if (!isMember)
-        {
-            return Result.Fail(new UserNotInChatError());
-        }
+        if (!isMember) return Result.Fail(new UserNotInChatError());
 
         var isSubjectAndSenderSame = senderUser == subjectUser;
 
-        if (!isSubjectAndSenderSame)
-        {
-            return Result.Fail(new NotEnoughRightsError());
-        }
+        if (!isSubjectAndSenderSame) return Result.Fail(new NotEnoughRightsError());
 
         var isCanWrite = await _chatPermissionsService.IsUserHasRightInChat(
             destinationChat,
@@ -64,10 +56,7 @@ public class MessageActionsGuardService
             MembershipRight.Write
         );
 
-        if (!isCanWrite)
-        {
-            return Result.Fail(new NotEnoughRightsError());
-        }
+        if (!isCanWrite) return Result.Fail(new NotEnoughRightsError());
 
         return Result.Ok();
     }
@@ -93,18 +82,12 @@ public class MessageActionsGuardService
             chat
         );
 
-        if (!isMemberOfChat)
-        {
-            return Result.Fail(new UserNotInChatError());
-        }
+        if (!isMemberOfChat) return Result.Fail(new UserNotInChatError());
 
         var isSenderOfMessage = subjectUser == message.SenderProfile;
         var isSenderOwnerOfChat = subjectUser == message.Chat.OwnerProfile;
 
-        if (!isSenderOfMessage && !isSenderOwnerOfChat)
-        {
-            return Result.Fail(new NotEnoughRightsError());
-        }
+        if (!isSenderOfMessage && !isSenderOwnerOfChat) return Result.Fail(new NotEnoughRightsError());
 
         return Result.Ok();
     }
@@ -118,17 +101,11 @@ public class MessageActionsGuardService
             chat
         );
 
-        if (!isMemberOfChat)
-        {
-            return Result.Fail(new UserNotInChatError());
-        }
+        if (!isMemberOfChat) return Result.Fail(new UserNotInChatError());
 
         var isSenderOfMessage = subjectUser == message.SenderProfile;
 
-        if (!isSenderOfMessage)
-        {
-            return Result.Fail(new NotEnoughRightsError());
-        }
+        if (!isSenderOfMessage) return Result.Fail(new NotEnoughRightsError());
 
         return Result.Ok();
     }

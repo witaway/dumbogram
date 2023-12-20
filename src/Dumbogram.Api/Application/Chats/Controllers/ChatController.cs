@@ -4,7 +4,7 @@ using Dumbogram.Api.Application.Messages.Services;
 using Dumbogram.Api.Application.Users.Services;
 using Dumbogram.Api.Infrasctructure.Controller;
 using Dumbogram.Api.Infrasctructure.Dto;
-using Dumbogram.Api.Models.Chats;
+using Dumbogram.Api.Persistence.Context.Application.Enumerations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -48,10 +48,7 @@ public class ChatController : ApplicationController
         var userProfile = await _userResolverService.GetApplicationUser();
 
         var chatResult = await _chatService.RequestPublicOrAccessibleChatByChatId(chatId, userProfile!);
-        if (chatResult.IsFailed)
-        {
-            return Failure(chatResult.Errors);
-        }
+        if (chatResult.IsFailed) return Failure(chatResult.Errors);
 
         var chat = chatResult.Value;
         var chatDto = new ReadSingleChatShortInfoResponse(chatResult.Value);
@@ -72,17 +69,11 @@ public class ChatController : ApplicationController
         var userProfile = await _userResolverService.GetApplicationUser();
 
         var chatResult = await _chatService.RequestPublicOrAccessibleChatByChatId(chatId, userProfile);
-        if (chatResult.IsFailed)
-        {
-            return Failure(chatResult.Errors);
-        }
+        if (chatResult.IsFailed) return Failure(chatResult.Errors);
 
         var chat = chatResult.Value;
         var joinResult = await _chatMembershipService.JoinUserToChat(userProfile, chat);
-        if (joinResult.IsFailed)
-        {
-            return Failure(joinResult.Errors);
-        }
+        if (joinResult.IsFailed) return Failure(joinResult.Errors);
 
         await _chatPermissionsService.EnsureUserHasPermissionInChat(chat, userProfile, MembershipRight.Write);
         await _systemMessagesService.CreateJoinedMessage(chat, userProfile);
@@ -96,17 +87,11 @@ public class ChatController : ApplicationController
         var userProfile = await _userResolverService.GetApplicationUser();
 
         var chatResult = await _chatService.RequestPublicOrAccessibleChatByChatId(chatId, userProfile);
-        if (chatResult.IsFailed)
-        {
-            return Failure(chatResult.Errors);
-        }
+        if (chatResult.IsFailed) return Failure(chatResult.Errors);
 
         var chat = chatResult.Value;
         var leaveResult = await _chatMembershipService.JoinUserToChat(userProfile, chat);
-        if (leaveResult.IsFailed)
-        {
-            return Failure(leaveResult.Errors);
-        }
+        if (leaveResult.IsFailed) return Failure(leaveResult.Errors);
 
         await _systemMessagesService.CreateLeftMessage(chat, userProfile);
 

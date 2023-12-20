@@ -1,8 +1,8 @@
 ﻿using Dumbogram.Api.Application.Messages.Services.Errors;
-using Dumbogram.Api.Database;
-using Dumbogram.Api.Models.Chats;
-using Dumbogram.Api.Models.Messages;
-using Dumbogram.Api.Models.Users;
+using Dumbogram.Api.Persistence.Context.Application;
+using Dumbogram.Api.Persistence.Context.Application.Entities.Chats;
+using Dumbogram.Api.Persistence.Context.Application.Entities.Messages;
+using Dumbogram.Api.Persistence.Context.Application.Entities.Users;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
 
@@ -46,17 +46,11 @@ public class MessagesService
     public async Task<Result<Message>> QuerySingleMessageById(UserProfile subjectUser, Chat chat, int messageId)
     {
         var messagesCanBeReadResult = await _messageActionsGuardService.CheckMessagesCanBeRead(subjectUser, chat);
-        if (messagesCanBeReadResult.IsFailed)
-        {
-            return Result.Fail(messagesCanBeReadResult.Errors);
-        }
+        if (messagesCanBeReadResult.IsFailed) return Result.Fail(messagesCanBeReadResult.Errors);
 
         var message = await ReadSingleMessageById(chat, messageId);
 
-        if (message == null)
-        {
-            return Result.Fail(new MessageNotFoundError());
-        }
+        if (message == null) return Result.Fail(new MessageNotFoundError());
 
         return message;
     }
@@ -64,10 +58,7 @@ public class MessagesService
     public async Task<Result<List<Message>>> QueryManyMessages(UserProfile subjectUser, Chat chat)
     {
         var messagesCanBeReadResult = await _messageActionsGuardService.CheckMessagesCanBeRead(subjectUser, chat);
-        if (messagesCanBeReadResult.IsFailed)
-        {
-            return Result.Fail(messagesCanBeReadResult.Errors);
-        }
+        if (messagesCanBeReadResult.IsFailed) return Result.Fail(messagesCanBeReadResult.Errors);
 
         var messages = await ReadManyMessages(chat);
         return Result.Ok(messages);
@@ -76,10 +67,7 @@ public class MessagesService
     public async Task<Result> SendMessage(UserProfile subjectUser, UserMessage message)
     {
         var messageCanBeSendResult = await _messageActionsGuardService.CheckMessageCanBeSend(subjectUser, message);
-        if (messageCanBeSendResult.IsFailed)
-        {
-            return Result.Fail(messageCanBeSendResult.Errors);
-        }
+        if (messageCanBeSendResult.IsFailed) return Result.Fail(messageCanBeSendResult.Errors);
 
         await _dbContext.AddAsync(message);
         await _dbContext.SaveChangesAsync();
@@ -91,10 +79,7 @@ public class MessagesService
     {
         var messageCanBeUpdatedResult =
             await _messageActionsGuardService.CheckMessageCanBeUpdatedBy(subjectUser, message);
-        if (messageCanBeUpdatedResult.IsFailed)
-        {
-            return Result.Fail(messageCanBeUpdatedResult.Errors);
-        }
+        if (messageCanBeUpdatedResult.IsFailed) return Result.Fail(messageCanBeUpdatedResult.Errors);
 
         _dbContext.Update(message);
         await _dbContext.SaveChangesAsync();
@@ -106,10 +91,7 @@ public class MessagesService
     {
         var messageCanBeDeletedResult =
             await _messageActionsGuardService.CheckMessageCanBeDeletedBy(subjectUser, message);
-        if (messageCanBeDeletedResult.IsFailed)
-        {
-            return Result.Fail(messageCanBeDeletedResult.Errors);
-        }
+        if (messageCanBeDeletedResult.IsFailed) return Result.Fail(messageCanBeDeletedResult.Errors);
 
         _dbContext.Remove(message);
         await _dbContext.SaveChangesAsync();

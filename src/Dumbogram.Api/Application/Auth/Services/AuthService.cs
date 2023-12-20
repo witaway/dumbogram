@@ -3,9 +3,10 @@ using System.Security.Claims;
 using Dumbogram.Api.Application.Auth.Controllers;
 using Dumbogram.Api.Application.Auth.Services.Errors;
 using Dumbogram.Api.Application.Users.Services;
-using Dumbogram.Api.Database.Identity;
 using Dumbogram.Api.Infrasctructure.Extensions;
-using Dumbogram.Api.Models.Users;
+using Dumbogram.Api.Persistence.Context.Application.Entities.Users;
+using Dumbogram.Api.Persistence.Context.Identity.Entities;
+using Dumbogram.Api.Persistence.Context.Identity.Enumerations;
 using FluentResults;
 using Microsoft.AspNetCore.Identity;
 
@@ -59,18 +60,12 @@ public class AuthService
     public async Task<Result<JwtSecurityToken>> SignIn(ApplicationIdentityUser user, string password)
     {
         // Checking if password matches user
-        if (!await IsPasswordMatches(user, password))
-        {
-            return Result.Fail<JwtSecurityToken>(new PasswordNotValidError());
-        }
+        if (!await IsPasswordMatches(user, password)) return Result.Fail<JwtSecurityToken>(new PasswordNotValidError());
 
         // Get user's claims
         var claimsResult = await GetUserClaims(user);
 
-        if (claimsResult.IsFailed)
-        {
-            return Result.Fail<JwtSecurityToken>(claimsResult.Errors);
-        }
+        if (claimsResult.IsFailed) return Result.Fail<JwtSecurityToken>(claimsResult.Errors);
 
         // Get token from claims
         var claims = claimsResult.Value;
@@ -83,36 +78,22 @@ public class AuthService
     {
         // Ensure we have correct input
         if (user.Email == null || user.UserName == null)
-        {
             throw new ArgumentNullException(nameof(user), "Email or UserName is null");
-        }
 
         // User existence check
         var existenceErrors = new List<IError>();
 
         var emailAlreadyTaken = await _identityUserService.IsUserWithEmailExist(user.Email);
-        if (emailAlreadyTaken)
-        {
-            existenceErrors.Add(new EmailAlreadyTakenError());
-        }
+        if (emailAlreadyTaken) existenceErrors.Add(new EmailAlreadyTakenError());
 
         var usernameAlreadyTaken = await _identityUserService.IsUserWithUsernameExist(user.UserName);
-        if (usernameAlreadyTaken)
-        {
-            existenceErrors.Add(new UsernameAlreadyTakenError());
-        }
+        if (usernameAlreadyTaken) existenceErrors.Add(new UsernameAlreadyTakenError());
 
-        if (existenceErrors.Any())
-        {
-            return Result.Fail(existenceErrors);
-        }
+        if (existenceErrors.Any()) return Result.Fail(existenceErrors);
 
         // Trying to create IdentityUser
         var userCreationResult = await _userManager.CreateAsync(user, password);
-        if (!userCreationResult.Succeeded)
-        {
-            return Result.Fail(userCreationResult.GetWrappedErrors());
-        }
+        if (!userCreationResult.Succeeded) return Result.Fail(userCreationResult.GetWrappedErrors());
 
         // Granting basic role to IdentityUser
         await _identityRolesService.EnsureUserIsInRole(user, UserRoles.User);

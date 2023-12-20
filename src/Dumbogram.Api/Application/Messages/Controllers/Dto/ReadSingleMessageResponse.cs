@@ -1,4 +1,4 @@
-﻿using Dumbogram.Api.Models.Messages;
+﻿using Dumbogram.Api.Persistence.Context.Application.Entities.Messages;
 
 namespace Dumbogram.Api.Application.Messages.Controllers.Dto;
 
@@ -14,12 +14,10 @@ public class ReadSingleMessageResponse
         {
             Content = userMessage.Content;
             if (userMessage.RepliedMessage is not null && !isReplyInner)
-            {
                 ReplyToMessage = new ReadSingleMessageResponse(
                     userMessage.RepliedMessage,
                     true
                 );
-            }
         }
         else if (message is SystemMessage systemMessage)
         {

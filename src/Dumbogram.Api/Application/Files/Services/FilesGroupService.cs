@@ -1,8 +1,9 @@
 ﻿using Dumbogram.Api.Application.Chats.Services.Errors;
 using Dumbogram.Api.Application.Files.Services.Errors;
-using Dumbogram.Api.Database;
-using Dumbogram.Api.Models.Files;
-using Dumbogram.Api.Models.Users;
+using Dumbogram.Api.Persistence.Context.Application;
+using Dumbogram.Api.Persistence.Context.Application.Entities.Files;
+using Dumbogram.Api.Persistence.Context.Application.Entities.Users;
+using Dumbogram.Api.Persistence.Context.Application.Enumerations;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
 

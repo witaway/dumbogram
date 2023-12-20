@@ -1,10 +1,10 @@
 ﻿using Dumbogram.Api.Application.Files.Services;
 using Dumbogram.Api.Application.Messages.Controllers.Dto;
 using Dumbogram.Api.Application.Messages.Services.Errors;
-using Dumbogram.Api.Database;
-using Dumbogram.Api.Models.Files;
-using Dumbogram.Api.Models.Messages;
-using Dumbogram.Api.Models.Users;
+using Dumbogram.Api.Persistence.Context.Application;
+using Dumbogram.Api.Persistence.Context.Application.Entities.Messages;
+using Dumbogram.Api.Persistence.Context.Application.Entities.Users;
+using Dumbogram.Api.Persistence.Context.Application.Enumerations;
 using FluentResults;
 
 namespace Dumbogram.Api.Application.Messages.Services;
@@ -48,17 +48,12 @@ public class MessageContentBuilderService
                 sender,
                 (Guid)attachedPhotosGroupId
             );
-            if (attachedPhotosGroupResult.IsFailed)
-            {
-                return Result.Fail(attachedPhotosGroupResult.Errors);
-            }
+            if (attachedPhotosGroupResult.IsFailed) return Result.Fail(attachedPhotosGroupResult.Errors);
 
             var attachedPhotosGroup = attachedPhotosGroupResult.Value;
 
             if (attachedPhotosGroup.GroupType != FilesGroupType.AttachedPhotos)
-            {
                 return Result.Fail(new BadMessageContent());
-            }
 
             content.AttachedPhotosGroupId = (Guid)attachedPhotosGroupId;
             propertiesSet++;
@@ -68,10 +63,7 @@ public class MessageContentBuilderService
             content.AttachedPhotosGroupId = null;
         }
 
-        if (propertiesSet == 0)
-        {
-            return Result.Fail(new MessageCannotBeEmpty());
-        }
+        if (propertiesSet == 0) return Result.Fail(new MessageCannotBeEmpty());
 
         return Result.Ok(content);
     }

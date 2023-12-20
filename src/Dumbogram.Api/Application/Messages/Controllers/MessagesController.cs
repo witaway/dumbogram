@@ -3,7 +3,7 @@ using Dumbogram.Api.Application.Messages.Controllers.Dto;
 using Dumbogram.Api.Application.Messages.Services;
 using Dumbogram.Api.Application.Users.Services;
 using Dumbogram.Api.Infrasctructure.Controller;
-using Dumbogram.Api.Models.Messages;
+using Dumbogram.Api.Persistence.Context.Application.Entities.Messages;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -38,18 +38,12 @@ public class MessagesController : ApplicationController
         var subjectUser = await _userResolverService.GetApplicationUser();
 
         var chatResult = await _chatService.RequestPublicOrAccessibleChatByChatId(chatId, subjectUser);
-        if (chatResult.IsFailed)
-        {
-            return Failure(chatResult.Errors);
-        }
+        if (chatResult.IsFailed) return Failure(chatResult.Errors);
 
         var chat = chatResult.Value;
 
         var messageResult = await _messagesService.QuerySingleMessageById(subjectUser, chat, messageId);
-        if (messageResult.IsFailed)
-        {
-            return Failure(messageResult.Errors);
-        }
+        if (messageResult.IsFailed) return Failure(messageResult.Errors);
 
         var message = messageResult.Value;
         var messageResponse = new ReadSingleMessageResponse(message);
@@ -63,18 +57,12 @@ public class MessagesController : ApplicationController
         var subjectUser = await _userResolverService.GetApplicationUser();
 
         var chatResult = await _chatService.RequestPublicOrAccessibleChatByChatId(chatId, subjectUser);
-        if (chatResult.IsFailed)
-        {
-            return Failure(chatResult.Errors);
-        }
+        if (chatResult.IsFailed) return Failure(chatResult.Errors);
 
         var chat = chatResult.Value;
 
         var messagesResult = await _messagesService.QueryManyMessages(subjectUser, chat);
-        if (messagesResult.IsFailed)
-        {
-            return Failure(messagesResult.Errors);
-        }
+        if (messagesResult.IsFailed) return Failure(messagesResult.Errors);
 
         var messages = messagesResult.Value;
         var messagesResponse = new ReadManyMessagesResponse(messages);
@@ -88,19 +76,13 @@ public class MessagesController : ApplicationController
         var subjectUser = await _userResolverService.GetApplicationUser();
 
         var chatResult = await _chatService.RequestPublicOrAccessibleChatByChatId(chatId, subjectUser);
-        if (chatResult.IsFailed)
-        {
-            return Failure(chatResult.Errors);
-        }
+        if (chatResult.IsFailed) return Failure(chatResult.Errors);
 
         var chat = chatResult.Value;
 
         var messageContentResult = await _messageContentBuilderService.BuildMessageContent(subjectUser, request);
 
-        if (messageContentResult.IsFailed)
-        {
-            return Failure(messageContentResult.Errors);
-        }
+        if (messageContentResult.IsFailed) return Failure(messageContentResult.Errors);
 
         var message = new UserMessage
         {
@@ -112,10 +94,7 @@ public class MessagesController : ApplicationController
 
         var sendMessageResult = await _messagesService.SendMessage(subjectUser, message);
 
-        if (sendMessageResult.IsFailed)
-        {
-            return Failure(sendMessageResult.Errors);
-        }
+        if (sendMessageResult.IsFailed) return Failure(sendMessageResult.Errors);
 
         return Ok();
     }
@@ -133,25 +112,16 @@ public class MessagesController : ApplicationController
         var subjectUser = await _userResolverService.GetApplicationUser();
 
         var chatResult = await _chatService.RequestPublicOrAccessibleChatByChatId(chatId, subjectUser);
-        if (chatResult.IsFailed)
-        {
-            return Failure(chatResult.Errors);
-        }
+        if (chatResult.IsFailed) return Failure(chatResult.Errors);
 
         var chat = chatResult.Value;
 
         var messageResult = await _messagesService.QuerySingleMessageById(subjectUser, chat, messageId);
-        if (messageResult.IsFailed)
-        {
-            return Failure(messageResult.Errors);
-        }
+        if (messageResult.IsFailed) return Failure(messageResult.Errors);
 
         var message = messageResult.Value;
         var deleteMessageResult = await _messagesService.DeleteMessage(subjectUser, message);
-        if (deleteMessageResult.IsFailed)
-        {
-            return Failure(deleteMessageResult.Errors);
-        }
+        if (deleteMessageResult.IsFailed) return Failure(deleteMessageResult.Errors);
 
         return Ok();
     }

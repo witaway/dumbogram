@@ -1,10 +1,10 @@
 ﻿using Dumbogram.Api.Application.Chats.Services.Errors;
-using Dumbogram.Api.Database;
-using Dumbogram.Api.Database.KeysetPagination;
-using Dumbogram.Api.Database.KeysetPagination.Dto;
-using Dumbogram.Api.Database.KeysetPagination.Internals;
-using Dumbogram.Api.Models.Chats;
-using Dumbogram.Api.Models.Users;
+using Dumbogram.Api.Persistence.Context.Application;
+using Dumbogram.Api.Persistence.Context.Application.Entities.Chats;
+using Dumbogram.Api.Persistence.Context.Application.Entities.Users;
+using Dumbogram.Api.Persistence.Context.Application.Enumerations;
+using Dumbogram.Api.Persistence.Infrastructure.KeysetPagination;
+using Dumbogram.Api.Persistence.Infrastructure.KeysetPagination.Internals;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
 
@@ -82,10 +82,7 @@ public class ChatService
     public async Task<Result<Chat>> RequestPublicChatByChatId(Guid chatId)
     {
         var chat = await ReadPublicChatByChatId(chatId);
-        if (chat == null)
-        {
-            return Result.Fail(new ChatNotFoundError());
-        }
+        if (chat == null) return Result.Fail(new ChatNotFoundError());
 
         return chat;
     }
@@ -97,7 +94,8 @@ public class ChatService
     /// <param name="userProfile"></param>
     /// <param name="pagingDetails"></param>
     /// <returns></returns>
-    public async Task<PagedList<Chat>> ReadAllPublicOrAccessibleChats(UserProfile userProfile, PagingDetails<Chat> pagingDetails)
+    public async Task<PagedList<Chat>> ReadAllPublicOrAccessibleChats(UserProfile userProfile,
+        PagingDetails<Chat> pagingDetails)
     {
         return await _dbContext
             .Chats
@@ -138,10 +136,7 @@ public class ChatService
     public async Task<Result<Chat>> RequestPublicOrAccessibleChatByChatId(Guid chatId, UserProfile userProfile)
     {
         var chat = await ReadPublicOrAccessibleChatByChatId(chatId, userProfile);
-        if (chat == null)
-        {
-            return Result.Fail(new ChatNotFoundError());
-        }
+        if (chat == null) return Result.Fail(new ChatNotFoundError());
 
         return chat;
     }
@@ -181,10 +176,7 @@ public class ChatService
     public async Task<Result<Chat>> RequestChatOwnedBy(Guid chatId, UserProfile userProfile)
     {
         var chat = await ReadChatOwnedBy(chatId, userProfile);
-        if (chat == null)
-        {
-            return Result.Fail(new ChatNotFoundError());
-        }
+        if (chat == null) return Result.Fail(new ChatNotFoundError());
 
         return chat;
     }
@@ -232,10 +224,7 @@ public class ChatService
     public async Task<Result<Chat>> RequestChatJoinedBy(Guid chatId, UserProfile userProfile)
     {
         var chat = await ReadChatJoinedBy(chatId, userProfile);
-        if (chat == null)
-        {
-            return Result.Fail(new ChatNotFoundError());
-        }
+        if (chat == null) return Result.Fail(new ChatNotFoundError());
 
         return chat;
     }

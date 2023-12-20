@@ -1,4 +1,4 @@
-﻿using Dumbogram.Api.Models.Chats;
+﻿using Dumbogram.Api.Persistence.Context.Application.Enumerations;
 using FluentValidation;
 
 namespace Dumbogram.Api.Application.Chats.Controllers.Dto;
