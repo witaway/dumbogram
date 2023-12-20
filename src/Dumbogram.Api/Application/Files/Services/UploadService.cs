@@ -6,13 +6,12 @@ using Dumbogram.Api.Application.Users.Services;
 using Dumbogram.Api.Models.Files;
 using Dumbogram.Api.Models.Files.FileTypes;
 using SkiaSharp;
-using File = Dumbogram.Api.Models.Files.File;
 
 namespace Dumbogram.Api.Application.Files.Services;
 
 public class UploadService
 {
-    private readonly FileService _fileService;
+    private readonly FileRecordService _fileRecordService;
     private readonly FilesGroupService _filesGroupService;
     private readonly FileStorageService _fileStorageService;
     private readonly FileTransferService _fileTransferService;
@@ -22,14 +21,14 @@ public class UploadService
     public UploadService(
         FileTransferService fileTransferService,
         IHttpContextAccessor httpContextAccessor,
-        FileService fileService,
+        FileRecordService fileRecordService,
         FilesGroupService filesGroupService,
         FileStorageService fileStorageService,
         UserResolverService userResolverService
     )
     {
         _fileTransferService = fileTransferService;
-        _fileService = fileService;
+        _fileRecordService = fileRecordService;
         _httpContextAccessor = httpContextAccessor;
         _filesGroupService = filesGroupService;
         _fileStorageService = fileStorageService;
@@ -57,7 +56,7 @@ public class UploadService
         var uploadsLimit = filesQuantityLimit - group.Files.Count();
 
         var request = _httpContextAccessor.HttpContext!.Request;
-        var filesResults = await _fileTransferService.UploadSmallFiles<FilePhoto>(request, writer, uploadsLimit);
+        var filesResults = await _fileTransferService.UploadSmallFiles<FileRecordPhoto>(request, writer, uploadsLimit);
 
         var uploadedFiles = filesResults.GetSucceededValues().ToList();
 
@@ -76,7 +75,7 @@ public class UploadService
             };
         }
 
-        await _fileService.AddFilesRange(uploadedFiles);
+        await _fileRecordService.AddFilesRange(uploadedFiles);
         await _filesGroupService.AddFilesRangeToFilesGroup(group, uploadedFiles);
 
         var response = FilesUploadResponse.Parse(filesResults);
@@ -93,11 +92,11 @@ public class UploadService
         var uploadsLimit = filesQuantityLimit - group.Files.Count();
 
         var request = _httpContextAccessor.HttpContext!.Request;
-        var filesResults = await _fileTransferService.UploadLargeFiles<File>(request, writer, uploadsLimit);
+        var filesResults = await _fileTransferService.UploadLargeFiles<FileRecord>(request, writer, uploadsLimit);
 
         var uploadedFiles = filesResults.GetSucceededValues();
 
-        await _fileService.AddFilesRange(uploadedFiles);
+        await _fileRecordService.AddFilesRange(uploadedFiles);
         await _filesGroupService.AddFilesRangeToFilesGroup(group, uploadedFiles);
 
         var response = FilesUploadResponse.Parse(filesResults);

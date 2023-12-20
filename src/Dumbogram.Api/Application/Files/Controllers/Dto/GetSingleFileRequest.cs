@@ -1,15 +1,15 @@
-﻿using File = Dumbogram.Api.Models.Files.File;
+﻿using Dumbogram.Api.Models.Files;
 
 namespace Dumbogram.Api.Application.Files.Controllers.Dto;
 
 public class GetSingleFileRequest
 {
-    public GetSingleFileRequest(File file)
+    public GetSingleFileRequest(FileRecord fileRecord)
     {
-        Id = file.Id;
-        FileName = file.OriginalFileName;
-        FileSize = file.FileSize;
-        MimeType = file.MimeType;
+        Id = fileRecord.Id;
+        FileName = fileRecord.OriginalFileName;
+        FileSize = fileRecord.FileSize;
+        MimeType = fileRecord.MimeType;
     }
 
     public Guid Id { get; set; }

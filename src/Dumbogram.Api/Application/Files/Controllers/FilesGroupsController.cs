@@ -14,7 +14,7 @@ namespace Dumbogram.Api.Application.Files.Controllers;
 [Route("api/files")]
 public class FileController : ApplicationController
 {
-    private readonly FileService _fileService;
+    private readonly FileRecordService _fileRecordService;
     private readonly FilesGroupService _filesGroupService;
     private readonly FileStorageService _fileStorageService;
     private readonly FileTransferService _fileTransferService;
@@ -23,7 +23,7 @@ public class FileController : ApplicationController
 
     public FileController(
         FileTransferService fileTransferService,
-        FileService fileService,
+        FileRecordService fileRecordService,
         UploadService uploadService,
         FilesGroupService filesGroupService,
         FileStorageService fileStorageService,
@@ -31,7 +31,7 @@ public class FileController : ApplicationController
     )
     {
         _fileTransferService = fileTransferService;
-        _fileService = fileService;
+        _fileRecordService = fileRecordService;
         _uploadService = uploadService;
         _filesGroupService = filesGroupService;
         _fileStorageService = fileStorageService;
@@ -69,10 +69,7 @@ public class FileController : ApplicationController
         var subjectUser = await _userResolverService.GetApplicationUser();
 
         var groupResult = await _filesGroupService.RequestFilesGroupById(groupId);
-        if (groupResult.IsFailed)
-        {
-            return Failure(groupResult.Errors);
-        }
+        if (groupResult.IsFailed) return Failure(groupResult.Errors);
 
         var group = groupResult.Value;
         var response = new GetSingleGroupRequest(group);
@@ -91,10 +88,7 @@ public class FileController : ApplicationController
         var subjectUser = await _userResolverService.GetApplicationUser();
 
         var groupResult = await _filesGroupService.RequestOwnedFilesGroupById(subjectUser, groupId);
-        if (groupResult.IsFailed)
-        {
-            return Failure(groupResult.Errors);
-        }
+        if (groupResult.IsFailed) return Failure(groupResult.Errors);
 
         var group = groupResult.Value;
 
@@ -108,18 +102,12 @@ public class FileController : ApplicationController
     public async Task<IActionResult> DownloadFileFromGroup(Guid groupId, Guid fileId)
     {
         var groupResult = await _filesGroupService.RequestFilesGroupById(groupId);
-        if (groupResult.IsFailed)
-        {
-            return Failure(groupResult.Errors);
-        }
+        if (groupResult.IsFailed) return Failure(groupResult.Errors);
 
         var group = groupResult.Value;
         var file = group.Files.SingleOrDefault(file => file.Id == fileId);
 
-        if (file == null)
-        {
-            return Failure(new FileNotExistError());
-        }
+        if (file == null) return Failure(new FileNotExistError());
 
         var contentType = file.MimeType;
         var downloadName = file.OriginalFileName;
@@ -132,18 +120,12 @@ public class FileController : ApplicationController
     public async Task<IActionResult> RemoveFileFromGroup(Guid groupId, Guid fileId)
     {
         var groupResult = await _filesGroupService.RequestFilesGroupById(groupId);
-        if (groupResult.IsFailed)
-        {
-            return Failure(groupResult.Errors);
-        }
+        if (groupResult.IsFailed) return Failure(groupResult.Errors);
 
         var group = groupResult.Value;
         var file = group.Files.SingleOrDefault(file => file.Id == fileId);
 
-        if (file == null)
-        {
-            return Failure(new FileNotExistError());
-        }
+        if (file == null) return Failure(new FileNotExistError());
 
         await _filesGroupService.RemoveFileFromFilesGroup(group, file);
 

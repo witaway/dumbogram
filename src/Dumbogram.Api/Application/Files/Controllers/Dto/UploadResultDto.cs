@@ -1,12 +1,12 @@
 ﻿using Dumbogram.Api.Infrasctructure.Classes;
 using Dumbogram.Api.Infrasctructure.Dto;
-using File = Dumbogram.Api.Models.Files.File;
+using Dumbogram.Api.Models.Files;
 
 namespace Dumbogram.Api.Application.Files.Controllers.Dto;
 
 public class UploadResultDto
 {
-    public UploadResultDto(Results<string, File>.IdentityWithResult fileResult)
+    public UploadResultDto(Results<string, FileRecord>.IdentityWithResult fileResult)
     {
         Number = fileResult.Identity.Number;
         FileName = fileResult.Identity.Label;

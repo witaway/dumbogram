@@ -7,7 +7,6 @@ using Dumbogram.Api.Models.Files.FileTypes;
 using Dumbogram.Api.Models.Messages;
 using Dumbogram.Api.Models.Users;
 using Microsoft.EntityFrameworkCore;
-using File = Dumbogram.Api.Models.Files.File;
 
 namespace Dumbogram.Api.Database;
 
@@ -32,7 +31,7 @@ public class ApplicationDbContext : DbContext
 
     // Files-related
     public DbSet<FilesGroup> FilesGroups { get; set; }
-    public DbSet<File> Files { get; set; }
+    public DbSet<FileRecord> Files { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -50,9 +49,9 @@ public class ApplicationDbContext : DbContext
         modelBuilder.HasPostgresEnum<FilesGroupType>();
 
         // We don't need public DbSets for all those system message types
-        modelBuilder.Entity<FileDocument>();
-        modelBuilder.Entity<FileAnimation>();
-        modelBuilder.Entity<FilePhoto>();
-        modelBuilder.Entity<FileVideo>();
+        modelBuilder.Entity<FileRecordDocument>();
+        modelBuilder.Entity<FileRecordAnimation>();
+        modelBuilder.Entity<FileRecordPhoto>();
+        modelBuilder.Entity<FileRecordVideo>();
     }
 }

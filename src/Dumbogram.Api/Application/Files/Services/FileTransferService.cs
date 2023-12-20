@@ -6,11 +6,11 @@ using Dumbogram.Api.Infrasctructure.Classes;
 using Dumbogram.Api.Infrasctructure.Errors;
 using Dumbogram.Api.Infrasctructure.Extensions;
 using Dumbogram.Api.Infrasctructure.Utilities;
+using Dumbogram.Api.Models.Files;
 using FluentResults;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Net.Http.Headers;
-using File = Dumbogram.Api.Models.Files.File;
 
 namespace Dumbogram.Api.Application.Files.Services;
 
@@ -32,7 +32,7 @@ public class FileTransferService
     private async Task<Result<TFile>> WriteSingleFileAsync<TFile>(
         StorageWriter.StorageWriter writer,
         FileContainer fileContainer
-    ) where TFile : File, new()
+    ) where TFile : FileRecord, new()
     {
         var fileMetadata = fileContainer.FileMetadata;
         await using var destination = _fileStorageService.CreateFile(
@@ -77,7 +77,7 @@ public class FileTransferService
         StorageWriter.StorageWriter writer,
         IAsyncEnumerable<FileContainer> fileContainers,
         int uploadsLimit = int.MaxValue
-    ) where TFile : File, new()
+    ) where TFile : FileRecord, new()
     {
         var uploadedFiles = new Results<string, TFile>();
         var successfullyUploadedCount = 0;
@@ -105,14 +105,12 @@ public class FileTransferService
         HttpRequest request,
         StorageWriter.StorageWriter writer,
         int uploadsLimit = int.MaxValue
-    ) where TFile : File, new()
+    ) where TFile : FileRecord, new()
     {
         var contentType = request.ContentType ?? "";
 
         if (!MultipartRequestHelper.IsMultipartContentType(contentType))
-        {
             throw new Exception("The request couldn't be processed");
-        }
 
         var boundary = MultipartRequestHelper.GetBoundary(
             MediaTypeHeaderValue.Parse(contentType),
@@ -131,7 +129,7 @@ public class FileTransferService
         HttpRequest request,
         StorageWriter.StorageWriter writer,
         int uploadsLimit = int.MaxValue
-    ) where TFile : File, new()
+    ) where TFile : FileRecord, new()
     {
         var formFiles = request.Form.Files;
 
@@ -141,9 +139,9 @@ public class FileTransferService
         return uploadedFilesResults;
     }
 
-    public Stream DownloadFile(File file)
+    public Stream DownloadFile(FileRecord fileRecord)
     {
-        var storedFileName = file.StoredFileName;
+        var storedFileName = fileRecord.StoredFileName;
         return _fileStorageService.ReadFile(storedFileName);
     }
 }

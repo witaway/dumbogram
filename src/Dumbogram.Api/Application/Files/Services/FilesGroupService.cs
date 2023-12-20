@@ -5,7 +5,6 @@ using Dumbogram.Api.Models.Files;
 using Dumbogram.Api.Models.Users;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
-using File = Dumbogram.Api.Models.Files.File;
 
 namespace Dumbogram.Api.Application.Files.Services;
 
@@ -13,14 +12,14 @@ public class FilesGroupService
 {
     private readonly ApplicationDbContext _dbContext;
 
-    private readonly FileService _fileService;
+    private readonly FileRecordService _fileRecordService;
 
     public FilesGroupService(
-        FileService fileService,
+        FileRecordService fileRecordService,
         ApplicationDbContext dbContext
     )
     {
-        _fileService = fileService;
+        _fileRecordService = fileRecordService;
         _dbContext = dbContext;
     }
 
@@ -57,10 +56,7 @@ public class FilesGroupService
     {
         var filesGroup = await GetFilesGroupById(filesGroupId);
 
-        if (filesGroup == null)
-        {
-            return Result.Fail(new FilesGroupNotExistError());
-        }
+        if (filesGroup == null) return Result.Fail(new FilesGroupNotExistError());
 
         return Result.Ok(filesGroup);
     }
@@ -69,38 +65,29 @@ public class FilesGroupService
     {
         var filesGroup = await GetFilesGroupById(filesGroupId);
 
-        if (filesGroup == null)
-        {
-            return Result.Fail(new FilesGroupNotExistError());
-        }
+        if (filesGroup == null) return Result.Fail(new FilesGroupNotExistError());
 
-        if (filesGroup.Owner != subjectUser)
-        {
-            return Result.Fail(new NotEnoughRightsError());
-        }
+        if (filesGroup.Owner != subjectUser) return Result.Fail(new NotEnoughRightsError());
 
         return Result.Ok(filesGroup);
     }
 
-    public async Task AddFileToFilesGroup(FilesGroup filesGroup, File file)
+    public async Task AddFileToFilesGroup(FilesGroup filesGroup, FileRecord fileRecord)
     {
-        filesGroup.Files.Add(file);
+        filesGroup.Files.Add(fileRecord);
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task AddFilesRangeToFilesGroup(FilesGroup filesGroup, IEnumerable<File> files)
+    public async Task AddFilesRangeToFilesGroup(FilesGroup filesGroup, IEnumerable<FileRecord> files)
     {
-        foreach (var file in files)
-        {
-            filesGroup.Files.Add(file);
-        }
+        foreach (var file in files) filesGroup.Files.Add(file);
 
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task RemoveFileFromFilesGroup(FilesGroup filesGroup, File file)
+    public async Task RemoveFileFromFilesGroup(FilesGroup filesGroup, FileRecord fileRecord)
     {
-        filesGroup.Files.Remove(file);
+        filesGroup.Files.Remove(fileRecord);
         await _dbContext.SaveChangesAsync();
     }
 }

@@ -13,7 +13,7 @@ public class FilesGroup : BaseEntity
     public FilesGroupType GroupType { get; set; }
 
     public UserProfile Owner { get; set; } = null!;
-    public IList<File> Files { get; set; } = null!;
+    public IList<FileRecord> Files { get; set; } = null!;
 }
 
 public class FilesGroupConfiguration : IEntityTypeConfiguration<FilesGroup>
