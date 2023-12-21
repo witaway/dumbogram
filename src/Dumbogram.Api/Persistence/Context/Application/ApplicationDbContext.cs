@@ -45,6 +45,7 @@ public class ApplicationDbContext : DbContext
     {
         modelBuilder.ApplyGlobalFilters<ISoftDelete>(e => e.DeletedDate == null);
 
+        modelBuilder.HasPostgresEnum<FileType>();
         modelBuilder.HasPostgresEnum<SystemMessageType>();
         modelBuilder.HasPostgresEnum<FilesGroupType>();
     }

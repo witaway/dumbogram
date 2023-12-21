@@ -1,4 +1,5 @@
 ﻿using Dumbogram.Api.Persistence.Context.Application.Entities.Files;
+using Dumbogram.Api.Persistence.Context.Application.Enumerations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -33,7 +34,8 @@ public class FileConfiguration : IEntityTypeConfiguration<FileRecord>
 
         builder
             .Property(file => file.Type)
-            .HasColumnName("file_type");
+            .HasColumnName("type")
+            .HasDefaultValue(FileType.Unknown);
 
         builder
             .Property(file => file.FilesGroupId)

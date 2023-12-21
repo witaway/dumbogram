@@ -18,6 +18,7 @@ public static class RegisterDbContexts
         var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
         dataSourceBuilder.MapEnum<SystemMessageType>();
         dataSourceBuilder.MapEnum<FilesGroupType>();
+        dataSourceBuilder.MapEnum<FileType>();
         dataSourceBuilder.UseNodaTime();
 
         var dataSource = dataSourceBuilder.Build();
@@ -42,8 +43,6 @@ public static class RegisterDbContexts
         var connectionString = configuration.GetConnectionString("DumbogramIdentityDbConnection");
 
         var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
-        dataSourceBuilder.MapEnum<SystemMessageType>();
-        dataSourceBuilder.MapEnum<FilesGroupType>();
         dataSourceBuilder.UseNodaTime();
 
         var dataSource = dataSourceBuilder.Build();
