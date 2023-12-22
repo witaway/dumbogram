@@ -1,6 +1,7 @@
+using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
-using Dumbogram.Api.Application.Auth.Controllers.Dto;
+using Dumbogram.Api.ApiOld.Auth.Controllers.Dto;
 using Dumbogram.Api.Infrasctructure.Filters;
 using Dumbogram.Api.Infrasctructure.Middlewares;
 using Dumbogram.Api.Infrasctructure.ModelBinders;
@@ -30,6 +31,11 @@ public static class SetupServices
         ConfigureIdentity(services);
         RegisterAuthentication(services, configuration);
 
+        services.AddMediatR(config =>
+        {
+            config.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+        });
+        
         services.AddHttpContextAccessor();
         RegisterCustomMiddlewares(services);
         services.RegisterCustomServices(configuration);

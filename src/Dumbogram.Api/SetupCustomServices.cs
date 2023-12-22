@@ -1,8 +1,8 @@
-using Dumbogram.Api.Application.Auth.Services;
-using Dumbogram.Api.Application.Chats.Services;
-using Dumbogram.Api.Application.Files.Services;
-using Dumbogram.Api.Application.Messages.Services;
-using Dumbogram.Api.Application.Users.Services;
+using Dumbogram.Api.ApiOld.Auth.Services;
+using Dumbogram.Api.ApiOld.Chats.Services;
+using Dumbogram.Api.ApiOld.Files.Services;
+using Dumbogram.Api.ApiOld.Messages.Services;
+using Dumbogram.Api.ApiOld.Users.Services;
 
 namespace Dumbogram.Api;
 
