@@ -1,4 +1,4 @@
-using Dumbogram.Api.Infrasctructure.Middlewares;
+using Dumbogram.Api.Common.Middlewares;
 
 namespace Dumbogram.Api;
 

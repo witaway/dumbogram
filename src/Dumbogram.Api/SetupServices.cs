@@ -1,10 +1,9 @@
 using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
-using Dumbogram.Api.ApiOld.Auth.Controllers.Dto;
-using Dumbogram.Api.Infrasctructure.Filters;
-using Dumbogram.Api.Infrasctructure.Middlewares;
-using Dumbogram.Api.Infrasctructure.ModelBinders;
+using Dumbogram.Api.Common.Filters;
+using Dumbogram.Api.Common.Middlewares;
+using Dumbogram.Api.Common.ModelBinders;
 using Dumbogram.Api.Persistence;
 using Dumbogram.Api.Persistence.Context.Identity;
 using Dumbogram.Api.Persistence.Context.Identity.Entities;
@@ -31,11 +30,8 @@ public static class SetupServices
         ConfigureIdentity(services);
         RegisterAuthentication(services, configuration);
 
-        services.AddMediatR(config =>
-        {
-            config.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-        });
-        
+        services.AddMediatR(config => { config.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()); });
+
         services.AddHttpContextAccessor();
         RegisterCustomMiddlewares(services);
         services.RegisterCustomServices(configuration);
@@ -112,10 +108,7 @@ public static class SetupServices
 
     private static void RegisterFluentValidation(IServiceCollection services)
     {
-        // This is how single validator registers:
-        //   services.AddScoped<IValidator<SignInDto>, SignInDtoValidator>();
-        // Todo: Maybe use assembly name instead of marker validator?
-        services.AddValidatorsFromAssemblyContaining(typeof(SignInRequestValidator));
+        services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
         services.AddFluentValidationAutoValidation();
     }
 

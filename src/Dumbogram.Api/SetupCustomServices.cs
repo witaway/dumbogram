@@ -1,8 +1,8 @@
-using Dumbogram.Api.ApiOld.Auth.Services;
-using Dumbogram.Api.ApiOld.Chats.Services;
-using Dumbogram.Api.ApiOld.Files.Services;
-using Dumbogram.Api.ApiOld.Messages.Services;
-using Dumbogram.Api.ApiOld.Users.Services;
+using Dumbogram.Api.Domain.Services.Chats;
+using Dumbogram.Api.Domain.Services.Messages;
+using Dumbogram.Api.Domain.Services.Tokens;
+using Dumbogram.Api.Domain.Services.Users;
+using Dumbogram.Api.Infrastructure.Files;
 
 namespace Dumbogram.Api;
 
@@ -14,7 +14,6 @@ public static class SetupCustomServices
     )
     {
         // Auth-related services
-        services.AddScoped<AuthService>();
         services.AddScoped<TokenService>();
 
         // IdentityUser-related services
@@ -35,7 +34,6 @@ public static class SetupCustomServices
         services.AddScoped<ChatVisibilityService>();
 
         // Messages-related services
-        services.AddScoped<MessageContentBuilderService>();
         services.AddScoped<MessagesService>();
         services.AddScoped<SystemMessagesService>();
         services.AddScoped<MessageActionsGuardService>();
@@ -43,7 +41,6 @@ public static class SetupCustomServices
         // Files-related services
         services.AddSingleton<FileStorageService>();
         services.AddSingleton<FileTransferService>();
-        services.AddScoped<UploadService>();
         services.AddScoped<FileRecordService>();
         services.AddScoped<FilesGroupService>();
         services.AddScoped<FileTransferService>();
